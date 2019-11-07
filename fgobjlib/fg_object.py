@@ -1,5 +1,11 @@
 class FgObject:
-    def __init__(self, vdom: str = None):
+    def __init__(self, vdom: str = None, api: str = 'cmdb', api_path: str = None, api_name: str = None,
+                 api_mkey: str = None):
+
+        self.API = api
+        self.API_PATH = api_path
+        self.API_NAME = api_name
+        self.API_MKEY = api_mkey
         self.set_vdom(vdom)
 
     def set_vdom(self, vdom):
@@ -10,7 +16,7 @@ class FgObject:
                     if str.isspace(char):
                         raise Exception("\"vdom\", str not allowed to contain whitespace")
 
-                # Check vdom name string length meets FG requriements
+                # Check vdom name string length meets FG requirements
                 if 1 <= len(vdom) <= 31:
                     self.vdom = vdom
                 else:

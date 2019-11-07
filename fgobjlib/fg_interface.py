@@ -1,22 +1,22 @@
+from fgobjlib import FgObject
 import ipaddress
 
 
-class FgInterface:
-    """FgInterface class represents FortiGate Firewall interface object and provides methods for validating parameters
+class FgInterface(FgObject):
+    """
+    FgInterface class represents FortiGate Firewall interface object and provides methods for validating parameters
     and generating both cli and api configuration data for use in external configuration applications
 
-    Currently supports interface types of \"standard\" i.e. ethernet/physical, vlan and vdom-link"""
+    Currently supports interface types of \"standard\" i.e. ethernet/physical, vlan and vdom-link
+    """
 
     def __init__(self, intf: str = None, ip: str = None, ipv6: str = None, mode: str = None, modeipv6: str = None,
                  intf_type: str = None,  vdom: str = None, vrf: int = 0, allowaccess: str = None,
                  role: str = None, vlanid: int = None, phys_intf: str = None, device_ident: bool = False,
                  alias: str = None, description: str = None):
 
-        # Set Instance "constants"
-        self.API = 'cmdb'
-        self.PATH = 'system'
-        self.NAME = 'interface'
-        self.MKEY = None
+        # Initialize the parent class
+        super().__init__(vdom=vdom, api='cmdb', api_path='system', api_name='interface', api_mkey=None)
 
         # Set Instance Variables
         self.set_intf(intf)
@@ -147,21 +147,6 @@ class FgInterface:
                 raise Exception("If set, mode, must be set to either dhcp or static")
         else:
             self.ipv6mode = 'static'
-
-    def set_vdom(self, vdom):
-        if vdom:
-            for char in vdom:
-                if str.isspace(char): raise Exception("\"vdom\", str not allowed to contain whitespace")
-
-            if isinstance(vdom, str):
-                if 1 <= len(vdom) <= 31:
-                    self.vdom = vdom
-                else:
-                    raise Exception("\"vdom\", when set, must be an str between 1 and 31 chars")
-            else:
-                raise Exception("\"vdom\", when set, must be a str")
-        else:
-            self.vdom = None
 
     def set_allowaccess(self, allowaccess):
         if allowaccess:
@@ -314,7 +299,7 @@ class FgInterface:
         return conf
 
     def get_api_config_add(self):
-        conf = {'api': self.API, 'path': self.PATH, 'name': self.NAME, 'mkey': self.MKEY, 'action': None}
+        conf = {'api': self.API, 'path': self.API_PATH, 'name': self.API_NAME, 'mkey': self.API_MKEY, 'action': None}
         data = {}
         params = {}
         data.update({'name': self.intf})
@@ -375,7 +360,7 @@ class FgInterface:
 
     def get_api_config_update(self):
         # Need to set mkey to interface name when doing updates (puts) or deletes
-        self.MKEY = self.intf
+        self.API_MKEY = self.intf
 
         conf = self.get_api_config_add()
         return conf
@@ -397,7 +382,7 @@ class FgInterface:
         :param self:
         :return: conf:
         """
-        conf = {'api': self.API, 'path': self.PATH, 'name': self.NAME, 'mkey': self.MKEY, 'action': None}
+        conf = {'api': self.API, 'path': self.API_PATH, 'name': self.API_NAME, 'mkey': self.API_MKEY, 'action': None}
         data = {}
         params = {}
 

@@ -1,6 +1,7 @@
+from fgobjlib import FgObject
 import ipaddress
 
-class FgIpsecP2Interface:
+class FgIpsecP2Interface(FgObject):
     """
     FgIpsecP2Interface class represents FortiGate Firewall ipsec phase2 interface object and provides methods for
     validating parameters and generating both cli and api configuration data for use in external configuration
@@ -20,6 +21,7 @@ class FgIpsecP2Interface:
         self.MKEY = None
 
         # Set Instance Variables
+        super().__init__(vdom=vdom)
         self.set_name(name)
         self.set_phase1name(phase1name)
         self.set_proposal(proposal)
@@ -145,25 +147,6 @@ class FgIpsecP2Interface:
 
         else:
             self.dhgrp = None
-
-
-    def set_vdom(self, vdom):
-        if vdom:
-            if isinstance(vdom, str):
-                # vdom names cannot have spaces so check for spaces and throw error if there are
-                for char in vdom:
-                    if str.isspace(char):
-                        raise Exception("\"vdom\", str not allowed to contain whitespace")
-
-                # Check vdom name string length meets FG requriements
-                if 1 <= len(vdom) <= 31:
-                    self.vdom = vdom
-                else:
-                    raise Exception("\"vdom\", when set, must be an str between 1 and 31 chars")
-            else:
-                raise Exception("\"vdom\", when set, must be a str")
-        else:
-            self.vdom = None
 
     def set_comment(self, comment):
         if comment:

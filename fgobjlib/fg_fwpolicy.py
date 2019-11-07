@@ -1,17 +1,18 @@
-class FgFwPolicy:
-    """FgFwPolicy class represents FortiGate Firewall policy object and provides methods for validating parameters
-    and generating both cli and api configuration data for use in external configuration applications"""
+from fgobjlib import FgObject
+
+class FgFwPolicy(FgObject):
+    """
+    FgFwPolicy class represents FortiGate Firewall policy object and provides methods for validating parameters
+    and generating both cli and api configuration data for use in external configuration applications
+    """
 
     def __init__(self, policyid: int = None, src_intf: list = None, dst_intf: list = None, src_addr: list = None,
                  dst_addr: list = None, service: list = None, schedule: list = None, action: str = None,
                  log_traffic: str = None, nat: bool = None, vdom: str = None, src_addr_negate: bool = None,
                  dst_addr_negate: bool = None, name: str = None, comment: str = None):
 
-        # Set Instance "constants"
-        self.API = 'cmdb'
-        self.PATH = 'firewall'
-        self.NAME = 'policy'
-        self.MKEY = None
+        # Initialize the parent class
+        super().__init__(vdom=vdom, api='cmdb', api_path='firewall', api_name='policy', api_mkey=None)
 
         # Set Instance Variables
         self.set_policyid(policyid)
@@ -89,22 +90,6 @@ class FgFwPolicy:
             self.schedule = schedule
         else:
             self.schedule = 'always'
-
-    def set_vdom(self, vdom):
-        if vdom:
-            for char in vdom:
-                if str.isspace(char):
-                    raise Exception("\"vdom\", str not allowed to contain whitespace")
-
-            if isinstance(vdom, str):
-                if 1 <= len(vdom) <= 31:
-                    self.vdom = vdom
-                else:
-                    raise Exception("\"vdom\", when set, must be an str between 1 and 31 chars")
-            else:
-                raise Exception("\"vdom\", when set, must be a str")
-        else:
-            self.vdom = None
 
     def set_action(self, action):
         if action:
@@ -201,7 +186,7 @@ class FgFwPolicy:
         return conf
 
     def get_api_config_add(self):
-        conf = {'api': self.API, 'path': self.PATH, 'name': self.NAME, 'mkey': self.MKEY, 'action': None}
+        conf = {'api': self.API, 'path': self.API_PATH, 'name': self.API_NAME, 'mkey': self.API_MKEY, 'action': None}
         data = {}
         params = {}
 
@@ -232,7 +217,7 @@ class FgFwPolicy:
 
     def get_api_config_update(self):
         # Need to set mkey to interfac name when doing updates (puts) or deletes
-        self.MKEY = self.policyid
+        self.API_MKEY = self.policyid
 
         conf = self.get_api_config_add()
         return conf
@@ -250,7 +235,7 @@ class FgFwPolicy:
             raise Exception("Policy id must be set in order to configure it for delete")
 
     def get_api_config_del(self):
-        conf = {'api': self.API, 'path': self.PATH, 'name': self.NAME, 'mkey': self.MKEY, 'action': None}
+        conf = {'api': self.API, 'path': self.API_PATH, 'name': self.API_NAME, 'mkey': self.API_MKEY, 'action': None}
         data = {}
         params = {}
 

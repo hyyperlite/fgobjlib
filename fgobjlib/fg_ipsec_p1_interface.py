@@ -1,4 +1,4 @@
-from fgobjectslib import FgObject
+from fgobjlib import FgObject
 import ipaddress
 
 class FgIpsecP1Interface(FgObject):
@@ -106,9 +106,6 @@ class FgIpsecP1Interface(FgObject):
         """
         set_dhgrp: the dhgrp may be passed in as a str, or a list.  If the dhgrp(s) passed in are valid we'll add each
         of those to a space separated values string and set in self.dhgrp
-
-        :param dhgrp:
-        :return:
         """
         if dhgrp:
             dhgrp_items = ''

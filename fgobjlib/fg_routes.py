@@ -1,4 +1,4 @@
-from fgobjectslib import FgObject
+from fgobjlib import FgObject
 import textwrap
 import ipaddress
 
