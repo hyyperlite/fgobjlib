@@ -1,5 +1,4 @@
 from fgobjlib import FgObject
-import textwrap
 import ipaddress
 
 
