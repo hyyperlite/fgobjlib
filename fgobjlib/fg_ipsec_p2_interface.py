@@ -14,18 +14,10 @@ class FgIpsecP2Interface(FgObject):
                  dhgrp: int = None, keepalive: int = None, replay: bool = None, comment: str = None,
                  auto_negotiate: bool = None, vdom: str = None, src_subnet: str = None, dst_subnet: str = None):
 
-        # Set Instance "constants"
-        self.API = 'cmdb'
-        self.PATH = 'vpn.ipsec'
-        self.NAME = 'phase2-interface'
-        self.MKEY = None
-
-        # Set Instance Variables
-        super().__init__(vdom=vdom)
+        # Set instance attributes
         self.set_name(name)
         self.set_phase1name(phase1name)
         self.set_proposal(proposal)
-        self.set_vdom(vdom)
         self.set_comment(comment)
         self.set_keepalive(keepalive)
         self.set_dhgrp(dhgrp)
@@ -35,6 +27,19 @@ class FgIpsecP2Interface(FgObject):
         self.set_src_subnet(src_subnet)
         self.set_dst_subnet(dst_subnet)
 
+        # Initialize the parent class
+        super().__init__(vdom=vdom, api='cmdb', api_path='vpn.ipsec', api_name='phase2-interface', api_mkey=None,
+                         obj_id=self.name)
+
+        ### Set parent class attributes ###
+        # CLI config path for this object type
+        self.cli_path = "config vpn ipsec phase2-interface"
+
+        # Map instance attribute names to fg attribute names
+        self.data_attrs = {'name': 'name', 'phase1name': 'phase1name', 'proposal': 'proposal',
+                           'comment': 'comments', 'keepalive': 'keepalive', 'dhgrp': 'dhgrp', 'pfs': 'pfs',
+                           'replay': 'replay', 'auto_negotiate': 'auto-negotiate', 'src_subnet': 'src-subnet',
+                           'dst_subnet': 'dst-subnet'}
 
 
     def set_name(self, name):
@@ -222,101 +227,3 @@ class FgIpsecP2Interface(FgObject):
             self.dst_subnet = None
 
 
-    def get_cli_config_add(self):
-        conf = ''
-
-        # Set config parameters where needed
-        if self.vdom: conf += "config vdom\n edit {} \n".format(self.vdom)
-
-        conf += "config vpn ipsec phase2-interface\n  edit \"{}\" \n".format(self.name)
-
-        if self.phase1name: conf += "    set phase1name \"{}\"\n".format(self.phase1name)
-        if self.proposal: conf += "    set proposal {} \n".format(self.proposal)
-        if self.dhgrp: conf += "    set dhgrp {}\n".format(self.dhgrp)
-        if self.keepalive: conf += "    set keepalive {}\n".format(self.keepalive)
-        if self.pfs: conf += "    set pfs {}\n".format(self.pfs)
-        if self.replay: conf += "    set replay {}\n".format(self.replay)
-        if self.auto_negotiate: conf += "    set auto_negotiate {]\n".format(self.auto_negotiate)
-        if self.src_subnet: conf += "    set src-subnet {}\n".format(self.src_subnet)
-        if self.dst_subnet: conf += "    set dst-subnet {}\n".format(self.dst_subnet)
-        if self.comment: conf += "    set comments \"{}\"\n".format(self.comment)
-
-        # End phase1-interface config
-        conf += "  end\nend\n"
-
-        # End vdom config
-        if self.vdom: conf += "end\n"
-        return conf
-
-    def get_cli_config_update(self):
-        conf = self.get_cli_config_add()
-        return conf
-
-    def get_api_config_add(self):
-        conf = {'api': self.API, 'path': self.PATH, 'name': self.NAME, 'mkey': self.MKEY, 'action': None}
-        data = {}
-        params = {}
-
-        # Set the VDOM, if necessary
-        if self.vdom:
-            params.update({'vdom': self.vdom})
-
-        if self.name: data.update({'name': self.name})
-        if self.phase1name: data.update({'phase1name': self.phase1name})
-        if self.proposal: data.update({'proposal': self.proposal})
-        if self.keepalive: data.update({'keepalive': self.keepalive})
-        if self.dhgrp: data.update({'dhgrp': self.dhgrp})
-        if self.pfs: data.update({'pfs': self.pfs})
-        if self.replay: data.update({'replay': self.replay})
-        if self.auto_negotiate: data.update({'auto-negotiate': self.auto_negotiate})
-        if self.src_subnet: data.update({'src-subnet': self.src_subnet})
-        if self.dst_subnet: data.update({'dst-subnet': self.dst_subnet})
-        if self.comment: data.update({'comment': self.comment})
-
-        # Add data and parameter dictionaries to conf dictionary
-        conf.update({'data': data})
-        conf.update({'parameters': params})
-
-        return conf
-
-    def get_api_config_update(self):
-        # Need to set mkey to interface name when doing updates (puts) or deletes
-        self.MKEY = self.name
-
-        conf = self.get_api_config_add()
-        return conf
-
-    def get_cli_config_del(self):
-        conf = ''
-        if self.name:
-            if self.vdom: conf += "config vdom\n  edit {}\n".format(self.vdom)
-            conf += "config vpn ipsec phase2-interface\n"
-            conf += "  delete {}\n".format(self.name)
-            conf += "end\n"
-            if self.vdom: conf += "end\n"
-            return conf
-        else:
-            raise Exception("\"name\" must be set in order to configure it for delete")
-
-    def get_api_config_del(self):
-        conf = {'api': self.API, 'path': self.PATH, 'name': self.NAME, 'mkey': self.MKEY, 'action': None}
-        data = {}
-        params = {}
-
-        # Set the VDOM, if necessary
-        if self.vdom: params.update({'vdom': self.vdom})
-
-        if self.name:
-            # Set the mkey value to interface name and updated other vars
-            conf['mkey'] = self.name
-            conf.update({'data': data})
-            conf.update({'parameters': params})
-
-        else:
-            raise Exception("\"name\" must be set in order get or delete an existing policy")
-
-        return conf
-
-    def get_api_config_get(self):
-        conf = self.get_api_config_del()
-        return conf

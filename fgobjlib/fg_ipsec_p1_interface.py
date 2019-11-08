@@ -16,14 +16,7 @@ class FgIpsecP1Interface(FgObject):
                  net_device: bool = None, comment: str = None, vdom: str = None,  tunnel_search: str = None,
                  dpd: str = None, dhgrp: list = None, nat_traversal: str = None, exchange_interface_ip: bool = None):
 
-        # Set Instance "constants"
-        self.API = 'cmdb'
-        self.PATH = 'vpn.ipsec'
-        self.NAME = 'phase1-interface'
-        self.MKEY = None
-
         # Set Instance Variables
-        super().__init__(vdom=vdom)
         self.set_name(name)
         self.set_p1_type(p1_type)
         self.set_local_intf(local_intf)
@@ -44,6 +37,23 @@ class FgIpsecP1Interface(FgObject):
         self.set_dhgrp(dhgrp)
         self.set_nat_traversal(nat_traversal)
         self.set_exchange_interface_ip(exchange_interface_ip)
+
+        # Initialize the parent class
+        super().__init__(vdom=vdom, api='cmdb', api_path='vpn.ipsec', api_name='phase1-interface', api_mkey=None,
+                         obj_id=self.name)
+
+        ### Set parent class attributes ###
+        # CLI config path for this object type
+        self.cli_path = "config vpn ipsec phase1-interface"
+
+        # Map instance attribute names to fg attribute names
+        self.data_attrs = {'name': 'name', 'p1_type': 'type', 'local_intf': 'interface', 'proposal': 'proposal',
+                           'ike_version': 'ike-version', 'local_gw': 'local-gw', 'psk': 'psksecret',
+                           'local_id': 'localid', 'remote_gw': 'remote-gw', 'comment': 'comments',
+                           'add_route': 'add-route', 'add_gw_route': 'add-gw-route', 'keepalive': 'keepalive',
+                           'net_device': 'net-device', 'tunnel_search': 'tunnel-search', 'dpd': 'dpd', 'dhgrp': 'dhgrp',
+                           'nat_traversal': 'nattraversal', 'exchange_interface_ip': 'exchange-interface-ip'}
+
 
     def set_name(self, name):
         if name:
@@ -319,119 +329,3 @@ class FgIpsecP1Interface(FgObject):
         else:
             self.exchange_interface_ip = None
 
-    def get_cli_config_add(self):
-        conf = ''
-
-        # Set config parameters where needed
-        if self.vdom: conf += "config vdom\n edit {} \n".format(self.vdom)
-
-        conf += "config vpn ipsec phase1-interface\n  edit \"{}\" \n".format(self.name)
-
-        if self.p1_type: conf += "    set type {} \n".format(self.p1_type)
-        if self.local_intf: conf += "    set interface {} \n".format(self.local_intf)
-        if self.proposal: conf += "    set proposal {} \n".format(self.proposal)
-        if self.ike_version: conf += "    set ike-version {}\n".format(self.ike_version)
-        if self.local_gw: conf += "    set local-gw {}\n".format(self.local_gw)
-        if self.psk: conf += "    set psksecret {}\n".format(self.psk)
-        if self.local_id: conf += "    set localid {}\n".format(self.local_id)
-        if self.remote_gw: conf += "    set remote-gw {}\n".format(self.remote_gw)
-        if self.comment: conf += "    set comments \"{}\"".format(self.comment)
-        if self.keepalive: conf += "    set keepalive {}\n".format(self.keepalive)
-        if self.add_route: conf += "    set add-route {}\n".format(self.add_route)
-        if self.add_gw_route: conf += "    set add-gw-route {}\n".format(self.add_gw_route)
-        if self.net_device: conf += "    set net-device {}\n".format(self.net_device)
-        if self.tunnel_search: conf += "    set tunnel-search {}\n".format(self.tunnel_search)
-        if self.dpd: conf += "    set dpd {}\n".format(self.dpd)
-        if self.dhgrp: conf += "    set dhgrp {}\n".format(self.dhgrp)
-        if self.nat_traversal: conf += "    set nattraversal {}\n".format(self.nat_traversal)
-        if self.exchange_interface_ip: conf += "    set exchange-interface-ip {}\n".format(self.exchange_interface_ip)
-
-        # End phase1-interface config
-        conf += "  end\nend\n"
-
-        # End vdom config
-        if self.vdom: conf += "end\n"
-        return conf
-
-    def get_cli_config_update(self):
-        conf = self.get_cli_config_add()
-        return conf
-
-    def get_api_config_add(self):
-        conf = {'api': self.API, 'path': self.PATH, 'name': self.NAME, 'mkey': self.MKEY, 'action': None}
-        data = {}
-        params = {}
-
-        # Set the VDOM, if necessary
-        if self.vdom:
-            params.update({'vdom': self.vdom})
-
-        if self.name: data.update({'name': self.name})
-        if self.p1_type: data.update({'type': self.p1_type})
-        if self.local_intf: data.update({'interface': self.local_intf})
-        if self.proposal: data.update({'proposal': self.proposal})
-        if self.ike_version: data.update({'ike-version', self.ike_version})
-        if self.local_gw: data.update({'local-gw': self.local_gw})
-        if self.psk: data.update({'psksecret': self.psk})
-        if self.local_id: data.update({'localid': self.local_id})
-        if self.remote_gw: data.update({'remote-gw': self.remote_gw})
-        if self.comment: data.update({'comment': self.comment})
-        if self.keepalive: data.update({'keepalive': self.keepalive})
-        if self.add_route: data.update({'add-route': self.add_route})
-        if self.add_gw_route: data.update({'add-gw-route': self.add_gw_route})
-        if self.net_device: data.update({'net-device': self.net_device})
-        if self.tunnel_search: data.update({'tunnel-search': self.tunnel_search})
-        if self.dpd: data.update({'dpd': self.dpd})
-        if self.dhgrp: data.update({'dhgrp': self.dhgrp})
-        if self.nat_traversal: data.update({'nattraversal': self.nat_traversal})
-        if self.exchange_interface_ip: data.update({'exchange-interface-ip': self.exchange_interface_ip})
-
-        # Add data and parameter dictionaries to conf dictionary
-        conf.update({'data': data})
-        conf.update({'parameters': params})
-
-        return conf
-
-    def get_api_config_update(self):
-        # Need to set mkey to interface name when doing updates (puts) or deletes
-        self.MKEY = self.name
-
-        conf = self.get_api_config_add()
-        return conf
-
-    def get_cli_config_del(self):
-        conf = ''
-        if self.name:
-            if self.vdom: conf += "config vdom\nedit {}\n".format(self.vdom)
-            conf += "config vpn ipsec phase1-interface\n"
-            conf += "delete {}\n".format(self.name)
-            conf += "end\n"
-            if self.vdom: conf += "end\n"
-            return conf
-        else:
-            raise Exception("\"name\" must be set in order to configure it for delete")
-
-    def get_api_config_del(self):
-        conf = {'api': self.API, 'path': self.PATH, 'name': self.NAME, 'mkey': self.MKEY, 'action': None}
-        data = {}
-        params = {}
-
-        # Set the VDOM, if necessary
-        if self.vdom:
-            params.update({'vdom': self.vdom})
-            data.update({'vdom': self.vdom})
-
-        if self.name:
-            # Set the mkey value to interface name and updated other vars
-            conf['mkey'] = self.name
-            conf.update({'data': data})
-            conf.update({'parameters': params})
-
-        else:
-            raise Exception("\"name\" must be set in order get or delete an existing policy")
-
-        return conf
-
-    def get_api_config_get(self):
-        conf = self.get_api_config_del()
-        return conf

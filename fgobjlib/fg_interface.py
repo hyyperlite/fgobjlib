@@ -2,30 +2,23 @@ from fgobjlib import FgObject
 import ipaddress
 
 
-class FgInterface(FgObject):
+class FgInterfaceIpv4(FgObject):
     """
     FgInterface class represents FortiGate Firewall interface object and provides methods for validating parameters
     and generating both cli and api configuration data for use in external configuration applications
 
-    Currently supports interface types of \"standard\" i.e. ethernet/physical, vlan and vdom-link
+    Currently supports interface types of \"standard\" i.e. ethernet/physical or vlan,
     """
 
-    def __init__(self, intf: str = None, ip: str = None, ipv6: str = None, mode: str = None, modeipv6: str = None,
-                 intf_type: str = None,  vdom: str = None, vrf: int = 0, allowaccess: str = None,
-                 role: str = None, vlanid: int = None, phys_intf: str = None, device_ident: bool = False,
-                 alias: str = None, description: str = None):
-
-        # Initialize the parent class
-        super().__init__(vdom=vdom, api='cmdb', api_path='system', api_name='interface', api_mkey=None)
+    def __init__(self, intf: str = None, ip: str = None, mode: str = None, intf_type: str = None,  vdom: str = None,
+                 vrf: int = None, allowaccess: str = None, role: str = None, vlanid: int = None, phys_intf: str = None,
+                 device_ident: bool = None, alias: str = None, description: str = None):
 
         # Set Instance Variables
         self.set_intf(intf)
         self.set_ip(ip)
-        self.set_ipv6(ipv6)
         self.set_mode(mode)
-        self.set_modeipv6(modeipv6)
-        self.set_interface_type(intf_type)
-        self.set_vdom(vdom)
+        self.set_intf_type(intf_type)
         self.set_vrf(vrf)
         self.set_allowaccess(allowaccess)
         self.set_role(role)
@@ -35,24 +28,38 @@ class FgInterface(FgObject):
         self.set_alias(alias)
         self.set_description(description)
 
+        # Initialize the parent class
+        super().__init__(vdom=vdom, api='cmdb', api_path='system', api_name='interface', api_mkey=None,
+                         obj_id=self.intf)
+
+        ### Set parent class attributes ###
+        # CLI config path for this object type
+        self.cli_path = "config system interface"
+
+        # Map instance attribute names to fg attribute names
+        self.data_attrs = {'intf': 'name', 'ip': 'ip', 'vdom': 'vdom', 'intf_type': 'type', 'vrf': 'vrf',
+                           'allowaccess': 'allowaccess', 'role': 'role', 'vlanid': 'vlanid',
+                           'phys_intf': 'interface', 'device_ident': 'device-identification',
+                           'alias': 'alias', 'description': 'description'}
+
     @classmethod
-    def standard_intf(cls, intf: str, ip: str = None, ipv6: str = None, mode: str = 'static', modeipv6: str = None,
-                      vdom: str = None, vrf: int = None, allowaccess: str = None, role: str = None,
-                      device_ident: bool = None, alias: str = None, description: str = None):
+    def standard_intf(cls, intf: str, ip: str = None, mode: str = 'static', vdom: str = None, vrf: int = None,
+                      allowaccess: str = None, role: str = None, device_ident: bool = None, alias: str = None,
+                      description: str = None):
 
         intf_type = None
         vlanid = None
         phys_intf = None
 
-        obj = cls(intf, ip, ipv6, mode, modeipv6, intf_type, vdom, vrf, allowaccess, role, vlanid, phys_intf,
+        obj = cls(intf, ip, mode, intf_type, vdom, vrf, allowaccess, role, vlanid, phys_intf,
                   device_ident, alias, description)
 
         return obj
 
     @classmethod
-    def vlan_intf(cls, intf: str, vlanid: int, phys_intf: str, ip: str = None, ipv6: str = None, mode: str = 'static',
-                  modeipv6: str = None, vdom: str = None, vrf: int = None, allowaccess: str = None,
-                  role: str = None, device_ident: bool = None, alias: str = None, description: str = None):
+    def vlan_intf(cls, intf: str, vlanid: int, phys_intf: str, ip: str = None, mode: str = 'static', vdom: str = None,
+                  vrf: int = None, allowaccess: str = None, role: str = None, device_ident: bool = None,
+                  alias: str = None, description: str = None):
 
         if not vlanid: raise Exception("\"vlan_intf()\", requires to provide a \"vlanid\". vlanid should be type: int, "
                                        "between 1 and 4960")
@@ -62,19 +69,10 @@ class FgInterface(FgObject):
 
         intf_type = 'vlan'
 
-        obj = cls(intf, ip, ipv6, mode, modeipv6, intf_type, vdom, vrf, allowaccess, role, vlanid, phys_intf,
+        obj = cls(intf, ip, mode, intf_type, vdom, vrf, allowaccess, role, vlanid, phys_intf,
                   device_ident, alias, description)
 
         return obj
-
-    @classmethod
-    def vdom_link_intf(cls, name: str):
-
-        intf_type = 'vdom-link'
-        obj = cls(intf_type=intf_type, intf=name)
-
-        return obj
-
 
     def set_intf(self, intf):
         if intf:
@@ -90,28 +88,26 @@ class FgInterface(FgObject):
             raise Exception("Value \"intf\" is required but was not provided")
 
     def set_ip(self, ip):
-        self.ip = ipaddress.ip_interface(ip) if ip else None
+        if ip:
+            try:
+                self.ip = str(ipaddress.ip_interface(ip))
+            except ValueError:
+                raise ValueError("\ip\" must be valide ipv4 address")
+        else:
+            self.ip = None
 
-    def set_ipv6(self, ipv6):
-        self.ipv6 = ipaddress.IPv6Interface(ipv6) if ipv6 else None
-
-    def set_interface_type(self, intf_type):
+    def set_intf_type(self, intf_type):
         if intf_type:
             if intf_type.lower() == 'vlan':
-                self.type = 'vlan'
+                self. intf_type = 'vlan'
             elif intf_type.lower() == 'standard':
-                self.type = None
-            elif intf_type.lower() == 'vdom-link':
-                self.type = 'vdom-link'
-                self.NAME = 'vdom-link'
+                self.intf_type = None
             elif intf_type.lower() == 'loopback':
-                self.type = 'loopback'
-            elif not intf_type:
-                self.type = None
+                self.intf_type = 'loopback'
             else:
                 raise Exception("Interface type provided is not recognized: {}".format(intf_type))
         else:
-            self.type = None
+            self.intf_type = None
 
     def set_role(self, role):
         if role:
@@ -137,17 +133,6 @@ class FgInterface(FgObject):
         else:
             self.mode = 'dhcp'
 
-    def set_modeipv6(self, modeipv6):
-        if modeipv6:
-            if modeipv6.lower() == 'dhcp':
-                self.ipv6mode = 'dhcp'
-            elif modeipv6.lower() == 'static':
-                self.ipv6mode = 'static'
-            else:
-                raise Exception("If set, mode, must be set to either dhcp or static")
-        else:
-            self.ipv6mode = 'static'
-
     def set_allowaccess(self, allowaccess):
         if allowaccess:
             for service in list(allowaccess.split(" ")):
@@ -155,10 +140,10 @@ class FgInterface(FgObject):
                                        'probe-response', 'capwap', 'ftm']:
                     continue
                 else:
-                    raise Exception("Param \"allowaccces\" has unrecognized services defined: {}".format(service))
-            self.allowacess = allowaccess
+                    raise Exception("\"allowaccces\" has unrecognized services defined: {}".format(service))
+            self.allowaccess = allowaccess
         else:
-            self.allowacess = None
+            self.allowaccess = None
 
     def set_vlanid(self, vlanid):
         if vlanid:
@@ -229,174 +214,3 @@ class FgInterface(FgObject):
                 raise Exception("\"description\", when set, must be type str")
         else:
             self.description = None
-
-    def get_cli_config_add(self):
-        conf = ''
-
-        # If type is vdom link, we configure from global.  You mus then configure the vdom-link endpoints as
-        # separate individual interfaces <name>_0 and <name>_1, as this just creates the endpoints.
-        if self.type == 'vdom-link':
-            print("***** type: {}".format(self.type))
-            conf += "config global\n"
-            conf += "  config system vdom-link\n"
-            conf += "   edit {}\n".format(self.intf)
-            conf += "  end\nend\n"
-
-            return conf
-
-        # If vdom was set, then enter vdom context
-        if self.vdom: conf += "config vdom\n  edit {}\n".format(self.vdom)
-        conf += "config system interface\n  edit \"{}\"\n".format(self.intf)
-        if self.vdom: conf += "    set vdom {}\n".format(self.vdom)
-
-        if self.type == 'vlan' and self.vlanid and self.phys_intf:
-            conf += "    set type vlan\n"
-            conf += "    set vlanid {}\n".format(self.vlanid)
-            conf += "    set interface \"{}\"\n".format(self.phys_intf)
-
-        # If mode static, set the interface ip address
-        if isinstance(self.ip, ipaddress.IPv4Interface) and self.mode == 'static':
-            conf += "    set mode static\n"
-            conf += "    set ip {}\n".format(self.ip)
-
-        # This isn't necessarily required in FOS, but to avoid errors, here we ensure that if setting to static
-        # that we also have a valid ipv4 address/mask (as checked in if statement above) if not raise error.
-        elif self.mode == 'static':
-            raise Exception("\"mode\" is set to static but a valid ipv4 ip.netmask was not provided, {}"
-                            .format(self.ip))
-        else:
-            conf += "    set mode dhcp\n"
-
-        # Set other interface params as necessary
-        if self.allowacess: conf += "    set allowaccess {}\n".format(self.allowacess)
-        if self.vrf: conf += "    set vrf {}\n".format(self.vrf)
-        if self.device_ident: conf += "    set device-identification enable\n"
-        if self.alias: conf += "    set alias \"{}\"\n".format(self.alias)
-        if self.description: conf += "    set description \"{}\"\n".format(self.description)
-        if self.role: conf += "    set role {}\n".format(self.role)
-
-        if isinstance(self.ipv6, ipaddress.IPv6Interface) and self.ipv6mode == 'static':
-            conf += "    config ipv6\n"
-            conf += "      set ip6-mode static\n"
-            conf += "      set ip6-address {}\n".format(self.ipv6)
-            conf += "    end\n"
-
-        elif self.ipv6mode == 'dhcp':
-            conf += "    config ipv6\n"
-            conf += "      set ip6-mode dhcp\n"
-            conf += "    end\n"
-
-        # End interface configuration
-        conf += "  end\nend\n"
-
-        # End vdom configuration
-        if self.vdom: conf += "end\n"
-
-        return conf
-
-    def get_cli_config_update(self):
-        conf = self.get_cli_config_add()
-        return conf
-
-    def get_api_config_add(self):
-        conf = {'api': self.API, 'path': self.API_PATH, 'name': self.API_NAME, 'mkey': self.API_MKEY, 'action': None}
-        data = {}
-        params = {}
-        data.update({'name': self.intf})
-
-        # If this is a type vdom-link then create /system/vdom-link.  This will create two endpoint interfaces;
-        # those endpoint interfaces <vlink name>_0 and <vlink_name>_1 must be configured as separately, using
-        # type "vlink-member".
-        if self.type == 'vdom-link':
-            conf.update({'data': data})
-            conf.update({'parameters': params})
-            return conf
-
-        # Set the VDOM, if necessary
-        if self.vdom:
-            params.update({'vdom': self.vdom})
-            data.update({'vdom': self.vdom})
-
-        # Add vlan data
-        if self.type == 'vlan' and self.vlanid and self.phys_intf:
-            data.update({'type': 'vlan'})
-            data.update({'vlanid': self.vlanid})
-            data.update({'interface': self.phys_intf})
-
-        # Add interface type and ip data
-        if isinstance(self.ip, ipaddress.IPv4Interface) and self.mode == 'static':
-            data.update({'mode': 'static'})
-            data.update({'ip': str(self.ip)})
-
-        elif self.mode == 'static':
-            raise Exception("\"mode\" is set to static but a valid ipv4 ip.netmask was not provided, {}"
-                            .format(self.ip))
-        else:
-            data.update({'mode': 'dhcp'})
-
-        # Add other settings if necessary
-        if self.allowacess: data.update({'allowaccess': self.allowacess})
-        if self.vrf: data.update({'vrf': self.vrf})
-        if self.device_ident: data.update({'device-identification': 'enable'})
-        if self.alias: data.update({'alias': self.alias})
-        if self.description: data.update({'description': self.description})
-        if self.role: data.update({'role': self.role})
-
-        # Set IPv6 related vars if necessary
-        if isinstance(self.ipv6, ipaddress.IPv6Interface) and self.ipv6mode == 'static':
-            data.update({'ipv6': []})
-            data['ipv6'].update({'ip6-mode': 'static'})
-            data['ipv6'].update({'ip6-address': str(self.ipv6)})
-
-        elif self.ipv6mode == 'dhcp':
-            data.update({'ipv6': []})
-            data['ipv6'].update({'ip6-mode': 'dhcp'})
-
-        # Add data and parameter dicts to the return dict
-        conf.update({'data': data})
-        conf.update({'parameters': params})
-
-        return conf
-
-    def get_api_config_update(self):
-        # Need to set mkey to interface name when doing updates (puts) or deletes
-        self.API_MKEY = self.intf
-
-        conf = self.get_api_config_add()
-        return conf
-
-    def get_cli_config_del(self):
-        conf = ''
-        if self.intf:
-            if self.vdom: conf += "config vdom\nedit {}\n".format(self.vdom)
-            conf += "config system interface\n"
-            conf += "delete {}\n".format(self.intf)
-            conf += "end\n"
-            if self.vdom: conf += "end\n"
-            return conf
-        else:
-            raise Exception("Interface name \"intf\" must be set in order to configure it for delete")
-
-    def get_api_config_del(self):
-        """
-        :param self:
-        :return: conf:
-        """
-        conf = {'api': self.API, 'path': self.API_PATH, 'name': self.API_NAME, 'mkey': self.API_MKEY, 'action': None}
-        data = {}
-        params = {}
-
-        if self.intf:
-            # Set the mkey value to interface name and updated other dictionaries
-            data['mkey'] = self.intf
-            conf.update({'data': data})
-            conf.update({'parameters': params})
-
-        else:
-            raise Exception("Interface name \"intf\" must be set in order to configure it for delete ")
-
-        return conf
-
-    def get_api_config_get(self):
-        conf = self.get_api_config_del()
-        return conf
