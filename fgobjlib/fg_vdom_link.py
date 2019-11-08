@@ -9,14 +9,17 @@ class FgVdomLink(FgObject):
     Currently supports interface types of \"standard\" i.e. ethernet/physical or vlan,
     """
 
-    def __init__(self, name: str = None):
+    def __init__(self, name: str = None, vdom_enabled: bool = None):
 
         # Set Instance Variables
         self.set_name(name)
 
         # Initialize the parent class
-        super().__init__(vdom=None, api='cmdb', api_path='system', api_name='vdom-link', api_mkey=None,obj_id=self.name)
-        self.is_global = True
+        super().__init__(vdom='global', api='cmdb', api_path='system', api_name='vdom-link', api_mkey=None,obj_id=self.name)
+        self.is_global = "with_vdom"
+
+        if vdom_enabled == True:
+            self.vdom_enabled = True
 
         ### Set parent class attributes ###
         # CLI config path for this object type

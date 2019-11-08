@@ -12,7 +12,11 @@ class FgObject:
         self.obj_id = obj_id
         self.cli_path = None
         self.set_vdom(vdom)
-        self.is_global = False
+
+        # Set and used only for objects that are configured via global context vs vdom context
+        # these allow to determine if cli should use "config system global" or just configure the object
+        # depending on whether vdom is enabled
+        self.vdom_enabled = None
 
         # Map of instance attribute names to fg attribute names
         self.data_attrs = {}
@@ -44,11 +48,12 @@ class FgObject:
         data = {}
         params = {}
 
-        if self.is_global:
-            pass
         # Set the VDOM, if necessary
-        elif self.vdom:
-            params.update({'vdom': self.vdom})
+        if self.vdom:
+            if self.vdom == 'global':
+                pass
+            else:
+                params.update({'vdom': self.vdom})
 
         for inst_attr, fg_attr in self.data_attrs.items():
             if getattr(self, inst_attr): data.update({fg_attr: getattr(self, inst_attr)})
@@ -72,7 +77,11 @@ class FgObject:
         params = {}
 
         # Set the VDOM, if necessary
-        if self.vdom: params.update({'vdom': self.vdom})
+        if self.vdom:
+            if self.vdom == 'global':
+                pass
+            else:
+                params.update({'vdom': self.vdom})
 
         if self.obj_id:
             # Set the mkey value to interface name and updated other vars
@@ -95,10 +104,13 @@ class FgObject:
     def get_cli_config_add(self):
         conf = ''
 
-        if self.is_global:
-            conf += "config global\n"
+        # start vdom or global config
+        if self.vdom:
 
-        elif self.vdom:
+            if self.vdom == 'global' and self.vdom_enabled:
+                conf += "config global\n"
+
+        else:
             conf += "config vdom\n"
             conf += " edit {} \n".format(self.vdom)
 
@@ -138,8 +150,16 @@ class FgObject:
         # End obj_id config
         conf += "  end\nend\n"
 
-        # End vdom config
-        if self.vdom or self.is_global: conf += "end\n"
+
+        # End vdom or global config
+        if self.vdom:
+            if self.vdom == 'global' and self.vdom_enabled:
+                conf += "end\n"
+            elif self.vdom == 'global':
+                pass
+            else:
+                conf += "end\n"
+
         return conf
 
     def get_cli_config_update(self):
@@ -149,16 +169,28 @@ class FgObject:
     def get_cli_config_del(self):
         conf = ''
         if self.obj_id:
-            if self.is_global:
-                conf += "config global\n"
-            elif self.vdom:
+
+            # start vdom or global config
+            if self.vdom:
+                if self.vdom == 'global' and self.vdom_enabled:
+                    conf += "config global\n"
+            else:
                 conf += "config vdom\n"
-                conf += "  edit {}\n".format(self.vdom)
+                conf += " edit {} \n".format(self.vdom)
 
             conf += "{}\n".format(self.cli_path)
             conf += "  delete {}\n".format(self.obj_id)
             conf += "end\n"
-            if self.vdom or self.is_global: conf += "end\n"
+
+            # End vdom or global config
+            if self.vdom:
+                if self.vdom == 'global' and self.vdom_enabled:
+                    conf += "end\n"
+                elif self.vdom == 'global':
+                    pass
+                else:
+                    conf += "end\n"
+
             return conf
         else:
             raise Exception("\"obj_id\" must be set in order to configure it for delete")
