@@ -8,13 +8,14 @@ class FgObject:
         self.API_NAME = api_name
         self.API_MKEY = api_mkey
 
-        # Set vdom attribute
+        # Set attrs
         self.obj_id = obj_id
         self.cli_path = None
         self.set_vdom(vdom)
 
         # Map of instance attribute names to fg attribute names
         self.data_attrs = {}
+        self.cli_ignore_attrs = {}
 
     def set_vdom(self, vdom):
         if vdom:
@@ -102,8 +103,32 @@ class FgObject:
         # Edit obj_id
         conf += "  edit \"{}\" \n".format(self.obj_id)
 
+        # For every attr defined in the data_attrs dictionary, if the dictionary value is true then add it to the
+        # configuration.  Otherwise skip it.
         for inst_attr, fg_attr in self.data_attrs.items():
-            if getattr(self, inst_attr): conf += "    set {} {}\n".format(fg_attr, getattr(self, inst_attr))
+
+            # Check for cli attribute in ignore list and skip if contained
+            if inst_attr in self.cli_ignore_attrs: continue
+
+            # get the value of an attribute based on the text name of the attribute in data_attrs dictionary
+            config_attr = getattr(self, inst_attr)
+
+            # need to convert lists which are used for api, to strings for cli output
+            if isinstance(config_attr, list):
+                str_items = ''
+
+                # if the config item is a list, then get the dictionaries from that list, pull the value and assign
+                # the value to a string that will be used as the config parameters in the cli config output
+                for item in config_attr:
+                    if isinstance(item, dict):
+                        if item['name']:
+                            str_items += "{} ".format(str(item.get('name')))
+                        else:
+                            raise Exception("unrecognized key name for dictionary list: {}".format(item.keys()))
+
+                conf += "    set {} {}\n".format(fg_attr, str_items)
+            else:
+                if getattr(self, inst_attr): conf += "    set {} {}\n".format(fg_attr, config_attr)
 
         # End obj_id config
         conf += "  end\nend\n"

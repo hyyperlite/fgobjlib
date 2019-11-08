@@ -7,7 +7,7 @@ class FgIpsecP2Interface(FgObject):
     validating parameters and generating both cli and api configuration data for use in external configuration
     applications and ftntlib
 
-    Currently supports dynamic or static VPN using psk authentication. No support yet for advpn or mode-cfg
+    Currently supports dynamic or static VPN using psk authentication. No support yet for advpn or mode-cfg or pki
     """
 
     def __init__(self, name: str = None, phase1name: str = None, proposal: list = None, pfs: bool = None,
@@ -41,6 +41,7 @@ class FgIpsecP2Interface(FgObject):
                            'replay': 'replay', 'auto_negotiate': 'auto-negotiate', 'src_subnet': 'src-subnet',
                            'dst_subnet': 'dst-subnet'}
 
+        self.cli_ignore_attrs = ['name']
 
     def set_name(self, name):
         if name:

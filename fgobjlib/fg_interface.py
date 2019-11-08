@@ -42,6 +42,8 @@ class FgInterfaceIpv4(FgObject):
                            'phys_intf': 'interface', 'device_ident': 'device-identification',
                            'alias': 'alias', 'description': 'description'}
 
+        self.cli_ignore_attrs = ['intf']
+
     @classmethod
     def standard_intf(cls, intf: str, ip: str = None, mode: str = 'static', vdom: str = None, vrf: int = None,
                       allowaccess: str = None, role: str = None, device_ident: bool = None, alias: str = None,

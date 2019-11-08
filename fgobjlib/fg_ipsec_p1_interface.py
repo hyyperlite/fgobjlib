@@ -54,6 +54,7 @@ class FgIpsecP1Interface(FgObject):
                            'net_device': 'net-device', 'tunnel_search': 'tunnel-search', 'dpd': 'dpd', 'dhgrp': 'dhgrp',
                            'nat_traversal': 'nattraversal', 'exchange_interface_ip': 'exchange-interface-ip'}
 
+        self.cli_ignore_attrs = ['name']
 
     def set_name(self, name):
         if name:
