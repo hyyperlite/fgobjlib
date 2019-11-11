@@ -106,13 +106,11 @@ class FgObject:
 
         # start vdom or global config
         if self.vdom:
-
             if self.vdom == 'global' and self.vdom_enabled:
                 conf += "config global\n"
-
-        else:
-            conf += "config vdom\n"
-            conf += " edit {} \n".format(self.vdom)
+            else:
+                conf += "config vdom\n"
+                conf += " edit {} \n".format(self.vdom)
 
         # Config object's cli path
         conf += "{}\n".format(self.cli_path)

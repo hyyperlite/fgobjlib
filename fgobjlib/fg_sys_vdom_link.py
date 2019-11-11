@@ -15,8 +15,8 @@ class FgVdomLink(FgObject):
         self.set_name(name)
 
         # Initialize the parent class
-        super().__init__(vdom='global', api='cmdb', api_path='system', api_name='vdom-link', api_mkey=None,obj_id=self.name)
-        self.is_global = "with_vdom"
+        super().__init__(vdom='global', api='cmdb', api_path='system', api_name='vdom-link', api_mkey=None,
+                         obj_id=self.name)
 
         if vdom_enabled == True:
             self.vdom_enabled = True

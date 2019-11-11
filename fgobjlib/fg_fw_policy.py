@@ -11,6 +11,21 @@ class FgFwPolicy(FgObject):
                  logtraffic: str = None, nat: bool = None, vdom: str = None, srcaddr_negate: bool = None,
                  dstaddr_negate: bool = None, name: str = None, comment: str = None):
 
+        # Initialize the parent class - we do set this here, because the subclass will first verify obj_id
+        # is acceptable for this class type in the above attribute set functions
+        super().__init__(vdom=vdom, api='cmdb', api_path='firewall', api_name='policy', api_mkey=None, obj_id=policyid)
+
+        ### Set parent class attributes ###
+        # CLI config path for this object type
+        self.cli_path = "config firewall policy"
+
+        # Map instance attribute names to fg attribute names
+        self.data_attrs = {'policyid': 'policyid', 'srcintf': 'srcintf', 'dstintf': 'dstintf', 'srcaddr': 'srcaddr',
+                           'service': 'service', 'schedule': 'schedule', 'action': 'action', 'logtraffic': 'logtraffic',
+                           'nat': 'nat', 'srcaddr_negate': 'srcaddr-negate', 'dstaddr_negate': 'dstaddr-negate'}
+
+        self.cli_ignore_attrs = ['policyid']
+
         # Set Instance Variables
         self.set_policyid(policyid)
         self.srcintf = self.set_policy_objects(srcintf, 'srcintf')
@@ -26,22 +41,6 @@ class FgFwPolicy(FgObject):
         self.dstaddr_negate = self.set_negate(dstaddr_negate)
         self.set_name(name)
         self.set_comment(comment)
-
-        # Initialize the parent class - we do set this here, because the subclass will first verify obj_id
-        # is acceptable for this class type in the above attribute set functions
-        super().__init__(vdom=vdom, api='cmdb', api_path='firewall', api_name='policy', api_mkey=None,
-                         obj_id=self.policyid)
-
-        ### Set parent class attributes ###
-        # CLI config path for this object type
-        self.cli_path = "config firewall policy"
-
-        # Map instance attribute names to fg attribute names
-        self.data_attrs = {'policyid': 'policyid', 'srcintf': 'srcintf', 'dstintf': 'dstintf', 'srcaddr': 'srcaddr',
-                           'service': 'service', 'schedule': 'schedule', 'action': 'action', 'logtraffic': 'logtraffic',
-                           'nat': 'nat', 'srcaddr_negate': 'srcaddr-negate', 'dstaddr_negate': 'dstaddr-negate'}
-
-        self.cli_ignore_attrs = ['policyid']
 
     def set_policyid(self, policyid):
         if policyid:
