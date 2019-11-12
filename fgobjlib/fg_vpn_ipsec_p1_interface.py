@@ -16,6 +16,24 @@ class FgIpsecP1Interface(FgObject):
                  net_device: bool = None, comment: str = None, vdom: str = None,  tunnel_search: str = None,
                  dpd: str = None, dhgrp: list = None, nat_traversal: str = None, exchange_interface_ip: bool = None):
 
+        # Initialize the parent class
+        super().__init__(api='cmdb', api_path='vpn.ipsec', api_name='phase1-interface', api_mkey=None, obj_id=name,
+                         vdom=vdom)
+
+        ### Set parent class attributes ###
+        # CLI config path for this object type
+        self.cli_path = "config vpn ipsec phase1-interface"
+
+        # Map instance attribute names to fg attribute names
+        self.data_attrs = {'name': 'name', 'p1_type': 'type', 'local_intf': 'interface', 'proposal': 'proposal',
+                           'ike_version': 'ike-version', 'local_gw': 'local-gw', 'psk': 'psksecret',
+                           'local_id': 'localid', 'remote_gw': 'remote-gw', 'comment': 'comments',
+                           'add_route': 'add-route', 'add_gw_route': 'add-gw-route', 'keepalive': 'keepalive',
+                           'net_device': 'net-device', 'tunnel_search': 'tunnel-search', 'dpd': 'dpd', 'dhgrp': 'dhgrp',
+                           'nat_traversal': 'nattraversal', 'exchange_interface_ip': 'exchange-interface-ip'}
+
+        self.cli_ignore_attrs = ['name']
+
         # Set instance attributes
         self.set_name(name)
         self.set_p1_type(p1_type)
@@ -38,23 +56,6 @@ class FgIpsecP1Interface(FgObject):
         self.set_nat_traversal(nat_traversal)
         self.set_exchange_interface_ip(exchange_interface_ip)
 
-        # Initialize the parent class
-        super().__init__(vdom=vdom, api='cmdb', api_path='vpn.ipsec', api_name='phase1-interface', api_mkey=None,
-                         obj_id=self.name)
-
-        ### Set parent class attributes ###
-        # CLI config path for this object type
-        self.cli_path = "config vpn ipsec phase1-interface"
-
-        # Map instance attribute names to fg attribute names
-        self.data_attrs = {'name': 'name', 'p1_type': 'type', 'local_intf': 'interface', 'proposal': 'proposal',
-                           'ike_version': 'ike-version', 'local_gw': 'local-gw', 'psk': 'psksecret',
-                           'local_id': 'localid', 'remote_gw': 'remote-gw', 'comment': 'comments',
-                           'add_route': 'add-route', 'add_gw_route': 'add-gw-route', 'keepalive': 'keepalive',
-                           'net_device': 'net-device', 'tunnel_search': 'tunnel-search', 'dpd': 'dpd', 'dhgrp': 'dhgrp',
-                           'nat_traversal': 'nattraversal', 'exchange_interface_ip': 'exchange-interface-ip'}
-
-        self.cli_ignore_attrs = ['name']
 
     def set_name(self, name):
         if name:

@@ -13,7 +13,7 @@ class FgFwPolicy(FgObject):
 
         # Initialize the parent class - we do set this here, because the subclass will first verify obj_id
         # is acceptable for this class type in the above attribute set functions
-        super().__init__(vdom=vdom, api='cmdb', api_path='firewall', api_name='policy', api_mkey=None, obj_id=policyid)
+        super().__init__(api='cmdb', api_path='firewall', api_name='policy', api_mkey=None, obj_id=policyid, vdom=vdom)
 
         ### Set parent class attributes ###
         # CLI config path for this object type

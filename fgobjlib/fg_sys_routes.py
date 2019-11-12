@@ -10,6 +10,21 @@ class FgRouteIPv4(FgObject):
                  distance: int = None, priority: int = None, weight: int = None, comment: str = None,
                  blackhole: bool = None, vrf: int = None, vdom: str = None):
 
+        # Initialize the parent class - we do set this here, because the subclass will first verify obj_id
+        # is acceptable for this class type in the above attribute set functions
+        super().__init__(api='cmdb', api_path='router', api_name='static', api_mkey=None, obj_id=routeid, vdom=vdom)
+
+        ### Set parent class attributes ###
+        # CLI config path for this object type
+        self.cli_path = "config router static"
+
+        # Map instance attribute names to fg attribute names
+        self.data_attrs = {'routeid': 'seq-num', 'dst': 'dst', 'device': 'device', 'gateway': 'gateway',
+                           'distance': 'distance', 'priority': 'priority', 'weight': 'weight', 'comment': 'comments',
+                           'blackhole': 'blackhole', 'vrf': 'vrf'}
+
+        self.cli_ignore_attrs = ['routeid']
+
         # Set instance attributes
         self.set_routeid(routeid)
         self.set_dst(dst)
@@ -22,21 +37,6 @@ class FgRouteIPv4(FgObject):
         self.set_blackhole(blackhole)
         self.set_vrf(vrf)
 
-        # Initialize the parent class - we do set this here, because the subclass will first verify obj_id
-        # is acceptable for this class type in the above attribute set functions
-        super().__init__(vdom=vdom, api='cmdb', api_path='router', api_name='static', api_mkey=None,
-                         obj_id=self.routeid)
-
-        ### Set parent class attributes ###
-        # CLI config path for this object type
-        self.cli_path = "config router static"
-
-        # Map instance attribute names to fg attribute names
-        self.data_attrs = {'routeid': 'seq-num', 'dst': 'dst', 'device': 'device', 'gateway': 'gateway',
-                           'distance': 'distance', 'priority': 'priority', 'weight': 'weight', 'comment': 'comments',
-                           'blackhole': 'blackhole', 'vrf': 'vrf'}
-
-        self.cli_ignore_attrs = ['routeid']
 
     @classmethod
     def standard_route(cls, routeid: int = 0, dst: str = None, device: str = None, gateway: str = None, vdom: str = None,
@@ -74,7 +74,7 @@ class FgRouteIPv4(FgObject):
         if dst:
             if isinstance(dst, str):
                 try:
-                    self.dst = ipaddress.ip_network(dst)
+                    self.dst = str(ipaddress.ip_network(dst))
                 except ValueError:
                     raise ValueError("\"dst\" must be a valid ipv4 or ipv6 network and mask")
             else:

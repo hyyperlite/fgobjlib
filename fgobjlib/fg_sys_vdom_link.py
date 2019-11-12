@@ -11,12 +11,8 @@ class FgVdomLink(FgObject):
 
     def __init__(self, name: str = None, vdom_enabled: bool = None):
 
-        # Set instance attributes
-        self.set_name(name)
-
         # Initialize the parent class
-        super().__init__(vdom='global', api='cmdb', api_path='system', api_name='vdom-link', api_mkey=None,
-                         obj_id=self.name)
+        super().__init__(api='cmdb', api_path='system', api_name='vdom-link', api_mkey=None, vdom='global', obj_id=name)
 
         if vdom_enabled == True:
             self.vdom_enabled = True
@@ -28,6 +24,9 @@ class FgVdomLink(FgObject):
         # Map instance attribute names to fg attribute names
         self.data_attrs = {'name': 'name'}
         self.cli_ignore_attrs = []
+
+        # Set instance attributes
+        self.set_name(name)
 
     def set_name(self, name):
         if name:

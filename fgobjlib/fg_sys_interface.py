@@ -14,6 +14,21 @@ class FgInterfaceIpv4(FgObject):
                  vrf: int = None, allowaccess: str = None, role: str = None, vlanid: int = None, phys_intf: str = None,
                  device_ident: bool = None, alias: str = None, description: str = None):
 
+        # Initialize the parent class
+        super().__init__(api='cmdb', api_path='system', api_name='interface', api_mkey=None, obj_id=intf, vdom=vdom)
+
+        ### Set parent class attributes ###
+        # CLI config path for this object type
+        self.cli_path = "config system interface"
+
+        # Map instance attribute names to fg attribute names
+        self.data_attrs = {'intf': 'name', 'ip': 'ip', 'vdom': 'vdom', 'intf_type': 'type', 'vrf': 'vrf',
+                           'allowaccess': 'allowaccess', 'role': 'role', 'vlanid': 'vlanid',
+                           'phys_intf': 'interface', 'device_ident': 'device-identification',
+                           'alias': 'alias', 'description': 'description'}
+
+        self.cli_ignore_attrs = ['intf']
+
         # Set instance attributes
         self.set_intf(intf)
         self.set_ip(ip)
@@ -28,21 +43,6 @@ class FgInterfaceIpv4(FgObject):
         self.set_alias(alias)
         self.set_description(description)
 
-        # Initialize the parent class
-        super().__init__(vdom=vdom, api='cmdb', api_path='system', api_name='interface', api_mkey=None,
-                         obj_id=self.intf)
-
-        ### Set parent class attributes ###
-        # CLI config path for this object type
-        self.cli_path = "config system interface"
-
-        # Map instance attribute names to fg attribute names
-        self.data_attrs = {'intf': 'name', 'ip': 'ip', 'vdom': 'vdom', 'intf_type': 'type', 'vrf': 'vrf',
-                           'allowaccess': 'allowaccess', 'role': 'role', 'vlanid': 'vlanid',
-                           'phys_intf': 'interface', 'device_ident': 'device-identification',
-                           'alias': 'alias', 'description': 'description'}
-
-        self.cli_ignore_attrs = ['intf']
 
     @classmethod
     def standard_intf(cls, intf: str, ip: str = None, mode: str = 'static', vdom: str = None, vrf: int = None,

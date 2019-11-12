@@ -14,6 +14,23 @@ class FgIpsecP2Interface(FgObject):
                  dhgrp: int = None, keepalive: int = None, replay: bool = None, comment: str = None,
                  auto_negotiate: bool = None, vdom: str = None, src_subnet: str = None, dst_subnet: str = None):
 
+        # Initialize the parent class
+        super().__init__(api='cmdb', api_path='vpn.ipsec', api_name='phase2-interface', api_mkey=None, obj_id=name,
+                         vdom=vdom)
+
+        ### Set parent class attributes ###
+        # CLI config path for this object type
+        self.cli_path = "config vpn ipsec phase2-interface"
+
+        # Map instance attribute names to fg attribute names
+        self.data_attrs = {'name': 'name', 'phase1name': 'phase1name', 'proposal': 'proposal',
+                           'comment': 'comments', 'keepalive': 'keepalive', 'dhgrp': 'dhgrp', 'pfs': 'pfs',
+                           'replay': 'replay', 'auto_negotiate': 'auto-negotiate', 'src_subnet': 'src-subnet',
+                           'dst_subnet': 'dst-subnet'}
+
+        self.cli_ignore_attrs = ['name']
+
+
         # Set instance attributes
         self.set_name(name)
         self.set_phase1name(phase1name)
@@ -27,21 +44,6 @@ class FgIpsecP2Interface(FgObject):
         self.set_src_subnet(src_subnet)
         self.set_dst_subnet(dst_subnet)
 
-        # Initialize the parent class
-        super().__init__(vdom=vdom, api='cmdb', api_path='vpn.ipsec', api_name='phase2-interface', api_mkey=None,
-                         obj_id=self.name)
-
-        ### Set parent class attributes ###
-        # CLI config path for this object type
-        self.cli_path = "config vpn ipsec phase2-interface"
-
-        # Map instance attribute names to fg attribute names
-        self.data_attrs = {'name': 'name', 'phase1name': 'phase1name', 'proposal': 'proposal',
-                           'comment': 'comments', 'keepalive': 'keepalive', 'dhgrp': 'dhgrp', 'pfs': 'pfs',
-                           'replay': 'replay', 'auto_negotiate': 'auto-negotiate', 'src_subnet': 'src-subnet',
-                           'dst_subnet': 'dst-subnet'}
-
-        self.cli_ignore_attrs = ['name']
 
     def set_name(self, name):
         if name:
