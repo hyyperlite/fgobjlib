@@ -16,7 +16,7 @@ class FgIpsecP1Interface(FgObject):
                  net_device: bool = None, comment: str = None, vdom: str = None,  tunnel_search: str = None,
                  dpd: str = None, dhgrp: list = None, nat_traversal: str = None, exchange_interface_ip: bool = None):
 
-        # Set Instance Variables
+        # Set instance attributes
         self.set_name(name)
         self.set_p1_type(p1_type)
         self.set_local_intf(local_intf)

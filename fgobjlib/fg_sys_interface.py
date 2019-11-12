@@ -14,7 +14,7 @@ class FgInterfaceIpv4(FgObject):
                  vrf: int = None, allowaccess: str = None, role: str = None, vlanid: int = None, phys_intf: str = None,
                  device_ident: bool = None, alias: str = None, description: str = None):
 
-        # Set Instance Variables
+        # Set instance attributes
         self.set_intf(intf)
         self.set_ip(ip)
         self.set_mode(mode)

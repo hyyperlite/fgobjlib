@@ -10,7 +10,7 @@ class FgRouteIPv4(FgObject):
                  distance: int = None, priority: int = None, weight: int = None, comment: str = None,
                  blackhole: bool = None, vrf: int = None, vdom: str = None):
 
-        # Set Instance Variables
+        # Set instance attributes
         self.set_routeid(routeid)
         self.set_dst(dst)
         self.set_device(device)

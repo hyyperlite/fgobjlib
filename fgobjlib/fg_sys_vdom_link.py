@@ -11,7 +11,7 @@ class FgVdomLink(FgObject):
 
     def __init__(self, name: str = None, vdom_enabled: bool = None):
 
-        # Set Instance Variables
+        # Set instance attributes
         self.set_name(name)
 
         # Initialize the parent class

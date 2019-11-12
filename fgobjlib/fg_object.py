@@ -141,9 +141,9 @@ class FgObject:
                         else:
                             raise Exception("unrecognized key name for dictionary list: {}".format(item.keys()))
 
-                conf += "    set {} {}\n".format(fg_attr, str_items)
+                conf += "    set {} \"{}\"\n".format(fg_attr, str_items)
             else:
-                if getattr(self, inst_attr): conf += "    set {} {}\n".format(fg_attr, config_attr)
+                if getattr(self, inst_attr): conf += "    set {} \"{}\"\n".format(fg_attr, config_attr)
 
         # End obj_id config
         conf += "  end\nend\n"

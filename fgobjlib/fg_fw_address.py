@@ -10,14 +10,19 @@ class FgFwAddress(FgObject):
     """
 
     def __init__(self, name: str = None, type: str = None, address: str = None, visibility: bool = None,
-                 associated_interface: str = None, vdom: str = None):
+                 associated_interface: str = None, vdom: str = None, comment: str = None):
 
         # Initialize the parent class
-        super().__init__(vdom=vdom, api='cmdb', api_path='firewall', api_name='address', api_mkey=None, obj_id=name)
+        super().__init__(api='cmdb', api_path='firewall', api_name='address', api_mkey=None, obj_id=name, vdom=vdom)
+
+        ### Set parent class attributes ###
+        # CLI config path for this object type
+        self.cli_path = "config firewall address"
 
         # Map instance attribute names to fg attribute names
         self.data_attrs = {'name': 'name', 'type': 'type', 'address': 'subnet',
-                           'associated_interface': 'associated-interface', 'visibility': 'visibility'}
+                           'associated_interface': 'associated-interface', 'visibility': 'visibility',
+                           'comment': 'comments'}
 
         self.cli_ignore_attrs = []
 
@@ -27,10 +32,8 @@ class FgFwAddress(FgObject):
         self.set_address(address)
         self.set_visibility(visibility)
         self.set_associated_interface(associated_interface)
+        self.set_comment(comment)
 
-        ### Set parent class attributes ###
-        # CLI config path for this object type
-        self.cli_path = "config firewall address"
 
     def set_name(self, name):
         if name:
@@ -129,3 +132,15 @@ class FgFwAddress(FgObject):
 
         else:
             self.associated_interface = None
+
+    def set_comment(self, comment):
+        if comment:
+            if isinstance(comment, str):
+                if 1 <= len(comment) <= 255:
+                    self.comment = comment
+                else:
+                    raise Exception("\"description\", when set, must be type str between 1 and 1,023 chars")
+            else:
+                raise Exception("\"description\", when set, must be type str")
+        else:
+            self.comment = None
