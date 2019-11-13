@@ -1,0 +1,1020 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.7.1" />
+<title>fgobjlib.fg_fw_policy API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fgobjlib.fg_fw_policy</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from fgobjlib import FgObject
+
+class FgFwPolicy(FgObject):
+    &#34;&#34;&#34;
+    FgFwPolicy class represents FortiGate Firewall policy object and provides methods for validating parameters
+    and generating both cli and api configuration data for use in external configuration applications.
+
+    Attributes:
+        data_attrs (dict): Dictionary to define relevant config attributes and map instance attr names to fg attr names
+        cli_ignore_attrs (list): List of attributes to ignore when generating CLI configurations
+        policyid (int): Object ID
+        srcintf (list):  Policy source interface(s), may be string or list of strings
+        dstintf (list): Policy destination interface(s), may be string or list of strings
+        srcaddr (list): Policy source address(es), may be string or list of strings
+        dstaddr (list): Policy destination address(es), may be string or list of strings
+        schedule (str): Policy schedule
+        action (str):  Policy action, may be &#39;accept&#39; or &#39;deny&#39;
+        logtraffic (str): Policy log action, may be &#39;utm&#39;, &#39;all&#39; or &#39;disabled&#39;
+        nat (bool):  Source NAT for policy, True or False
+        comment (str): Object comment
+        vdom (str):  VDOM policy configured in  (if any)
+    &#34;&#34;&#34;
+
+    def __init__(self, policyid: int = None, srcintf: list = None, dstintf: list = None, srcaddr: list = None,
+                 dstaddr: list = None, service: list = None, schedule: str = None, action: str = None,
+                 logtraffic: str = None, nat: bool = None, vdom: str = None, srcaddr_negate: bool = None,
+                 dstaddr_negate: bool = None, name: str = None, comment: str = None):
+        &#34;&#34;&#34;
+        Args:
+            policyid (int): optional - ID of object.  Defines ID used in configs when API or CLI for config methods (default: 0)
+            srcintf (list): required - string or list of strings referencing src interface(s) of policy
+            dstintf (list): required - string or list of strings referencing dst interface(s) of policy
+            srcaddr (list): required - string or list of strings referencing src address(s) of policy
+            dstaddr (list): required - string or list of strings referencing dst address(s) of policy
+            schedule (str): optional - string referencing schedule to associated with policy (default: &#39;always&#39;)
+            action (str): optional - string sets action to assign to policy; may be &#39;accept&#39; or &#39;deny&#39; (default: deny)
+            logtraffic (str): optional - string set logtraffic action to assign; may be utm/all/disabled (default: disabled)
+            nat (bool): optional - string
+            comment (str): optional - Set a comment up to 255 characters (default: None)
+            vdom (str): optional - Set vdom.  If unset object configs uses default fg context (default: None)
+        &#34;&#34;&#34;
+
+
+        # Initialize the parent class - we do set this here, because the subclass will first verify obj_id
+        # is acceptable for this class type in the above attribute set functions
+        super().__init__(api=&#39;cmdb&#39;, api_path=&#39;firewall&#39;, api_name=&#39;policy&#39;, cli_path=&#34;config firewall policy&#34;,
+                         obj_id=policyid, vdom=vdom)
+
+        ### Set parent class attributes ###
+        # Map instance attribute names to fg attribute names
+        self.data_attrs = {&#39;policyid&#39;: &#39;policyid&#39;, &#39;srcintf&#39;: &#39;srcintf&#39;, &#39;dstintf&#39;: &#39;dstintf&#39;, &#39;srcaddr&#39;: &#39;srcaddr&#39;,
+                           &#39;service&#39;: &#39;service&#39;, &#39;schedule&#39;: &#39;schedule&#39;, &#39;action&#39;: &#39;action&#39;, &#39;logtraffic&#39;: &#39;logtraffic&#39;,
+                           &#39;nat&#39;: &#39;nat&#39;, &#39;srcaddr_negate&#39;: &#39;srcaddr-negate&#39;, &#39;dstaddr_negate&#39;: &#39;dstaddr-negate&#39;}
+
+        self.cli_ignore_attrs = [&#39;policyid&#39;]
+
+        # Set Instance Variables
+        self.set_policyid(policyid)
+        self.srcintf = self.set_policy_objects(srcintf, &#39;srcintf&#39;)
+        self.dstintf = self.set_policy_objects(dstintf, &#39;dstintf&#39;)
+        self.srcaddr = self.set_policy_objects(srcaddr, &#39;srcaddr&#39;)
+        self.dstaddr = self.set_policy_objects(dstaddr, &#39;dstaddr&#39;)
+        self.service = self.set_policy_objects(service, &#39;service&#39;)
+        self.set_schedule(schedule)
+        self.set_action(action)
+        self.set_logtraffic(logtraffic)
+        self.set_nat(nat)
+        self.set_negate(srcaddr_negate, &#39;srcaddr_negate&#39;)
+        self.set_negate(dstaddr_negate, &#39;dstaddr_negate&#39;)
+        self.set_comment(comment)
+
+    def set_policyid(self, policyid):
+        &#34;&#34;&#34; Set self.policyid to policyid if policyid is valid or if not provided set policyid = 0.
+
+        Args:
+            policyid (int):  Integer representing ID of policy.
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if policyid:
+            if isinstance(policyid, int):
+                self.policyid = policyid
+            else:
+                raise Exception(&#34;If setting \&#34;id\&#34; it must be an integer&#34;)
+        else:
+            self.policyid = 0
+
+
+    def set_policy_objects(self, policy_object, obj_type):
+        &#34;&#34;&#34; Check the validity of srcintf, dstintf, srcaddr and dstaddr objects and returns a list.
+
+        Args:
+            policy_object (list): string or list of strings containing srcintf(s), dstintf(s), srcaddr(s) or dstaddr(s)
+            obj_type (str): sets the type of object, may be one of &#39;srcintf&#39;, &#39;dstintf&#39;, &#39;srcaddr&#39; or &#39;dstaddr&#39;
+        &#34;&#34;&#34;
+
+        if policy_object  and obj_type:
+            # IF a single object was passed as a string, append it to intf_list else iterate the list and pull
+            # out the strings of interfaces and append each to intf_list
+
+            obj_list = []
+
+            if isinstance(policy_object, str):
+                obj_list.append({&#39;name&#39;: policy_object})
+
+            elif isinstance(policy_object, list):
+                for item in policy_object:
+                    obj_list.append({&#39;name&#39;: item})
+
+            else:
+                raise Exception(&#34;{} must be provided as type string (with single {} referenced or as a list &#34;
+                                &#34;for multiple {} references&#34;.format(obj_type, obj_type, obj_type))
+
+            # Make sure each interface passed in is not all whitespace and it is less than 80 chars
+            for item in obj_list:
+                if isinstance(item[&#39;name&#39;], str):
+                    if item[&#39;name&#39;].isspace(): raise Exception(&#34;{} cannot be an empty string&#34;.format(item))
+
+                    if not len(item[&#39;name&#39;]) &lt; 80:
+                        raise Exception(&#34;{}, must be less 79 chars or less&#34;.format(obj_type))
+
+                else:
+                    raise Exception(&#34;{}, must be type str or a list (array) of strings&#34;.format(obj_type))
+
+            # set self.&lt;obj_type&gt; attribute with the verified and formatted obj_list
+            setattr(self, obj_type, obj_list)
+
+        else:
+            raise Exception(&#34;{} is required but was not provided&#34;.format(type))
+
+    def set_schedule(self, schedule):
+        &#34;&#34;&#34; Set self.schedule to &#39;schedule&#39; if &#39;schedule&#39; name provided meets requirements
+
+        Args:
+            schedule (str): Policy schedule name
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if schedule:
+            if isinstance(schedule, str):
+                if not len(schedule) &lt;= 36:
+                    raise Exception(&#34;\&#34;schedule\&#34;, when set, must be less 35 chars or less&#34;)
+
+                if schedule.isspace():
+                    raise Exception(&#34;\&#34;schedule\&#34;, when set, cannot be an empty string&#34;)
+            else:
+                raise Exception(&#34;\&#34;schedule\&#34;, when set, must be type str&#34;)
+
+            self.schedule = schedule
+        else:
+            self.schedule = &#39;always&#39;
+
+    def set_action(self, action):
+        &#34;&#34;&#34; Set self.action to &#39;action&#39; if action meets requirements
+
+        Args:
+            action (str): policy action, may be &#39;accept&#39; or &#39;deny&#39;
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if action:
+            if action.lower() == &#39;accept&#39; or action.lower() == &#39;allow&#39;:
+                self.action = &#39;accept&#39;
+            elif action.lower() == &#39;deny&#39; or action.lower() == &#39;drop&#39;:
+                self.action = &#39;deny&#39;
+            else:
+                raise ValueError(&#34;\&#34;action\&#34;, when set, must be either &#39;accept&#39; or &#39;deny&#39;&#34;)
+        else:
+            self.action = None
+
+    def set_logtraffic(self, logtraffic):
+        &#34;&#34;&#34; Set self.logtraffic to &#39;logtraffic&#39; if logtraffic is valid
+
+        Args:
+            logtraffic (str): Policy log action.  May be &#39;utm&#39;, &#39;all&#39; or &#39;disabled&#39;
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if logtraffic:
+            if logtraffic.lower() == &#39;utm&#39;:
+
+                # can&#39;t log utm if policy action is not accept
+                if self.action == &#39;accept&#39;:
+                    self.logtraffic = &#39;utm&#39;
+                else:
+                    raise Exception(&#34;Cannot set \&#34;logtraffic\&#34; to utm when policy action is deny (deny &#34;
+                                    &#34;is default policy action&#34;)
+
+            elif logtraffic.lower() == &#39;all&#39;:
+                self.logtraffic = &#39;all&#39;
+
+            elif logtraffic.lower() == &#39;disabled&#39; or logtraffic.lower() == &#39;disable&#39;:
+                self.logtraffic = &#39;disabled&#39;
+        else:
+            self.logtraffic = None
+
+    def set_nat(self, nat):
+        &#34;&#34;&#34; Set self.nat to &#39;nat&#39; if valid.  True=enable, False=disable
+
+        Args:
+            nat (bool): Policy source NAT, true (enable) or false (disable)
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if nat:
+            if isinstance(nat, bool):
+                self.nat = True
+        else:
+            self.nat = False
+
+    def set_comment(self, comment):
+        &#34;&#34;&#34; Set self.comment to &#39;comment&#39; if comment string within requirements
+
+        Args:
+            comment (str):  Comment for this policy object
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if comment:
+            if isinstance(comment, str):
+                if 1 &lt;= len(comment) &lt;= 1023:
+                    self.comment = comment
+                else:
+                    raise Exception(&#34;\&#34;description\&#34;, when set, must be type str between 1 and 1,023 chars&#34;)
+            else:
+                raise Exception(&#34;\&#34;description\&#34;, when set, must be type str&#34;)
+        else:
+            self.comment = None
+
+    def set_negate(self, negate, obj_type):
+        &#34;&#34;&#34; Set the self.&lt;obj_type&gt; attribute representing negate type in policy
+
+        Args:
+            negate (bool): True = (enable negating), False = (disable negating)
+            obj_type (str): Name of self attribute representing negate to be set (ex. self.srcaddr_negate)
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if negate:
+            if obj_type:
+                if isinstance(negate, bool):
+                    # Set self.&lt;obj_type&gt; attribute with negate bool value
+                    setattr(self, obj_type, negate)
+                else:
+                    raise ValueError(&#34;\&#34;negate\&#34;, when set, must be type bool&#34;)
+        else:
+            setattr(self, obj_type, None)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fgobjlib.fg_fw_policy.FgFwPolicy"><code class="flex name class">
+<span>class <span class="ident">FgFwPolicy</span></span>
+<span>(</span><span>policyid=None, srcintf=None, dstintf=None, srcaddr=None, dstaddr=None, service=None, schedule=None, action=None, logtraffic=None, nat=None, vdom=None, srcaddr_negate=None, dstaddr_negate=None, name=None, comment=None)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>FgFwPolicy class represents FortiGate Firewall policy object and provides methods for validating parameters
+and generating both cli and api configuration data for use in external configuration applications.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>data_attrs</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Dictionary to define relevant config attributes and map instance attr names to fg attr names</dd>
+<dt><strong><code>cli_ignore_attrs</code></strong> :&ensp;<code>list</code></dt>
+<dd>List of attributes to ignore when generating CLI configurations</dd>
+<dt><strong><code>policyid</code></strong> :&ensp;<code>int</code></dt>
+<dd>Object ID</dd>
+<dt><strong><code>srcintf</code></strong> :&ensp;<code>list</code></dt>
+<dd>Policy source interface(s), may be string or list of strings</dd>
+<dt><strong><code>dstintf</code></strong> :&ensp;<code>list</code></dt>
+<dd>Policy destination interface(s), may be string or list of strings</dd>
+<dt><strong><code>srcaddr</code></strong> :&ensp;<code>list</code></dt>
+<dd>Policy source address(es), may be string or list of strings</dd>
+<dt><strong><code>dstaddr</code></strong> :&ensp;<code>list</code></dt>
+<dd>Policy destination address(es), may be string or list of strings</dd>
+<dt><strong><code>schedule</code></strong> :&ensp;<code>str</code></dt>
+<dd>Policy schedule</dd>
+<dt><strong><code>action</code></strong> :&ensp;<code>str</code></dt>
+<dd>Policy action, may be 'accept' or 'deny'</dd>
+<dt><strong><code>logtraffic</code></strong> :&ensp;<code>str</code></dt>
+<dd>Policy log action, may be 'utm', 'all' or 'disabled'</dd>
+<dt><strong><code>nat</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Source NAT for policy, True or False</dd>
+<dt><strong><code>comment</code></strong> :&ensp;<code>str</code></dt>
+<dd>Object comment</dd>
+<dt><strong><code>vdom</code></strong> :&ensp;<code>str</code></dt>
+<dd>VDOM policy configured in
+(if any)</dd>
+</dl>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>policyid</code></strong> :&ensp;<code>int</code></dt>
+<dd>optional - ID of object.
+Defines ID used in configs when API or CLI for config methods (default: 0)</dd>
+<dt><strong><code>srcintf</code></strong> :&ensp;<code>list</code></dt>
+<dd>required - string or list of strings referencing src interface(s) of policy</dd>
+<dt><strong><code>dstintf</code></strong> :&ensp;<code>list</code></dt>
+<dd>required - string or list of strings referencing dst interface(s) of policy</dd>
+<dt><strong><code>srcaddr</code></strong> :&ensp;<code>list</code></dt>
+<dd>required - string or list of strings referencing src address(s) of policy</dd>
+<dt><strong><code>dstaddr</code></strong> :&ensp;<code>list</code></dt>
+<dd>required - string or list of strings referencing dst address(s) of policy</dd>
+<dt><strong><code>schedule</code></strong> :&ensp;<code>str</code></dt>
+<dd>optional - string referencing schedule to associated with policy (default: 'always')</dd>
+<dt><strong><code>action</code></strong> :&ensp;<code>str</code></dt>
+<dd>optional - string sets action to assign to policy; may be 'accept' or 'deny' (default: deny)</dd>
+<dt><strong><code>logtraffic</code></strong> :&ensp;<code>str</code></dt>
+<dd>optional - string set logtraffic action to assign; may be utm/all/disabled (default: disabled)</dd>
+<dt><strong><code>nat</code></strong> :&ensp;<code>bool</code></dt>
+<dd>optional - string</dd>
+<dt><strong><code>comment</code></strong> :&ensp;<code>str</code></dt>
+<dd>optional - Set a comment up to 255 characters (default: None)</dd>
+<dt><strong><code>vdom</code></strong> :&ensp;<code>str</code></dt>
+<dd>optional - Set vdom.
+If unset object configs uses default fg context (default: None)</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class FgFwPolicy(FgObject):
+    &#34;&#34;&#34;
+    FgFwPolicy class represents FortiGate Firewall policy object and provides methods for validating parameters
+    and generating both cli and api configuration data for use in external configuration applications.
+
+    Attributes:
+        data_attrs (dict): Dictionary to define relevant config attributes and map instance attr names to fg attr names
+        cli_ignore_attrs (list): List of attributes to ignore when generating CLI configurations
+        policyid (int): Object ID
+        srcintf (list):  Policy source interface(s), may be string or list of strings
+        dstintf (list): Policy destination interface(s), may be string or list of strings
+        srcaddr (list): Policy source address(es), may be string or list of strings
+        dstaddr (list): Policy destination address(es), may be string or list of strings
+        schedule (str): Policy schedule
+        action (str):  Policy action, may be &#39;accept&#39; or &#39;deny&#39;
+        logtraffic (str): Policy log action, may be &#39;utm&#39;, &#39;all&#39; or &#39;disabled&#39;
+        nat (bool):  Source NAT for policy, True or False
+        comment (str): Object comment
+        vdom (str):  VDOM policy configured in  (if any)
+    &#34;&#34;&#34;
+
+    def __init__(self, policyid: int = None, srcintf: list = None, dstintf: list = None, srcaddr: list = None,
+                 dstaddr: list = None, service: list = None, schedule: str = None, action: str = None,
+                 logtraffic: str = None, nat: bool = None, vdom: str = None, srcaddr_negate: bool = None,
+                 dstaddr_negate: bool = None, name: str = None, comment: str = None):
+        &#34;&#34;&#34;
+        Args:
+            policyid (int): optional - ID of object.  Defines ID used in configs when API or CLI for config methods (default: 0)
+            srcintf (list): required - string or list of strings referencing src interface(s) of policy
+            dstintf (list): required - string or list of strings referencing dst interface(s) of policy
+            srcaddr (list): required - string or list of strings referencing src address(s) of policy
+            dstaddr (list): required - string or list of strings referencing dst address(s) of policy
+            schedule (str): optional - string referencing schedule to associated with policy (default: &#39;always&#39;)
+            action (str): optional - string sets action to assign to policy; may be &#39;accept&#39; or &#39;deny&#39; (default: deny)
+            logtraffic (str): optional - string set logtraffic action to assign; may be utm/all/disabled (default: disabled)
+            nat (bool): optional - string
+            comment (str): optional - Set a comment up to 255 characters (default: None)
+            vdom (str): optional - Set vdom.  If unset object configs uses default fg context (default: None)
+        &#34;&#34;&#34;
+
+
+        # Initialize the parent class - we do set this here, because the subclass will first verify obj_id
+        # is acceptable for this class type in the above attribute set functions
+        super().__init__(api=&#39;cmdb&#39;, api_path=&#39;firewall&#39;, api_name=&#39;policy&#39;, cli_path=&#34;config firewall policy&#34;,
+                         obj_id=policyid, vdom=vdom)
+
+        ### Set parent class attributes ###
+        # Map instance attribute names to fg attribute names
+        self.data_attrs = {&#39;policyid&#39;: &#39;policyid&#39;, &#39;srcintf&#39;: &#39;srcintf&#39;, &#39;dstintf&#39;: &#39;dstintf&#39;, &#39;srcaddr&#39;: &#39;srcaddr&#39;,
+                           &#39;service&#39;: &#39;service&#39;, &#39;schedule&#39;: &#39;schedule&#39;, &#39;action&#39;: &#39;action&#39;, &#39;logtraffic&#39;: &#39;logtraffic&#39;,
+                           &#39;nat&#39;: &#39;nat&#39;, &#39;srcaddr_negate&#39;: &#39;srcaddr-negate&#39;, &#39;dstaddr_negate&#39;: &#39;dstaddr-negate&#39;}
+
+        self.cli_ignore_attrs = [&#39;policyid&#39;]
+
+        # Set Instance Variables
+        self.set_policyid(policyid)
+        self.srcintf = self.set_policy_objects(srcintf, &#39;srcintf&#39;)
+        self.dstintf = self.set_policy_objects(dstintf, &#39;dstintf&#39;)
+        self.srcaddr = self.set_policy_objects(srcaddr, &#39;srcaddr&#39;)
+        self.dstaddr = self.set_policy_objects(dstaddr, &#39;dstaddr&#39;)
+        self.service = self.set_policy_objects(service, &#39;service&#39;)
+        self.set_schedule(schedule)
+        self.set_action(action)
+        self.set_logtraffic(logtraffic)
+        self.set_nat(nat)
+        self.set_negate(srcaddr_negate, &#39;srcaddr_negate&#39;)
+        self.set_negate(dstaddr_negate, &#39;dstaddr_negate&#39;)
+        self.set_comment(comment)
+
+    def set_policyid(self, policyid):
+        &#34;&#34;&#34; Set self.policyid to policyid if policyid is valid or if not provided set policyid = 0.
+
+        Args:
+            policyid (int):  Integer representing ID of policy.
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if policyid:
+            if isinstance(policyid, int):
+                self.policyid = policyid
+            else:
+                raise Exception(&#34;If setting \&#34;id\&#34; it must be an integer&#34;)
+        else:
+            self.policyid = 0
+
+
+    def set_policy_objects(self, policy_object, obj_type):
+        &#34;&#34;&#34; Check the validity of srcintf, dstintf, srcaddr and dstaddr objects and returns a list.
+
+        Args:
+            policy_object (list): string or list of strings containing srcintf(s), dstintf(s), srcaddr(s) or dstaddr(s)
+            obj_type (str): sets the type of object, may be one of &#39;srcintf&#39;, &#39;dstintf&#39;, &#39;srcaddr&#39; or &#39;dstaddr&#39;
+        &#34;&#34;&#34;
+
+        if policy_object  and obj_type:
+            # IF a single object was passed as a string, append it to intf_list else iterate the list and pull
+            # out the strings of interfaces and append each to intf_list
+
+            obj_list = []
+
+            if isinstance(policy_object, str):
+                obj_list.append({&#39;name&#39;: policy_object})
+
+            elif isinstance(policy_object, list):
+                for item in policy_object:
+                    obj_list.append({&#39;name&#39;: item})
+
+            else:
+                raise Exception(&#34;{} must be provided as type string (with single {} referenced or as a list &#34;
+                                &#34;for multiple {} references&#34;.format(obj_type, obj_type, obj_type))
+
+            # Make sure each interface passed in is not all whitespace and it is less than 80 chars
+            for item in obj_list:
+                if isinstance(item[&#39;name&#39;], str):
+                    if item[&#39;name&#39;].isspace(): raise Exception(&#34;{} cannot be an empty string&#34;.format(item))
+
+                    if not len(item[&#39;name&#39;]) &lt; 80:
+                        raise Exception(&#34;{}, must be less 79 chars or less&#34;.format(obj_type))
+
+                else:
+                    raise Exception(&#34;{}, must be type str or a list (array) of strings&#34;.format(obj_type))
+
+            # set self.&lt;obj_type&gt; attribute with the verified and formatted obj_list
+            setattr(self, obj_type, obj_list)
+
+        else:
+            raise Exception(&#34;{} is required but was not provided&#34;.format(type))
+
+    def set_schedule(self, schedule):
+        &#34;&#34;&#34; Set self.schedule to &#39;schedule&#39; if &#39;schedule&#39; name provided meets requirements
+
+        Args:
+            schedule (str): Policy schedule name
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if schedule:
+            if isinstance(schedule, str):
+                if not len(schedule) &lt;= 36:
+                    raise Exception(&#34;\&#34;schedule\&#34;, when set, must be less 35 chars or less&#34;)
+
+                if schedule.isspace():
+                    raise Exception(&#34;\&#34;schedule\&#34;, when set, cannot be an empty string&#34;)
+            else:
+                raise Exception(&#34;\&#34;schedule\&#34;, when set, must be type str&#34;)
+
+            self.schedule = schedule
+        else:
+            self.schedule = &#39;always&#39;
+
+    def set_action(self, action):
+        &#34;&#34;&#34; Set self.action to &#39;action&#39; if action meets requirements
+
+        Args:
+            action (str): policy action, may be &#39;accept&#39; or &#39;deny&#39;
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if action:
+            if action.lower() == &#39;accept&#39; or action.lower() == &#39;allow&#39;:
+                self.action = &#39;accept&#39;
+            elif action.lower() == &#39;deny&#39; or action.lower() == &#39;drop&#39;:
+                self.action = &#39;deny&#39;
+            else:
+                raise ValueError(&#34;\&#34;action\&#34;, when set, must be either &#39;accept&#39; or &#39;deny&#39;&#34;)
+        else:
+            self.action = None
+
+    def set_logtraffic(self, logtraffic):
+        &#34;&#34;&#34; Set self.logtraffic to &#39;logtraffic&#39; if logtraffic is valid
+
+        Args:
+            logtraffic (str): Policy log action.  May be &#39;utm&#39;, &#39;all&#39; or &#39;disabled&#39;
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if logtraffic:
+            if logtraffic.lower() == &#39;utm&#39;:
+
+                # can&#39;t log utm if policy action is not accept
+                if self.action == &#39;accept&#39;:
+                    self.logtraffic = &#39;utm&#39;
+                else:
+                    raise Exception(&#34;Cannot set \&#34;logtraffic\&#34; to utm when policy action is deny (deny &#34;
+                                    &#34;is default policy action&#34;)
+
+            elif logtraffic.lower() == &#39;all&#39;:
+                self.logtraffic = &#39;all&#39;
+
+            elif logtraffic.lower() == &#39;disabled&#39; or logtraffic.lower() == &#39;disable&#39;:
+                self.logtraffic = &#39;disabled&#39;
+        else:
+            self.logtraffic = None
+
+    def set_nat(self, nat):
+        &#34;&#34;&#34; Set self.nat to &#39;nat&#39; if valid.  True=enable, False=disable
+
+        Args:
+            nat (bool): Policy source NAT, true (enable) or false (disable)
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if nat:
+            if isinstance(nat, bool):
+                self.nat = True
+        else:
+            self.nat = False
+
+    def set_comment(self, comment):
+        &#34;&#34;&#34; Set self.comment to &#39;comment&#39; if comment string within requirements
+
+        Args:
+            comment (str):  Comment for this policy object
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if comment:
+            if isinstance(comment, str):
+                if 1 &lt;= len(comment) &lt;= 1023:
+                    self.comment = comment
+                else:
+                    raise Exception(&#34;\&#34;description\&#34;, when set, must be type str between 1 and 1,023 chars&#34;)
+            else:
+                raise Exception(&#34;\&#34;description\&#34;, when set, must be type str&#34;)
+        else:
+            self.comment = None
+
+    def set_negate(self, negate, obj_type):
+        &#34;&#34;&#34; Set the self.&lt;obj_type&gt; attribute representing negate type in policy
+
+        Args:
+            negate (bool): True = (enable negating), False = (disable negating)
+            obj_type (str): Name of self attribute representing negate to be set (ex. self.srcaddr_negate)
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if negate:
+            if obj_type:
+                if isinstance(negate, bool):
+                    # Set self.&lt;obj_type&gt; attribute with negate bool value
+                    setattr(self, obj_type, negate)
+                else:
+                    raise ValueError(&#34;\&#34;negate\&#34;, when set, must be type bool&#34;)
+        else:
+            setattr(self, obj_type, None)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fgobjlib.fg_object.FgObject" href="fg_object.html#fgobjlib.fg_object.FgObject">FgObject</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.set_action"><code class="name flex">
+<span>def <span class="ident">set_action</span></span>(<span>self, action)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Set self.action to 'action' if action meets requirements</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>action</code></strong> :&ensp;<code>str</code></dt>
+<dd>policy action, may be 'accept' or 'deny'</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_action(self, action):
+    &#34;&#34;&#34; Set self.action to &#39;action&#39; if action meets requirements
+
+    Args:
+        action (str): policy action, may be &#39;accept&#39; or &#39;deny&#39;
+
+    Returns:
+        None
+    &#34;&#34;&#34;
+    if action:
+        if action.lower() == &#39;accept&#39; or action.lower() == &#39;allow&#39;:
+            self.action = &#39;accept&#39;
+        elif action.lower() == &#39;deny&#39; or action.lower() == &#39;drop&#39;:
+            self.action = &#39;deny&#39;
+        else:
+            raise ValueError(&#34;\&#34;action\&#34;, when set, must be either &#39;accept&#39; or &#39;deny&#39;&#34;)
+    else:
+        self.action = None</code></pre>
+</details>
+</dd>
+<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.set_comment"><code class="name flex">
+<span>def <span class="ident">set_comment</span></span>(<span>self, comment)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Set self.comment to 'comment' if comment string within requirements</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>comment</code></strong> :&ensp;<code>str</code></dt>
+<dd>Comment for this policy object</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_comment(self, comment):
+    &#34;&#34;&#34; Set self.comment to &#39;comment&#39; if comment string within requirements
+
+    Args:
+        comment (str):  Comment for this policy object
+
+    Returns:
+        None
+    &#34;&#34;&#34;
+    if comment:
+        if isinstance(comment, str):
+            if 1 &lt;= len(comment) &lt;= 1023:
+                self.comment = comment
+            else:
+                raise Exception(&#34;\&#34;description\&#34;, when set, must be type str between 1 and 1,023 chars&#34;)
+        else:
+            raise Exception(&#34;\&#34;description\&#34;, when set, must be type str&#34;)
+    else:
+        self.comment = None</code></pre>
+</details>
+</dd>
+<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.set_logtraffic"><code class="name flex">
+<span>def <span class="ident">set_logtraffic</span></span>(<span>self, logtraffic)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Set self.logtraffic to 'logtraffic' if logtraffic is valid</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>logtraffic</code></strong> :&ensp;<code>str</code></dt>
+<dd>Policy log action.
+May be 'utm', 'all' or 'disabled'</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_logtraffic(self, logtraffic):
+    &#34;&#34;&#34; Set self.logtraffic to &#39;logtraffic&#39; if logtraffic is valid
+
+    Args:
+        logtraffic (str): Policy log action.  May be &#39;utm&#39;, &#39;all&#39; or &#39;disabled&#39;
+
+    Returns:
+        None
+    &#34;&#34;&#34;
+    if logtraffic:
+        if logtraffic.lower() == &#39;utm&#39;:
+
+            # can&#39;t log utm if policy action is not accept
+            if self.action == &#39;accept&#39;:
+                self.logtraffic = &#39;utm&#39;
+            else:
+                raise Exception(&#34;Cannot set \&#34;logtraffic\&#34; to utm when policy action is deny (deny &#34;
+                                &#34;is default policy action&#34;)
+
+        elif logtraffic.lower() == &#39;all&#39;:
+            self.logtraffic = &#39;all&#39;
+
+        elif logtraffic.lower() == &#39;disabled&#39; or logtraffic.lower() == &#39;disable&#39;:
+            self.logtraffic = &#39;disabled&#39;
+    else:
+        self.logtraffic = None</code></pre>
+</details>
+</dd>
+<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.set_nat"><code class="name flex">
+<span>def <span class="ident">set_nat</span></span>(<span>self, nat)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Set self.nat to 'nat' if valid.
+True=enable, False=disable</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>nat</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Policy source NAT, true (enable) or false (disable)</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_nat(self, nat):
+    &#34;&#34;&#34; Set self.nat to &#39;nat&#39; if valid.  True=enable, False=disable
+
+    Args:
+        nat (bool): Policy source NAT, true (enable) or false (disable)
+
+    Returns:
+        None
+    &#34;&#34;&#34;
+    if nat:
+        if isinstance(nat, bool):
+            self.nat = True
+    else:
+        self.nat = False</code></pre>
+</details>
+</dd>
+<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.set_negate"><code class="name flex">
+<span>def <span class="ident">set_negate</span></span>(<span>self, negate, obj_type)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Set the self.<obj_type> attribute representing negate type in policy</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>negate</code></strong> :&ensp;<code>bool</code></dt>
+<dd>True = (enable negating), False = (disable negating)</dd>
+<dt><strong><code>obj_type</code></strong> :&ensp;<code>str</code></dt>
+<dd>Name of self attribute representing negate to be set (ex. self.srcaddr_negate)</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_negate(self, negate, obj_type):
+    &#34;&#34;&#34; Set the self.&lt;obj_type&gt; attribute representing negate type in policy
+
+    Args:
+        negate (bool): True = (enable negating), False = (disable negating)
+        obj_type (str): Name of self attribute representing negate to be set (ex. self.srcaddr_negate)
+
+    Returns:
+        None
+    &#34;&#34;&#34;
+    if negate:
+        if obj_type:
+            if isinstance(negate, bool):
+                # Set self.&lt;obj_type&gt; attribute with negate bool value
+                setattr(self, obj_type, negate)
+            else:
+                raise ValueError(&#34;\&#34;negate\&#34;, when set, must be type bool&#34;)
+    else:
+        setattr(self, obj_type, None)</code></pre>
+</details>
+</dd>
+<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.set_policy_objects"><code class="name flex">
+<span>def <span class="ident">set_policy_objects</span></span>(<span>self, policy_object, obj_type)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Check the validity of srcintf, dstintf, srcaddr and dstaddr objects and returns a list.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>policy_object</code></strong> :&ensp;<code>list</code></dt>
+<dd>string or list of strings containing srcintf(s), dstintf(s), srcaddr(s) or dstaddr(s)</dd>
+<dt><strong><code>obj_type</code></strong> :&ensp;<code>str</code></dt>
+<dd>sets the type of object, may be one of 'srcintf', 'dstintf', 'srcaddr' or 'dstaddr'</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_policy_objects(self, policy_object, obj_type):
+    &#34;&#34;&#34; Check the validity of srcintf, dstintf, srcaddr and dstaddr objects and returns a list.
+
+    Args:
+        policy_object (list): string or list of strings containing srcintf(s), dstintf(s), srcaddr(s) or dstaddr(s)
+        obj_type (str): sets the type of object, may be one of &#39;srcintf&#39;, &#39;dstintf&#39;, &#39;srcaddr&#39; or &#39;dstaddr&#39;
+    &#34;&#34;&#34;
+
+    if policy_object  and obj_type:
+        # IF a single object was passed as a string, append it to intf_list else iterate the list and pull
+        # out the strings of interfaces and append each to intf_list
+
+        obj_list = []
+
+        if isinstance(policy_object, str):
+            obj_list.append({&#39;name&#39;: policy_object})
+
+        elif isinstance(policy_object, list):
+            for item in policy_object:
+                obj_list.append({&#39;name&#39;: item})
+
+        else:
+            raise Exception(&#34;{} must be provided as type string (with single {} referenced or as a list &#34;
+                            &#34;for multiple {} references&#34;.format(obj_type, obj_type, obj_type))
+
+        # Make sure each interface passed in is not all whitespace and it is less than 80 chars
+        for item in obj_list:
+            if isinstance(item[&#39;name&#39;], str):
+                if item[&#39;name&#39;].isspace(): raise Exception(&#34;{} cannot be an empty string&#34;.format(item))
+
+                if not len(item[&#39;name&#39;]) &lt; 80:
+                    raise Exception(&#34;{}, must be less 79 chars or less&#34;.format(obj_type))
+
+            else:
+                raise Exception(&#34;{}, must be type str or a list (array) of strings&#34;.format(obj_type))
+
+        # set self.&lt;obj_type&gt; attribute with the verified and formatted obj_list
+        setattr(self, obj_type, obj_list)
+
+    else:
+        raise Exception(&#34;{} is required but was not provided&#34;.format(type))</code></pre>
+</details>
+</dd>
+<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.set_policyid"><code class="name flex">
+<span>def <span class="ident">set_policyid</span></span>(<span>self, policyid)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Set self.policyid to policyid if policyid is valid or if not provided set policyid = 0.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>policyid</code></strong> :&ensp;<code>int</code></dt>
+<dd>Integer representing ID of policy.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_policyid(self, policyid):
+    &#34;&#34;&#34; Set self.policyid to policyid if policyid is valid or if not provided set policyid = 0.
+
+    Args:
+        policyid (int):  Integer representing ID of policy.
+
+    Returns:
+        None
+    &#34;&#34;&#34;
+    if policyid:
+        if isinstance(policyid, int):
+            self.policyid = policyid
+        else:
+            raise Exception(&#34;If setting \&#34;id\&#34; it must be an integer&#34;)
+    else:
+        self.policyid = 0</code></pre>
+</details>
+</dd>
+<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.set_schedule"><code class="name flex">
+<span>def <span class="ident">set_schedule</span></span>(<span>self, schedule)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Set self.schedule to 'schedule' if 'schedule' name provided meets requirements</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>schedule</code></strong> :&ensp;<code>str</code></dt>
+<dd>Policy schedule name</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_schedule(self, schedule):
+    &#34;&#34;&#34; Set self.schedule to &#39;schedule&#39; if &#39;schedule&#39; name provided meets requirements
+
+    Args:
+        schedule (str): Policy schedule name
+
+    Returns:
+        None
+    &#34;&#34;&#34;
+    if schedule:
+        if isinstance(schedule, str):
+            if not len(schedule) &lt;= 36:
+                raise Exception(&#34;\&#34;schedule\&#34;, when set, must be less 35 chars or less&#34;)
+
+            if schedule.isspace():
+                raise Exception(&#34;\&#34;schedule\&#34;, when set, cannot be an empty string&#34;)
+        else:
+            raise Exception(&#34;\&#34;schedule\&#34;, when set, must be type str&#34;)
+
+        self.schedule = schedule
+    else:
+        self.schedule = &#39;always&#39;</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fgobjlib.fg_object.FgObject" href="fg_object.html#fgobjlib.fg_object.FgObject">FgObject</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fgobjlib.fg_object.FgObject.get_api_config_add" href="fg_object.html#fgobjlib.fg_object.FgObject.get_api_config_add">get_api_config_add</a></code></li>
+<li><code><a title="fgobjlib.fg_object.FgObject.get_api_config_del" href="fg_object.html#fgobjlib.fg_object.FgObject.get_api_config_del">get_api_config_del</a></code></li>
+<li><code><a title="fgobjlib.fg_object.FgObject.get_api_config_get" href="fg_object.html#fgobjlib.fg_object.FgObject.get_api_config_get">get_api_config_get</a></code></li>
+<li><code><a title="fgobjlib.fg_object.FgObject.get_api_config_update" href="fg_object.html#fgobjlib.fg_object.FgObject.get_api_config_update">get_api_config_update</a></code></li>
+<li><code><a title="fgobjlib.fg_object.FgObject.get_cli_config_add" href="fg_object.html#fgobjlib.fg_object.FgObject.get_cli_config_add">get_cli_config_add</a></code></li>
+<li><code><a title="fgobjlib.fg_object.FgObject.get_cli_config_del" href="fg_object.html#fgobjlib.fg_object.FgObject.get_cli_config_del">get_cli_config_del</a></code></li>
+<li><code><a title="fgobjlib.fg_object.FgObject.get_cli_config_update" href="fg_object.html#fgobjlib.fg_object.FgObject.get_cli_config_update">get_cli_config_update</a></code></li>
+<li><code><a title="fgobjlib.fg_object.FgObject.set_vdom" href="fg_object.html#fgobjlib.fg_object.FgObject.set_vdom">set_vdom</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fgobjlib" href="index.html">fgobjlib</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy" href="#fgobjlib.fg_fw_policy.FgFwPolicy">FgFwPolicy</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.set_action" href="#fgobjlib.fg_fw_policy.FgFwPolicy.set_action">set_action</a></code></li>
+<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.set_comment" href="#fgobjlib.fg_fw_policy.FgFwPolicy.set_comment">set_comment</a></code></li>
+<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.set_logtraffic" href="#fgobjlib.fg_fw_policy.FgFwPolicy.set_logtraffic">set_logtraffic</a></code></li>
+<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.set_nat" href="#fgobjlib.fg_fw_policy.FgFwPolicy.set_nat">set_nat</a></code></li>
+<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.set_negate" href="#fgobjlib.fg_fw_policy.FgFwPolicy.set_negate">set_negate</a></code></li>
+<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.set_policy_objects" href="#fgobjlib.fg_fw_policy.FgFwPolicy.set_policy_objects">set_policy_objects</a></code></li>
+<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.set_policyid" href="#fgobjlib.fg_fw_policy.FgFwPolicy.set_policyid">set_policyid</a></code></li>
+<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.set_schedule" href="#fgobjlib.fg_fw_policy.FgFwPolicy.set_schedule">set_schedule</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.1</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

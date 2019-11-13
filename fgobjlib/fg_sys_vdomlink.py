@@ -2,33 +2,45 @@ from fgobjlib import FgObject
 
 
 class FgVdomLink(FgObject):
-    """
-    FgInterface class represents FortiGate Firewall interface object and provides methods for validating parameters
+    """ FgInterface class represents FortiGate system vdom-link object and provides methods for validating parameters
     and generating both cli and api configuration data for use in external configuration applications
 
-    Currently supports interface types of \"standard\" i.e. ethernet/physical or vlan,
+    Attributes:
+        name (str): Name of vdom-link object
+        vdom_enabled (bool):  Vdom enabled on target object True or False
     """
 
     def __init__(self, name: str = None, vdom_enabled: bool = None):
+        """
+        Args:
+            name (str): Name of vdom-link object
+            vdom_enabled (bool): VDOMs enabled on target FortiGate?  Set to True if VDOMS enabled False if not.
+        """
 
         # Initialize the parent class
-        super().__init__(api='cmdb', api_path='system', api_name='vdom-link', api_mkey=None, vdom='global', obj_id=name)
+        super().__init__(api='cmdb', api_path='system', api_name='vdom-link', cli_path="config system vdom-link",
+                         vdom='global', obj_id=name)
 
-        if vdom_enabled == True:
-            self.vdom_enabled = True
+
 
         ### Set parent class attributes ###
-        # CLI config path for this object type
-        self.cli_path = "config system vdom-link"
-
         # Map instance attribute names to fg attribute names
         self.data_attrs = {'name': 'name'}
         self.cli_ignore_attrs = []
+        if vdom_enabled == True: self.vdom_enabled = True
 
         # Set instance attributes
         self.set_name(name)
 
     def set_name(self, name):
+        """ Set self.name to name if name is valid
+
+        Args:
+            name (str): Name of vdom-link
+
+        Returns:
+            None
+        """
         if name:
             if name.isspace(): raise Exception("\"intf\", cannot be an empty string")
             if isinstance(name, str):

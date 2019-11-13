@@ -1,16 +1,49 @@
 class FgObject:
-    def __init__(self, vdom: str = None, api: str = 'cmdb', api_path: str = None, api_name: str = None,
-                 api_mkey: str = None, obj_id = None, cli_path: str = None):
+    """FgObject class represents basic methods and attributes used commonly across most, if not all, child class objects
 
-        # Set the API PATH
+    FgObject class provides attributes and methods that are used by the specific FortiGate object child classes.  Common
+    attributes such as VDOM and object ID are contained and validated in this parent class.  API and CLI path attributes
+    are also represented here.  Various methods used by most of the child classes for returning CLI or API configuration
+    data are also within this FgObject class. This class is typically not called directly by an application, rather it
+    is extended by the specific FortiGate object child classes such as FgFwPolicy.
+
+    Attributes:
+        API: string representing the FortiGate API to be called.  (this will almost always be 'cmdb')
+        API_PATH: string representing the api path associated with this object. (ex. system, router, firewall, etc..)
+        API_NAME: string representing the object type within the api_path to add/update/delete/get.
+        API_MKEY: updated with object_id for update/delete/get operations
+        CLI_PATH:  string with base FG cli context configurations for this object (ex: "config system interface")
+        obj_id: this may be string, integer or other type that defines the object ID for use in api and cli config.
+        vdom: defines the vdom this object is to be configured/updated/deleted/got from.
+        vdom_enabled: used for objects configured from global context to determine correct cli config path
+        data_attrs: the attributes from child classes to be used in generating configurations
+        cli_ignore_attrs: attributes from child classes that should be ignored
+"""
+
+    def __init__(self, api: str = None, api_path: str = None, api_name: str = None,  cli_path = None,
+                 obj_id = None, vdom: str = None):
+        """
+        Args:
+            api (str): set the FortiGate API to use. (default None) - Required if using API config methods.
+            api_path (str): optional - set the FortiGate API path. (default None) - Required if using API config methods.
+            api_name (str): optional - set the FortiGate API name.  (default None) - Required if using API config methods
+            cli_path (str): optional - set the FortiGate CLI configuration path . (default None) -
+            Required if using CLI config methods
+            obj_id: required - set the object id, this may be str or int.
+            vdom (str): optional - set the objects vdom, if FG vdoms enabled and object type is configured in vdom context
+        """
+
+        # Set the API path
         self.API = api
         self.API_PATH = api_path
         self.API_NAME = api_name
-        self.API_MKEY = api_mkey
+        self.API_MKEY = None
+
+        # Set the CLI path
+        self.CLI_PATH = cli_path
 
         # Set attrs
         self.obj_id = obj_id
-        self.cli_path = None
         self.set_vdom(vdom)
 
         # Set and used only for objects that are configured via global context vs vdom context
@@ -23,20 +56,31 @@ class FgObject:
         self.cli_ignore_attrs = {}
 
     def set_vdom(self, vdom):
+        """ Validate the vdom argument for FortiGate consumption, if acceptable set to self.vdom
+
+        Verify that vdom argument is non-empty string, with no whitespace between 1 and 31 chars.  If valid then set
+        self.vdom = vdom
+
+        Args:
+            vdom (str): FortiGate VDOM name that the instance object should be tied to
+
+        Returns:
+            None
+        """
         if vdom:
             if isinstance(vdom, str):
                 # vdom names cannot have spaces so check for spaces and throw error if there are
                 for char in vdom:
                     if str.isspace(char):
-                        raise Exception("\"vdom\", str not allowed to contain whitespace")
+                        raise ValueError("\"vdom\", when set, must be str with no whitespace")
 
                 # Check vdom name string length meets FG requirements
                 if 1 <= len(vdom) <= 31:
                     self.vdom = vdom
                 else:
-                    raise Exception("\"vdom\", when set, must be an str between 1 and 31 chars")
+                    raise ValueError("\"vdom\", when set, must be a str between 1 and 31 chars")
             else:
-                raise Exception("\"vdom\", when set, must be a str")
+                raise ValueError("\"vdom\", when set, must be a str between 1 and 31")
         else:
             self.vdom = None
 
@@ -44,6 +88,29 @@ class FgObject:
     #   API Config Methods   #
     ##########################
     def get_api_config_add(self):
+        """ Get FortiGate API configuration for adding(post) self to FortiGate via API using Fortinet's ftntlib library
+
+        Based on currently set instance attributes this method will build and return a FortiGate API configuration
+        parameters to be used in making Rest API post call to FortiGate using ftntlib.  (ftntlib is a library for
+        simplifying REST API calls to FortiOS and can be downloaded from the Fortinet Developer Network at
+        https://fndn.fortinet.net)
+
+        Args:
+            self: the current instance object
+
+        Returns:
+            A dictionary mapping keys to corresponding ftnlib API attributes  for ftntlib REST API methods.
+
+            example:
+                {'api': 'cmdb',
+                'path': 'vpn.ipsec',
+                'name': 'phase1-interface',
+                'mkey': 'vpn1',
+                'action': None,
+                'data': {},
+                'parameters': {'vdom': 'vdom1'}}
+        """
+
         conf = {'api': self.API, 'path': self.API_PATH, 'name': self.API_NAME, 'mkey': self.API_MKEY, 'action': None}
         data = {}
         params = {}
@@ -65,6 +132,29 @@ class FgObject:
         return conf
 
     def get_api_config_update(self):
+        """ Get FortiGate API configuration for updating(put) self to FortiGate via API using Fortinet's ftntlib library
+
+        Based on current instance's attributes this method will build and return a FortiGate API configuration
+        parameters to be used in making Rest API put call to FortiGate using ftntlib.  (ftntlib is a library for
+        simplifying REST API calls to FortiOS and can be downloaded from the Fortinet Developer Network at
+        https://fndn.fortinet.net)
+
+        Args:
+            self: the current instance object
+
+        Returns:
+            A dictionary mapping keys to corresponding ftnlib API attributes  for ftntlib REST API methods.
+
+            example:
+                {'api': 'cmdb',
+                'path': 'vpn.ipsec',
+                'name': 'phase1-interface',
+                'mkey': 'vpn1',
+                'action': None,
+                'data': {},
+                'parameters': {'vdom': 'vdom1'}}
+        """
+
         # Need to set mkey to interface name when doing updates (puts) or deletes
         self.API_MKEY = self.obj_id
 
@@ -72,6 +162,29 @@ class FgObject:
         return conf
 
     def get_api_config_del(self):
+        """ Get FortiGate API configuration for deleting(delete) self from FortiGate via API using Fortinet ftntlib lib
+
+        Based on current instance's attributes this method will build and return a FortiGate API configuration
+        parameters to be used in making Rest API delete call to FortiGate using ftntlib.  (ftntlib is a library for
+        simplifying REST API calls to FortiOS and can be downloaded from the Fortinet Developer Network at
+        https://fndn.fortinet.net)
+
+        Args:
+            self: the current instance object
+
+        Returns:
+            A dictionary mapping keys to corresponding ftnlib API attributes  for ftntlib REST API methods.
+
+            example:
+                {'api': 'cmdb',
+                'path': 'vpn.ipsec',
+                'name': 'phase1-interface',
+                'mkey': 'vpn1',
+                'action': None,
+                'data': {},
+                'parameters': {'vdom': 'vdom1'}}
+
+        """
         conf = {'api': self.API, 'path': self.API_PATH, 'name': self.API_NAME, 'mkey': self.API_MKEY, 'action': None}
         data = {}
         params = {}
@@ -95,6 +208,28 @@ class FgObject:
         return conf
 
     def get_api_config_get(self):
+        """ Get FortiGate API configuration for getting(get) self from FortiGate via API using Fortinet ftntlib lib
+
+            Based on current instance's attributes this method will build and return a FortiGate API configuration
+            parameters to be used in making Rest API get call to FortiGate using ftntlib.  (ftntlib is a library for
+            simplifying REST API calls to FortiOS and can be downloaded from the Fortinet Developer Network at
+            https://fndn.fortinet.net)
+
+        Args:
+            self: the current instance object
+
+        Returns:
+            A dictionary mapping keys to corresponding ftnlib API attributes  for ftntlib REST API methods.
+
+            example:
+                {'api': 'cmdb',
+                'path': 'vpn.ipsec',
+                'name': 'phase1-interface',
+                'mkey': 'vpn1',
+                'action': None,
+                'data': {},
+                'parameters': {'vdom': 'vdom1'}}
+            """
         conf = self.get_api_config_del()
         return conf
 
@@ -102,6 +237,18 @@ class FgObject:
     #   CLI Config Methods   #
     ##########################
     def get_cli_config_add(self):
+        """ Get FortiGate CLI configuration for adding self to FortiGate via CLI
+
+            Based on currently set instance attributes this method will build and return a FortiGate CLI configuration
+            snipet for the current instance object.
+
+            Args:
+                self: the current instance object
+
+            Returns:
+                A FortiGate CLI configuration snipet representing self to be use for configuring new FG object.
+            """
+
         conf = ''
 
         # start vdom or global config
@@ -113,7 +260,7 @@ class FgObject:
                 conf += " edit {} \n".format(self.vdom)
 
         # Config object's cli path
-        conf += "{}\n".format(self.cli_path)
+        conf += "{}\n".format(self.CLI_PATH)
 
         # Edit obj_id
         conf += "  edit \"{}\" \n".format(self.obj_id)
@@ -161,10 +308,32 @@ class FgObject:
         return conf
 
     def get_cli_config_update(self):
+        """ Get FortiGate CLI configuration for updating self to FortiGate via CLI
+
+        Based on currently set instance attributes this method will build and return a FortiGate CLI configuration
+        snipet for the current instance object.
+
+        Args:
+            self: the current instance object
+
+        Returns:
+            A FortiGate CLI configuration snipet representing self to be use for updating existing FG object
+        """
         conf = self.get_cli_config_add()
         return conf
 
     def get_cli_config_del(self):
+        """ Get FortiGate CLI configuration for deleting self from FortiGate via CLI
+
+            Based on currently set instance attributes this method will build and return a FortiGate CLI configuration
+            snipet for the current instance object.
+
+            Args:
+                self: the current instance object
+
+            Returns:
+                A FortiGate CLI configuration snipet representing self to be use for configuring new FG object
+            """
         conf = ''
         if self.obj_id:
 
@@ -176,7 +345,7 @@ class FgObject:
                 conf += "config vdom\n"
                 conf += " edit {} \n".format(self.vdom)
 
-            conf += "{}\n".format(self.cli_path)
+            conf += "{}\n".format(self.CLI_PATH)
             conf += "  delete {}\n".format(self.obj_id)
             conf += "end\n"
 

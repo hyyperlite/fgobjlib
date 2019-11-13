@@ -1,0 +1,948 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.7.1" />
+<title>fgobjlib.fg_fw_address API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fgobjlib.fg_fw_address</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from fgobjlib import FgObject
+import ipaddress
+
+class FgFwAddress(FgObject):
+    &#34;&#34;&#34;
+    FgFwAddress  represents FortiGate firewall address object and provides methods for validating parameters
+    and generating both cli and api configuration data for use in external configuration applications.
+
+    Currently supports address types subnet (default), iprange and fqdn
+
+    Attributes:
+        data_attrs (dict): Dictionary to define relevant config attributes and map instance attr names to fg attr names
+        cli_ignore_attrs (list): List of attributes to ignore when generating CLI configurations
+        name (str): Name of instance object
+        type (str): Type of address object
+        subnet (str): Subnet for &#34;ipmask&#34; type object
+        fqdn (str): Fqdn for &#34;fqdn&#34; type object
+        start_ip (str): start-ip for &#34;iprange&#34; type object
+        end_ip (str): end-ip for &#34;iprange: type object
+        visibility (bool): Object visibility set to True or False
+        comment (str): Object comment
+    &#34;&#34;&#34;
+
+    def __init__(self, name: str = None, type: str = None, subnet: str = None, fqdn: str = None,
+                 start_ip: str = None, end_ip: str = None, visibility: bool = None, associated_interface: str = None,
+                 vdom: str = None, comment: str = None):
+        &#34;&#34;&#34;
+        Args:
+            name (str): required - Name of object.  Defines name used in configs when API or CLI for config methods
+            type (str): optional - Set type of address object.  (default: ipmask)
+            subnet (str): optional - Set subnet for address object of type ipmask. (default: None)
+            fqdn (str): optional - Set fqdn for address object of type fqdn. (default: None)
+            start_ip (str): optional - Set start-ip for address object of type iprange. (default: None)
+            end_ip (str): optional - Set end-ip address object of type iprange. (default: None)
+            visibility (bool): optional - Set visibility option to True-[enabled] or False-[disabled]  (default: None)
+            associated_interface (str): optional - Set associated-interface for display in FortiGate GUI (default: None)
+            comment (str): optional - Set a comment up to 255 characters (default: None)
+            vdom (str): optional - Set vdom.  If unset object configs uses default fg context (default: None)
+        &#34;&#34;&#34;
+
+        # Initialize the parent class
+        super().__init__(api=&#39;cmdb&#39;, api_path=&#39;firewall&#39;, api_name=&#39;address&#39;,  cli_path=&#34;config firewall address&#34;,
+                         obj_id=name, vdom=vdom)
+
+        ### Set parent class attributes ###
+        # Map instance attribute names to fg attribute names
+        self.data_attrs = {&#39;name&#39;: &#39;name&#39;, &#39;type&#39;: &#39;type&#39;, &#39;subnet&#39;: &#39;subnet&#39;, &#39;fqdn&#39;: &#39;fqdn&#39;,
+                           &#39;associated_interface&#39;: &#39;associated-interface&#39;, &#39;visibility&#39;: &#39;visibility&#39;,
+                           &#39;comment&#39;: &#39;comments&#39;, &#39;start_ip&#39;: &#39;start-ip&#39;, &#39;end_ip&#39;: &#39;end-ip&#39;}
+
+        self.cli_ignore_attrs = []
+
+        # Set instance attributes
+        self.set_name(name)
+        self.set_type(type)
+        self.set_subnet(subnet)
+        self.set_fqdn(fqdn)
+        self.set_visibility(visibility)
+        self.set_associated_interface(associated_interface)
+        self.set_comment(comment)
+        self.set_range_ips(start_ip, end_ip)
+
+
+    def set_name(self, name):
+        &#34;&#34;&#34;  Set self.name attribute to name if name provided is valid for FG object
+
+        Args:
+            name (str): Name of firewall address object.
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+
+        if name:
+            if name.isspace(): raise Exception(&#34;\&#34;intf\&#34;, cannot be an empty string&#34;)
+            if isinstance(name, str):
+                if 1 &lt;= len(name) &lt;= 79:
+                    self.name = name
+                else:
+                    raise Exception(&#34;\&#34;name\&#34;, must be less than or equal to 79 chars&#34;)
+            else:
+                raise Exception(&#34;\&#34;name\&#34;, must be a string&#34;)
+        else:
+            raise Exception(&#34;Value \&#34;name\&#34; is required but was not provided&#34;)
+
+    def set_type(self, type):
+        &#34;&#34;&#34; Set self.type attribute to type if type provided is valid for FG object
+
+        Args:
+            type (str): Type of firewall object, may be &#39;ipmask&#39;, &#39;iprange&#39;, &#39;fqdn&#39; or None (None = FG Default)
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if type:
+            if type in [&#39;ipmask&#39;, &#39;iprange&#39;, &#39;fqdn&#39;]:
+                self.type = type
+            else:
+                raise ValueError(&#34;\&#34;type\&#34; specified is unsupported&#34;)
+        else:
+            self.type = None
+
+    def set_subnet(self, subnet):
+        &#34;&#34;&#34; Set self.subnet to subnet if subnet is valid ipv4 network/mask
+
+        Args:
+            subnet (str): valid ipv4 network/mask, for use when self&#39;s &#39;type&#39; is ipmask or None (which is default type)
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if subnet:
+            if isinstance(subnet, str):
+                try:
+                    self.subnet = str(ipaddress.ip_network(subnet))
+                except ValueError:
+                    raise ValueError(&#34;\&#34;subnet\&#34;, when specified must be a valid ipv4 address&#34;)
+        else:
+            self.subnet = None
+
+    def set_fqdn(self, fqdn):
+        &#34;&#34;&#34; Set self.fqdn to fqdn if fqdn provided meets FortiGate requirements for this parameter
+
+        Args:
+            fqdn (str): fqdn for use when self type is also set to &#39;fqdn&#39;
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if fqdn:
+            if 1 &lt;= len(fqdn) &lt;= 255:
+                self.fqdn = fqdn
+            else:
+                raise ValueError(&#34;\&#34;fqdn\&#34;, when set, must be type str between 1 and 255 chars&#34;)
+        else:
+            self.fqdn = None
+
+    def set_visibility(self, visibility):
+        &#34;&#34;&#34; Set self.visibility
+
+        Args:
+            visibility (bool): Boolean to set visibility on FortiGate to enabled (True) or disabled (False)
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if visibility:
+            if isinstance(visibility, bool):
+                self.visibility = &#39;enable&#39; if visibility else &#39;disable&#39;
+            else:
+                raise ValueError(&#34;\&#34;visibility\&#34;, when set, must be type bool&#34;)
+        else:
+            self.visibility = None
+
+    def set_associated_interface(self, intf):
+        &#34;&#34;&#34; Set self.associated_interface if associated_interface provided meets requirements
+
+        Args:
+            intf (str):
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if intf:
+            if intf.isspace(): raise Exception(&#34;\&#34;associated_interface\&#34;, cannot be an empty string&#34;)
+            if isinstance(intf, str):
+                if 1 &lt;= len(intf) &lt;= 35:
+                    self.associated_interface = intf
+                else:
+                    raise Exception(&#34;\&#34;associated_interface\&#34;, when set, must be between 1 and 35 chars&#34;)
+            else:
+                raise Exception(&#34;\&#34;name\&#34;, must be a string&#34;)
+
+        else:
+            self.associated_interface = None
+
+    def set_comment(self, comment):
+        &#34;&#34;&#34; Set self.comment if comment provided meets requirements
+
+        Args:
+            comment (str): Comment for this FG object
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if comment:
+            if isinstance(comment, str):
+                if 1 &lt;= len(comment) &lt;= 255:
+                    self.comment = comment
+                else:
+                    raise Exception(&#34;\&#34;description\&#34;, when set, must be type str between 1 and 1,023 chars&#34;)
+            else:
+                raise Exception(&#34;\&#34;description\&#34;, when set, must be type str&#34;)
+        else:
+            self.comment = None
+
+    def set_range_ips(self, start_ip, end_ip):
+        &#34;&#34;&#34; Set self.start_ip and self.end_ip if valid
+
+        Validates start and end IPs to verify valid IPv4 address and that start_ip is sequentially less than end_ip
+        (Range IPs should generally only be invoked when self.type is set to &#39;iprange&#39;)
+
+        Args:
+            start_ip (str):  Valid IPv4 address for start-ip
+            end_ip (str):  Valid IPv4 address for end-ip
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if start_ip and end_ip:
+            try:
+                self.start_ip = str(ipaddress.ip_address(start_ip))
+            except ValueError:
+                raise ValueError(&#34;\&#34;start_ip\&#34;, when set must be a valid ipv4 or ipv6 address&#34;)
+            try:
+                self.end_ip = str(ipaddress.ip_address(end_ip))
+            except ValueError:
+                raise ValueError(&#34;\&#34;end_ip\&#34;, when set, must be a valid ipv4 or ipv6 address&#34;)
+
+            if ipaddress.ip_address(start_ip) &lt; ipaddress.ip_address(end_ip):
+                pass
+            else:
+                raise ValueError(&#34;\&#34;end_ip\&#34; must be higher IP address than \&#34;start_ip\&#34;&#34;)
+        elif start_ip or end_ip:
+            raise ValueError(&#34;When setting iprange parameters both \&#34;start_ip\&#34; and \&#34;end_ip\&#34; must be set with valid &#34;
+                             &#34;ip addresses&#34;)
+        else:
+            self.start_ip = None
+            self.end_ip = None</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fgobjlib.fg_fw_address.FgFwAddress"><code class="flex name class">
+<span>class <span class="ident">FgFwAddress</span></span>
+<span>(</span><span>name=None, type=None, subnet=None, fqdn=None, start_ip=None, end_ip=None, visibility=None, associated_interface=None, vdom=None, comment=None)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>FgFwAddress
+represents FortiGate firewall address object and provides methods for validating parameters
+and generating both cli and api configuration data for use in external configuration applications.</p>
+<p>Currently supports address types subnet (default), iprange and fqdn</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>data_attrs</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Dictionary to define relevant config attributes and map instance attr names to fg attr names</dd>
+<dt><strong><code>cli_ignore_attrs</code></strong> :&ensp;<code>list</code></dt>
+<dd>List of attributes to ignore when generating CLI configurations</dd>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>Name of instance object</dd>
+<dt><strong><code>type</code></strong> :&ensp;<code>str</code></dt>
+<dd>Type of address object</dd>
+<dt><strong><code>subnet</code></strong> :&ensp;<code>str</code></dt>
+<dd>Subnet for "ipmask" type object</dd>
+<dt><strong><code>fqdn</code></strong> :&ensp;<code>str</code></dt>
+<dd>Fqdn for "fqdn" type object</dd>
+<dt><strong><code>start_ip</code></strong> :&ensp;<code>str</code></dt>
+<dd>start-ip for "iprange" type object</dd>
+<dt><strong><code>end_ip</code></strong> :&ensp;<code>str</code></dt>
+<dd>end-ip for "iprange: type object</dd>
+<dt><strong><code>visibility</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Object visibility set to True or False</dd>
+<dt><strong><code>comment</code></strong> :&ensp;<code>str</code></dt>
+<dd>Object comment</dd>
+</dl>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>required - Name of object.
+Defines name used in configs when API or CLI for config methods</dd>
+<dt><strong><code>type</code></strong> :&ensp;<code>str</code></dt>
+<dd>optional - Set type of address object.
+(default: ipmask)</dd>
+<dt><strong><code>subnet</code></strong> :&ensp;<code>str</code></dt>
+<dd>optional - Set subnet for address object of type ipmask. (default: None)</dd>
+<dt><strong><code>fqdn</code></strong> :&ensp;<code>str</code></dt>
+<dd>optional - Set fqdn for address object of type fqdn. (default: None)</dd>
+<dt><strong><code>start_ip</code></strong> :&ensp;<code>str</code></dt>
+<dd>optional - Set start-ip for address object of type iprange. (default: None)</dd>
+<dt><strong><code>end_ip</code></strong> :&ensp;<code>str</code></dt>
+<dd>optional - Set end-ip address object of type iprange. (default: None)</dd>
+<dt><strong><code>visibility</code></strong> :&ensp;<code>bool</code></dt>
+<dd>optional - Set visibility option to True-[enabled] or False-[disabled]
+(default: None)</dd>
+<dt><strong><code>associated_interface</code></strong> :&ensp;<code>str</code></dt>
+<dd>optional - Set associated-interface for display in FortiGate GUI (default: None)</dd>
+<dt><strong><code>comment</code></strong> :&ensp;<code>str</code></dt>
+<dd>optional - Set a comment up to 255 characters (default: None)</dd>
+<dt><strong><code>vdom</code></strong> :&ensp;<code>str</code></dt>
+<dd>optional - Set vdom.
+If unset object configs uses default fg context (default: None)</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class FgFwAddress(FgObject):
+    &#34;&#34;&#34;
+    FgFwAddress  represents FortiGate firewall address object and provides methods for validating parameters
+    and generating both cli and api configuration data for use in external configuration applications.
+
+    Currently supports address types subnet (default), iprange and fqdn
+
+    Attributes:
+        data_attrs (dict): Dictionary to define relevant config attributes and map instance attr names to fg attr names
+        cli_ignore_attrs (list): List of attributes to ignore when generating CLI configurations
+        name (str): Name of instance object
+        type (str): Type of address object
+        subnet (str): Subnet for &#34;ipmask&#34; type object
+        fqdn (str): Fqdn for &#34;fqdn&#34; type object
+        start_ip (str): start-ip for &#34;iprange&#34; type object
+        end_ip (str): end-ip for &#34;iprange: type object
+        visibility (bool): Object visibility set to True or False
+        comment (str): Object comment
+    &#34;&#34;&#34;
+
+    def __init__(self, name: str = None, type: str = None, subnet: str = None, fqdn: str = None,
+                 start_ip: str = None, end_ip: str = None, visibility: bool = None, associated_interface: str = None,
+                 vdom: str = None, comment: str = None):
+        &#34;&#34;&#34;
+        Args:
+            name (str): required - Name of object.  Defines name used in configs when API or CLI for config methods
+            type (str): optional - Set type of address object.  (default: ipmask)
+            subnet (str): optional - Set subnet for address object of type ipmask. (default: None)
+            fqdn (str): optional - Set fqdn for address object of type fqdn. (default: None)
+            start_ip (str): optional - Set start-ip for address object of type iprange. (default: None)
+            end_ip (str): optional - Set end-ip address object of type iprange. (default: None)
+            visibility (bool): optional - Set visibility option to True-[enabled] or False-[disabled]  (default: None)
+            associated_interface (str): optional - Set associated-interface for display in FortiGate GUI (default: None)
+            comment (str): optional - Set a comment up to 255 characters (default: None)
+            vdom (str): optional - Set vdom.  If unset object configs uses default fg context (default: None)
+        &#34;&#34;&#34;
+
+        # Initialize the parent class
+        super().__init__(api=&#39;cmdb&#39;, api_path=&#39;firewall&#39;, api_name=&#39;address&#39;,  cli_path=&#34;config firewall address&#34;,
+                         obj_id=name, vdom=vdom)
+
+        ### Set parent class attributes ###
+        # Map instance attribute names to fg attribute names
+        self.data_attrs = {&#39;name&#39;: &#39;name&#39;, &#39;type&#39;: &#39;type&#39;, &#39;subnet&#39;: &#39;subnet&#39;, &#39;fqdn&#39;: &#39;fqdn&#39;,
+                           &#39;associated_interface&#39;: &#39;associated-interface&#39;, &#39;visibility&#39;: &#39;visibility&#39;,
+                           &#39;comment&#39;: &#39;comments&#39;, &#39;start_ip&#39;: &#39;start-ip&#39;, &#39;end_ip&#39;: &#39;end-ip&#39;}
+
+        self.cli_ignore_attrs = []
+
+        # Set instance attributes
+        self.set_name(name)
+        self.set_type(type)
+        self.set_subnet(subnet)
+        self.set_fqdn(fqdn)
+        self.set_visibility(visibility)
+        self.set_associated_interface(associated_interface)
+        self.set_comment(comment)
+        self.set_range_ips(start_ip, end_ip)
+
+
+    def set_name(self, name):
+        &#34;&#34;&#34;  Set self.name attribute to name if name provided is valid for FG object
+
+        Args:
+            name (str): Name of firewall address object.
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+
+        if name:
+            if name.isspace(): raise Exception(&#34;\&#34;intf\&#34;, cannot be an empty string&#34;)
+            if isinstance(name, str):
+                if 1 &lt;= len(name) &lt;= 79:
+                    self.name = name
+                else:
+                    raise Exception(&#34;\&#34;name\&#34;, must be less than or equal to 79 chars&#34;)
+            else:
+                raise Exception(&#34;\&#34;name\&#34;, must be a string&#34;)
+        else:
+            raise Exception(&#34;Value \&#34;name\&#34; is required but was not provided&#34;)
+
+    def set_type(self, type):
+        &#34;&#34;&#34; Set self.type attribute to type if type provided is valid for FG object
+
+        Args:
+            type (str): Type of firewall object, may be &#39;ipmask&#39;, &#39;iprange&#39;, &#39;fqdn&#39; or None (None = FG Default)
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if type:
+            if type in [&#39;ipmask&#39;, &#39;iprange&#39;, &#39;fqdn&#39;]:
+                self.type = type
+            else:
+                raise ValueError(&#34;\&#34;type\&#34; specified is unsupported&#34;)
+        else:
+            self.type = None
+
+    def set_subnet(self, subnet):
+        &#34;&#34;&#34; Set self.subnet to subnet if subnet is valid ipv4 network/mask
+
+        Args:
+            subnet (str): valid ipv4 network/mask, for use when self&#39;s &#39;type&#39; is ipmask or None (which is default type)
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if subnet:
+            if isinstance(subnet, str):
+                try:
+                    self.subnet = str(ipaddress.ip_network(subnet))
+                except ValueError:
+                    raise ValueError(&#34;\&#34;subnet\&#34;, when specified must be a valid ipv4 address&#34;)
+        else:
+            self.subnet = None
+
+    def set_fqdn(self, fqdn):
+        &#34;&#34;&#34; Set self.fqdn to fqdn if fqdn provided meets FortiGate requirements for this parameter
+
+        Args:
+            fqdn (str): fqdn for use when self type is also set to &#39;fqdn&#39;
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if fqdn:
+            if 1 &lt;= len(fqdn) &lt;= 255:
+                self.fqdn = fqdn
+            else:
+                raise ValueError(&#34;\&#34;fqdn\&#34;, when set, must be type str between 1 and 255 chars&#34;)
+        else:
+            self.fqdn = None
+
+    def set_visibility(self, visibility):
+        &#34;&#34;&#34; Set self.visibility
+
+        Args:
+            visibility (bool): Boolean to set visibility on FortiGate to enabled (True) or disabled (False)
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if visibility:
+            if isinstance(visibility, bool):
+                self.visibility = &#39;enable&#39; if visibility else &#39;disable&#39;
+            else:
+                raise ValueError(&#34;\&#34;visibility\&#34;, when set, must be type bool&#34;)
+        else:
+            self.visibility = None
+
+    def set_associated_interface(self, intf):
+        &#34;&#34;&#34; Set self.associated_interface if associated_interface provided meets requirements
+
+        Args:
+            intf (str):
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if intf:
+            if intf.isspace(): raise Exception(&#34;\&#34;associated_interface\&#34;, cannot be an empty string&#34;)
+            if isinstance(intf, str):
+                if 1 &lt;= len(intf) &lt;= 35:
+                    self.associated_interface = intf
+                else:
+                    raise Exception(&#34;\&#34;associated_interface\&#34;, when set, must be between 1 and 35 chars&#34;)
+            else:
+                raise Exception(&#34;\&#34;name\&#34;, must be a string&#34;)
+
+        else:
+            self.associated_interface = None
+
+    def set_comment(self, comment):
+        &#34;&#34;&#34; Set self.comment if comment provided meets requirements
+
+        Args:
+            comment (str): Comment for this FG object
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if comment:
+            if isinstance(comment, str):
+                if 1 &lt;= len(comment) &lt;= 255:
+                    self.comment = comment
+                else:
+                    raise Exception(&#34;\&#34;description\&#34;, when set, must be type str between 1 and 1,023 chars&#34;)
+            else:
+                raise Exception(&#34;\&#34;description\&#34;, when set, must be type str&#34;)
+        else:
+            self.comment = None
+
+    def set_range_ips(self, start_ip, end_ip):
+        &#34;&#34;&#34; Set self.start_ip and self.end_ip if valid
+
+        Validates start and end IPs to verify valid IPv4 address and that start_ip is sequentially less than end_ip
+        (Range IPs should generally only be invoked when self.type is set to &#39;iprange&#39;)
+
+        Args:
+            start_ip (str):  Valid IPv4 address for start-ip
+            end_ip (str):  Valid IPv4 address for end-ip
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if start_ip and end_ip:
+            try:
+                self.start_ip = str(ipaddress.ip_address(start_ip))
+            except ValueError:
+                raise ValueError(&#34;\&#34;start_ip\&#34;, when set must be a valid ipv4 or ipv6 address&#34;)
+            try:
+                self.end_ip = str(ipaddress.ip_address(end_ip))
+            except ValueError:
+                raise ValueError(&#34;\&#34;end_ip\&#34;, when set, must be a valid ipv4 or ipv6 address&#34;)
+
+            if ipaddress.ip_address(start_ip) &lt; ipaddress.ip_address(end_ip):
+                pass
+            else:
+                raise ValueError(&#34;\&#34;end_ip\&#34; must be higher IP address than \&#34;start_ip\&#34;&#34;)
+        elif start_ip or end_ip:
+            raise ValueError(&#34;When setting iprange parameters both \&#34;start_ip\&#34; and \&#34;end_ip\&#34; must be set with valid &#34;
+                             &#34;ip addresses&#34;)
+        else:
+            self.start_ip = None
+            self.end_ip = None</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fgobjlib.fg_object.FgObject" href="fg_object.html#fgobjlib.fg_object.FgObject">FgObject</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fgobjlib.fg_fw_address.FgFwAddress.set_associated_interface"><code class="name flex">
+<span>def <span class="ident">set_associated_interface</span></span>(<span>self, intf)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Set self.associated_interface if associated_interface provided meets requirements</p>
+<h2 id="args">Args</h2>
+<p>intf (str):</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_associated_interface(self, intf):
+    &#34;&#34;&#34; Set self.associated_interface if associated_interface provided meets requirements
+
+    Args:
+        intf (str):
+
+    Returns:
+        None
+    &#34;&#34;&#34;
+    if intf:
+        if intf.isspace(): raise Exception(&#34;\&#34;associated_interface\&#34;, cannot be an empty string&#34;)
+        if isinstance(intf, str):
+            if 1 &lt;= len(intf) &lt;= 35:
+                self.associated_interface = intf
+            else:
+                raise Exception(&#34;\&#34;associated_interface\&#34;, when set, must be between 1 and 35 chars&#34;)
+        else:
+            raise Exception(&#34;\&#34;name\&#34;, must be a string&#34;)
+
+    else:
+        self.associated_interface = None</code></pre>
+</details>
+</dd>
+<dt id="fgobjlib.fg_fw_address.FgFwAddress.set_comment"><code class="name flex">
+<span>def <span class="ident">set_comment</span></span>(<span>self, comment)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Set self.comment if comment provided meets requirements</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>comment</code></strong> :&ensp;<code>str</code></dt>
+<dd>Comment for this FG object</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_comment(self, comment):
+    &#34;&#34;&#34; Set self.comment if comment provided meets requirements
+
+    Args:
+        comment (str): Comment for this FG object
+
+    Returns:
+        None
+    &#34;&#34;&#34;
+    if comment:
+        if isinstance(comment, str):
+            if 1 &lt;= len(comment) &lt;= 255:
+                self.comment = comment
+            else:
+                raise Exception(&#34;\&#34;description\&#34;, when set, must be type str between 1 and 1,023 chars&#34;)
+        else:
+            raise Exception(&#34;\&#34;description\&#34;, when set, must be type str&#34;)
+    else:
+        self.comment = None</code></pre>
+</details>
+</dd>
+<dt id="fgobjlib.fg_fw_address.FgFwAddress.set_fqdn"><code class="name flex">
+<span>def <span class="ident">set_fqdn</span></span>(<span>self, fqdn)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Set self.fqdn to fqdn if fqdn provided meets FortiGate requirements for this parameter</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>fqdn</code></strong> :&ensp;<code>str</code></dt>
+<dd>fqdn for use when self type is also set to 'fqdn'</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_fqdn(self, fqdn):
+    &#34;&#34;&#34; Set self.fqdn to fqdn if fqdn provided meets FortiGate requirements for this parameter
+
+    Args:
+        fqdn (str): fqdn for use when self type is also set to &#39;fqdn&#39;
+
+    Returns:
+        None
+    &#34;&#34;&#34;
+    if fqdn:
+        if 1 &lt;= len(fqdn) &lt;= 255:
+            self.fqdn = fqdn
+        else:
+            raise ValueError(&#34;\&#34;fqdn\&#34;, when set, must be type str between 1 and 255 chars&#34;)
+    else:
+        self.fqdn = None</code></pre>
+</details>
+</dd>
+<dt id="fgobjlib.fg_fw_address.FgFwAddress.set_name"><code class="name flex">
+<span>def <span class="ident">set_name</span></span>(<span>self, name)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Set self.name attribute to name if name provided is valid for FG object</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>Name of firewall address object.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_name(self, name):
+    &#34;&#34;&#34;  Set self.name attribute to name if name provided is valid for FG object
+
+    Args:
+        name (str): Name of firewall address object.
+
+    Returns:
+        None
+    &#34;&#34;&#34;
+
+    if name:
+        if name.isspace(): raise Exception(&#34;\&#34;intf\&#34;, cannot be an empty string&#34;)
+        if isinstance(name, str):
+            if 1 &lt;= len(name) &lt;= 79:
+                self.name = name
+            else:
+                raise Exception(&#34;\&#34;name\&#34;, must be less than or equal to 79 chars&#34;)
+        else:
+            raise Exception(&#34;\&#34;name\&#34;, must be a string&#34;)
+    else:
+        raise Exception(&#34;Value \&#34;name\&#34; is required but was not provided&#34;)</code></pre>
+</details>
+</dd>
+<dt id="fgobjlib.fg_fw_address.FgFwAddress.set_range_ips"><code class="name flex">
+<span>def <span class="ident">set_range_ips</span></span>(<span>self, start_ip, end_ip)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Set self.start_ip and self.end_ip if valid</p>
+<p>Validates start and end IPs to verify valid IPv4 address and that start_ip is sequentially less than end_ip
+(Range IPs should generally only be invoked when self.type is set to 'iprange')</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>start_ip</code></strong> :&ensp;<code>str</code></dt>
+<dd>Valid IPv4 address for start-ip</dd>
+<dt><strong><code>end_ip</code></strong> :&ensp;<code>str</code></dt>
+<dd>Valid IPv4 address for end-ip</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_range_ips(self, start_ip, end_ip):
+    &#34;&#34;&#34; Set self.start_ip and self.end_ip if valid
+
+    Validates start and end IPs to verify valid IPv4 address and that start_ip is sequentially less than end_ip
+    (Range IPs should generally only be invoked when self.type is set to &#39;iprange&#39;)
+
+    Args:
+        start_ip (str):  Valid IPv4 address for start-ip
+        end_ip (str):  Valid IPv4 address for end-ip
+
+    Returns:
+        None
+    &#34;&#34;&#34;
+    if start_ip and end_ip:
+        try:
+            self.start_ip = str(ipaddress.ip_address(start_ip))
+        except ValueError:
+            raise ValueError(&#34;\&#34;start_ip\&#34;, when set must be a valid ipv4 or ipv6 address&#34;)
+        try:
+            self.end_ip = str(ipaddress.ip_address(end_ip))
+        except ValueError:
+            raise ValueError(&#34;\&#34;end_ip\&#34;, when set, must be a valid ipv4 or ipv6 address&#34;)
+
+        if ipaddress.ip_address(start_ip) &lt; ipaddress.ip_address(end_ip):
+            pass
+        else:
+            raise ValueError(&#34;\&#34;end_ip\&#34; must be higher IP address than \&#34;start_ip\&#34;&#34;)
+    elif start_ip or end_ip:
+        raise ValueError(&#34;When setting iprange parameters both \&#34;start_ip\&#34; and \&#34;end_ip\&#34; must be set with valid &#34;
+                         &#34;ip addresses&#34;)
+    else:
+        self.start_ip = None
+        self.end_ip = None</code></pre>
+</details>
+</dd>
+<dt id="fgobjlib.fg_fw_address.FgFwAddress.set_subnet"><code class="name flex">
+<span>def <span class="ident">set_subnet</span></span>(<span>self, subnet)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Set self.subnet to subnet if subnet is valid ipv4 network/mask</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>subnet</code></strong> :&ensp;<code>str</code></dt>
+<dd>valid ipv4 network/mask, for use when self's 'type' is ipmask or None (which is default type)</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_subnet(self, subnet):
+    &#34;&#34;&#34; Set self.subnet to subnet if subnet is valid ipv4 network/mask
+
+    Args:
+        subnet (str): valid ipv4 network/mask, for use when self&#39;s &#39;type&#39; is ipmask or None (which is default type)
+
+    Returns:
+        None
+    &#34;&#34;&#34;
+    if subnet:
+        if isinstance(subnet, str):
+            try:
+                self.subnet = str(ipaddress.ip_network(subnet))
+            except ValueError:
+                raise ValueError(&#34;\&#34;subnet\&#34;, when specified must be a valid ipv4 address&#34;)
+    else:
+        self.subnet = None</code></pre>
+</details>
+</dd>
+<dt id="fgobjlib.fg_fw_address.FgFwAddress.set_type"><code class="name flex">
+<span>def <span class="ident">set_type</span></span>(<span>self, type)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Set self.type attribute to type if type provided is valid for FG object</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>type</code></strong> :&ensp;<code>str</code></dt>
+<dd>Type of firewall object, may be 'ipmask', 'iprange', 'fqdn' or None (None = FG Default)</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_type(self, type):
+    &#34;&#34;&#34; Set self.type attribute to type if type provided is valid for FG object
+
+    Args:
+        type (str): Type of firewall object, may be &#39;ipmask&#39;, &#39;iprange&#39;, &#39;fqdn&#39; or None (None = FG Default)
+
+    Returns:
+        None
+    &#34;&#34;&#34;
+    if type:
+        if type in [&#39;ipmask&#39;, &#39;iprange&#39;, &#39;fqdn&#39;]:
+            self.type = type
+        else:
+            raise ValueError(&#34;\&#34;type\&#34; specified is unsupported&#34;)
+    else:
+        self.type = None</code></pre>
+</details>
+</dd>
+<dt id="fgobjlib.fg_fw_address.FgFwAddress.set_visibility"><code class="name flex">
+<span>def <span class="ident">set_visibility</span></span>(<span>self, visibility)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Set self.visibility</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>visibility</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Boolean to set visibility on FortiGate to enabled (True) or disabled (False)</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_visibility(self, visibility):
+    &#34;&#34;&#34; Set self.visibility
+
+    Args:
+        visibility (bool): Boolean to set visibility on FortiGate to enabled (True) or disabled (False)
+
+    Returns:
+        None
+    &#34;&#34;&#34;
+    if visibility:
+        if isinstance(visibility, bool):
+            self.visibility = &#39;enable&#39; if visibility else &#39;disable&#39;
+        else:
+            raise ValueError(&#34;\&#34;visibility\&#34;, when set, must be type bool&#34;)
+    else:
+        self.visibility = None</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fgobjlib.fg_object.FgObject" href="fg_object.html#fgobjlib.fg_object.FgObject">FgObject</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fgobjlib.fg_object.FgObject.get_api_config_add" href="fg_object.html#fgobjlib.fg_object.FgObject.get_api_config_add">get_api_config_add</a></code></li>
+<li><code><a title="fgobjlib.fg_object.FgObject.get_api_config_del" href="fg_object.html#fgobjlib.fg_object.FgObject.get_api_config_del">get_api_config_del</a></code></li>
+<li><code><a title="fgobjlib.fg_object.FgObject.get_api_config_get" href="fg_object.html#fgobjlib.fg_object.FgObject.get_api_config_get">get_api_config_get</a></code></li>
+<li><code><a title="fgobjlib.fg_object.FgObject.get_api_config_update" href="fg_object.html#fgobjlib.fg_object.FgObject.get_api_config_update">get_api_config_update</a></code></li>
+<li><code><a title="fgobjlib.fg_object.FgObject.get_cli_config_add" href="fg_object.html#fgobjlib.fg_object.FgObject.get_cli_config_add">get_cli_config_add</a></code></li>
+<li><code><a title="fgobjlib.fg_object.FgObject.get_cli_config_del" href="fg_object.html#fgobjlib.fg_object.FgObject.get_cli_config_del">get_cli_config_del</a></code></li>
+<li><code><a title="fgobjlib.fg_object.FgObject.get_cli_config_update" href="fg_object.html#fgobjlib.fg_object.FgObject.get_cli_config_update">get_cli_config_update</a></code></li>
+<li><code><a title="fgobjlib.fg_object.FgObject.set_vdom" href="fg_object.html#fgobjlib.fg_object.FgObject.set_vdom">set_vdom</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fgobjlib" href="index.html">fgobjlib</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fgobjlib.fg_fw_address.FgFwAddress" href="#fgobjlib.fg_fw_address.FgFwAddress">FgFwAddress</a></code></h4>
+<ul class="">
+<li><code><a title="fgobjlib.fg_fw_address.FgFwAddress.set_associated_interface" href="#fgobjlib.fg_fw_address.FgFwAddress.set_associated_interface">set_associated_interface</a></code></li>
+<li><code><a title="fgobjlib.fg_fw_address.FgFwAddress.set_comment" href="#fgobjlib.fg_fw_address.FgFwAddress.set_comment">set_comment</a></code></li>
+<li><code><a title="fgobjlib.fg_fw_address.FgFwAddress.set_fqdn" href="#fgobjlib.fg_fw_address.FgFwAddress.set_fqdn">set_fqdn</a></code></li>
+<li><code><a title="fgobjlib.fg_fw_address.FgFwAddress.set_name" href="#fgobjlib.fg_fw_address.FgFwAddress.set_name">set_name</a></code></li>
+<li><code><a title="fgobjlib.fg_fw_address.FgFwAddress.set_range_ips" href="#fgobjlib.fg_fw_address.FgFwAddress.set_range_ips">set_range_ips</a></code></li>
+<li><code><a title="fgobjlib.fg_fw_address.FgFwAddress.set_subnet" href="#fgobjlib.fg_fw_address.FgFwAddress.set_subnet">set_subnet</a></code></li>
+<li><code><a title="fgobjlib.fg_fw_address.FgFwAddress.set_type" href="#fgobjlib.fg_fw_address.FgFwAddress.set_type">set_type</a></code></li>
+<li><code><a title="fgobjlib.fg_fw_address.FgFwAddress.set_visibility" href="#fgobjlib.fg_fw_address.FgFwAddress.set_visibility">set_visibility</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.1</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

@@ -2,12 +2,33 @@ from fgobjlib import FgObject
 import ipaddress
 
 class FgIpsecP1Interface(FgObject):
-    """
-    FgIpsecP1Interface class represents FortiGate Firewall ipsec phase1 interface object and provides methods for
+    """ FgIpsecP1Interface class represents FortiGate Firewall ipsec phase1 interface object and provides methods for
     validating parameters and generating both cli and api configuration data for use in external configuration
     applications
 
     Currently supports dynamic or static VPN using psk authentication. No support yet for advpn or mode-cfg
+
+    Attributes:
+        name (str): Name of ipsec phase1-interface object
+        p1_type (str): Phase1-interface type
+        local_intf (str): Name of locally attached fortigate interface
+        proposal (list): Phase1-interface proposal(s)
+        ike_version (int): ike version
+        local_gw (str): Phase1-interface local-gw IP
+        psk (str): Pre-shared key
+        local_id (str): Local ID
+        remote_gw (str): Remote Gateway
+        add_route (bool):  add-route (True=enable, False=disable, None=inherit)
+        add_gw_route (bool): add-gw-route (True=enable, False=disable, None=inherit)
+        keepalive (int): Keepalive in seconds
+        net_device (bool): net-device (True=enable, False=disable, None=inherit)
+        comment (str): phase1 comment
+        vdom (str): Associated VDOM, if applicable
+        tunnel_search (str):  tunnel-search ('next-hop', 'selectors' or None=inherit)
+        dpd (str): phase1 DPD ('on-demand', 'on-idle', 'disable' or None=inherit)
+        dhgrp (str): dhgrp
+        nat_traversal (str): nat-traversal ('enable', 'disable', 'forced' or None=inherit)
+        exchange_interface_ip: exchange-interfce-ip (True=enable, False=disable, None=inherit)
     """
 
     def __init__(self, name: str = None, p1_type: str = None, local_intf: str = None, proposal: list = None,
@@ -16,9 +37,32 @@ class FgIpsecP1Interface(FgObject):
                  net_device: bool = None, comment: str = None, vdom: str = None,  tunnel_search: str = None,
                  dpd: str = None, dhgrp: list = None, nat_traversal: str = None, exchange_interface_ip: bool = None):
 
+        """
+        Args:
+            name (str): Set name of ipsec phase1-interface object
+            p1_type (str): Set phase1-interface type
+            local_intf (str): Set name of locally attached fortigate interface
+            proposal (list): Set phase1-interface proposal(s)
+            ike_version (int): Set ike version
+            local_gw (str): Set phase1-interface local-gw IP
+            psk (str): Set pre-shared key
+            local_id (str): Set local ID
+            remote_gw (str): Set remote Gateway
+            add_route (bool):  Set add-route (True=enable, False=disable, None=inherit)
+            add_gw_route (bool): Set add-gw-route (True=enable, False=disable, None=inherit)
+            keepalive (int): Set keepalive in seconds
+            net_device (bool): Set net-device (True=enable, False=disable, None=inherit)
+            comment (str): Set phase1 comment
+            vdom (str): Set associated VDOM, if applicable
+            tunnel_search (str):  Set tunnel-search ('next-hop', 'selectors' or None=inherit)
+            dpd (list): Set phase1 DPD ('on-demand', 'on-idle', 'disable' or None=inherit)
+            nat_traversal (str): Set nat-traversal ('enable', 'disable', 'forced' or None=inherit)
+            exchange_interface_ip: Set exchange-interfce-ip (True=enable, False=disable, None=inherit)
+        """
+
         # Initialize the parent class
-        super().__init__(api='cmdb', api_path='vpn.ipsec', api_name='phase1-interface', api_mkey=None, obj_id=name,
-                         vdom=vdom)
+        super().__init__(api='cmdb', api_path='vpn.ipsec', api_name='phase1-interface',
+                         cli_path="config vpn ipsec phase1-interface", obj_id=name, vdom=vdom)
 
         ### Set parent class attributes ###
         # CLI config path for this object type
@@ -58,6 +102,14 @@ class FgIpsecP1Interface(FgObject):
 
 
     def set_name(self, name):
+        """ Set self.name to name if name is valid
+
+        Args:
+            name: Name of object
+
+        Returns:
+            None
+        """
         if name:
             if name.isspace(): raise Exception("\"name\", cannot be an empty string")
             if isinstance(name, str):
@@ -71,6 +123,14 @@ class FgIpsecP1Interface(FgObject):
             raise Exception("Value \"name\" is required but was not provided")
 
     def set_proposal(self, proposal):
+        """ Set self.proposal with list of proposals from proposal if items are all acceptable FG proposals
+
+        Args:
+            proposal (list): string containing a single p1 proposal or list of strings with one or more p1 propolsals
+
+        Returns:
+            None
+        """
         valid_proposals = ['des-md5', 'des-sha', 'des-sha256', 'des-sha384', 'des-sha512', '3des-md5', '3des-sha1',
                            '3des-sha256', '3des-sha384', '3des-sha512', 'aes128-md5', 'aes128-sha1', 'aes128-sha256',
                            'aes128-sha384', 'aes128-sha512', 'aes192-md5', 'aes192-sha1', 'aes192-sha256',
@@ -112,12 +172,19 @@ class FgIpsecP1Interface(FgObject):
             self.proposal = proposal_items
 
         else:
-            self.proposal = ['3des-md5']
+            self.proposal = None
 
     def set_dhgrp(self, dhgrp):
-        """
-        set_dhgrp: the dhgrp may be passed in as a str, or a list.  If the dhgrp(s) passed in are valid we'll add each
+        """ Set self.dhgrp to dhgrp if dhgrp is valid ForitGate dhgrp
+
+        The dhgrp may be passed in as a str, or a list.  If the dhgrp(s) passed in are valid, add each
         of those to a space separated values string and set in self.dhgrp
+
+        Args:
+            dhgrp (list): single int representing one dhgrp or a list of ints for one or more dhgrps
+
+        Returns:
+            None
         """
         if dhgrp:
             dhgrp_items = ''
@@ -151,6 +218,14 @@ class FgIpsecP1Interface(FgObject):
             self.dhgrp = None
 
     def set_p1_type(self, p1_type):
+        """ Set self.pt_type to p1_type if p1_type is valid
+
+        Args:
+            p1_type (str): Phase1-interface type.  May be: 'dynamic', 'static', 'ddns' or None=inherit
+
+        Returns:
+
+        """
         if p1_type:
             if isinstance(p1_type, str):
                 if p1_type.lower() == 'dynamic':
@@ -167,6 +242,14 @@ class FgIpsecP1Interface(FgObject):
             self.p1_type = None
 
     def set_local_intf(self, intf):
+        """ set self.local_intfs to intf if intfs is valid
+
+        Args:
+            intf (str): Local interface for p1 attachment
+
+        Returns:
+            None
+        """
         if intf:
             if intf.isspace(): raise Exception("\"local_intf\", cannot be an empty string")
             if isinstance(intf, str):
@@ -180,6 +263,14 @@ class FgIpsecP1Interface(FgObject):
             raise Exception("\"local_intf\" not set, phase1 requires to define the interface")
 
     def set_ike_version(self, ike_version):
+        """ Set self.ike_version to 1 or 2 if ike_version = 1 or 2.  Otherwise raise Exception
+
+        Args:
+            ike_version (int): ike-version.  May be 1 or 2.
+
+        Returns:
+            None
+        """
         if ike_version:
             if isinstance(ike_version, int):
                 if ike_version == 1:
@@ -194,6 +285,14 @@ class FgIpsecP1Interface(FgObject):
             self.ike_version = None
 
     def set_local_gw(self, local_gw):
+        """ Set self.local_gw to local_gw if local_gw is valid ipv4 address
+
+        Args:
+            local_gw (str): Local gateway.  Must be valid ipv4 address
+
+        Returns:
+            None
+        """
         if local_gw:
             try:
                 ipaddress.ip_address(local_gw)
@@ -205,11 +304,19 @@ class FgIpsecP1Interface(FgObject):
             self.local_gw = None
 
     def set_remote_gw(self, remote_gw):
+        """ Set self.remote_gw to remote_gw if remote_gw is valid ipv4 address
+
+        Args:
+            remote_gw (str): Address of remote vpn peer gateway.  Must be valid ipv4 address.
+
+        Returns:
+            None
+        """
         if remote_gw:
             try:
                 ipaddress.ip_address(remote_gw)
             except ValueError:
-                print("\"remote_gw\", must be a valid ipv4 or ipv6 address")
+                print("\"remote_gw\", must be a valid ipv4 address")
             else:
                 self.remote_gw = remote_gw
         else:
@@ -219,6 +326,14 @@ class FgIpsecP1Interface(FgObject):
                 raise Exception("\"remote_gw\" not set, static tunnel types require a remote gateway")
 
     def set_psk(self, psk):
+        """ Set self.psk to psk if psk valid
+
+        Args:
+            psk (str): Phase1 psksecret.  Must be between 6 and 30 chars.
+
+        Returns:
+            None
+        """
         print("*** {} ***".format(psk))
         if psk:
             if isinstance(psk, str):
@@ -232,6 +347,14 @@ class FgIpsecP1Interface(FgObject):
             raise Exception("\"psk\" is required but was not provided")
 
     def set_local_id(self, local_id):
+        """ Set self.local_id to local_id if local_id is valid
+
+        Args:
+            local_id (str): Phase1 local id
+
+       Returns:
+            None
+        """
         if local_id:
             if isinstance(local_id, str):
                 if 1 <= len(local_id) <= 63:
@@ -244,6 +367,14 @@ class FgIpsecP1Interface(FgObject):
             self.local_id = None
 
     def set_comment(self, comment):
+        """ Set self.comment to comment if comment is valid
+
+        Args:
+            comment (str): Phase1 comment
+
+        Returns:
+            None
+        """
         if comment:
             if isinstance(comment, str):
                 if 1 <= len(comment) <= 1023:
@@ -256,6 +387,14 @@ class FgIpsecP1Interface(FgObject):
             self.comment = None
 
     def set_keepalive(self, keepalive):
+        """ Set self.keepalive if keepalive valid
+
+        Args:
+            keepalive (int): phase1 keepalive
+
+        Returns:
+            None
+        """
         if keepalive:
             if isinstance(keepalive, int):
                 if 10 <= keepalive <= 900:
@@ -268,24 +407,56 @@ class FgIpsecP1Interface(FgObject):
             self.keepalive = None
 
     def set_add_route(self, add_route):
+        """ Set self.add_route
+
+        Args:
+            add_route (bool): add-route. (True=enable, False=Disable, None=inherit)
+
+        Returns:
+
+        """
         if isinstance(add_route, bool):
             self.add_route = 'enable' if add_route else 'disable'
         else:
             self.add_route = None
 
     def set_add_gw_route(self, add_gw_route):
+        """ Set self.add_gw_route
+
+        Args:
+            add_gw_route (bool): add-gw-route.  (True=enable, False=Disable, None=inherit)
+
+        Returns:
+            None
+        """
         if isinstance(add_gw_route, bool):
             self.add_gw_route = 'enable' if add_gw_route else 'disable'
         else:
             self.add_gw_route = None
 
     def set_net_device(self, net_device):
+        """ set self.net_device
+
+        Args:
+            net_device (bool): net-device.  (True=enable, False=Disable, None=inherit)
+
+        Returns:
+            None
+        """
         if isinstance(net_device, bool):
             self.net_device = 'enable' if net_device else 'disable'
         else:
             self.net_device = None
 
     def set_tunnel_search(self, tunnel_search):
+        """ Set self.tunnel_search
+
+        Args:
+            tunnel_search (str): tunnel-search.  ('selectors', 'nexthop', None=inherit)
+
+        Returns:
+            None
+        """
         if isinstance(tunnel_search, str):
             if tunnel_search.lower() == 'selectors':
                 self.tunnel_search = 'selectors'
@@ -298,6 +469,14 @@ class FgIpsecP1Interface(FgObject):
             self.tunnel_search = None
 
     def set_dpd(self, dpd):
+        """ Set self.dpd
+
+        Args:
+            dpd (str): phase1 dpd.   ('disable', 'on-idle', 'on-demand', None=inherit)
+
+        Returns:
+            None
+        """
         if isinstance(dpd, str):
             if dpd.lower() == 'disable':
                 self.dpd = 'disable'
@@ -312,6 +491,14 @@ class FgIpsecP1Interface(FgObject):
             self.dpd = None
 
     def set_nat_traversal(self, nat_traversal):
+        """ Set self.nat_traversal
+
+        Args:
+            nat_traversal (str): nat-traversal.  ('enable', 'disable', 'forced', None=inherit)
+
+        Returns:
+            None
+        """
         if isinstance(nat_traversal, str):
             if nat_traversal.lower() == 'enable':
                 self.nat_traversal = 'enable'
@@ -326,6 +513,14 @@ class FgIpsecP1Interface(FgObject):
             self.nat_traversal = None
 
     def set_exchange_interface_ip(self, exchange_interface_ip):
+        """ Set self.exchange_interface_ip
+
+        Args:
+            exchange_interface_ip (bool): exchange-interface-ip. (True=enable, False=Disable, None=inherit)
+
+        Returns:
+            None
+        """
         if isinstance(exchange_interface_ip, bool):
             self.exchange_interface_ip = 'enable' if exchange_interface_ip else 'disable'
         else:

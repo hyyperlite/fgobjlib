@@ -1,0 +1,1573 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.7.1" />
+<title>fgobjlib.fg_sys_interface API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fgobjlib.fg_sys_interface</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from fgobjlib import FgObject
+import ipaddress
+
+
+class FgInterfaceIpv4(FgObject):
+    &#34;&#34;&#34;
+    FgInterface class represents FortiGate Firewall interface object and provides methods for validating parameters
+    and generating both cli and api configuration data for use in external configuration applications
+
+    Currently supports interface types of &#34;standard&#34; i.e. ethernet/physical or vlan
+
+    Attributes:
+        name (str): Name of interface
+        ip (str): IP address of interface
+        mode (str): Interface mode, i.e. static or dhcp
+        intf_type (str): Interface type, i.e. physical/virtual (default) or vlan
+        vdom (str): Vdom interface configured for
+        vrf (int): VRF interface is configured for
+        allowaccess (str):  Interface allowaccess policy.  i.e. &#34;ping http, https snmp, etc&#34;
+        role (str):  Interface role type
+        vlanid (str): Interface vlanid
+        phys_intf (str): Interfaces physical intf attachment.  (if intf_type is vlan)
+        device_ident (bool): device-identification for interface enabled or disabled
+        alias (str): Interface alias
+        description (str): Interface description
+    &#34;&#34;&#34;
+
+    def __init__(self, name: str = None, ip: str = None, mode: str = None, intf_type: str = None, vdom: str = None,
+                 vrf: int = None, allowaccess: str = None, role: str = None, vlanid: int = None, phys_intf: str = None,
+                 device_ident: bool = None, alias: str = None, description: str = None):
+        &#34;&#34;&#34;
+        Args:
+            name (str): Name of interface
+            ip (str): IP address of interface
+            mode (str): Interface mode, i.e. static or dhcp
+            intf_type (str): Interface type, i.e. physical/virtual (default) or vlan
+            vdom (str): Vdom interface configured for
+            vrf (int): VRF interface is configured for
+            allowaccess (str):  Interface allowaccess policy.  i.e. &#34;ping http, https snmp, etc&#34;
+            role (str):  Interface role type
+            vlanid (str): Interface vlanid
+            phys_intf (str): Interfaces physical intf attachment.  (if intf_type is vlan)
+            device_ident (bool): device-identification for interface enabled or disabled
+            alias (str): Interface alias
+            description (str): Interface description
+        &#34;&#34;&#34;
+
+        # Initialize the parent class
+        super().__init__(api=&#39;cmdb&#39;, api_path=&#39;system&#39;, api_name=&#39;interface&#39;, cli_path=&#34;config system interface&#34;,
+                         obj_id=name, vdom=vdom)
+
+        ### Set parent class attributes ###
+        # Map instance attribute names to fg attribute names
+        self.data_attrs = {&#39;name&#39;: &#39;name&#39;, &#39;ip&#39;: &#39;ip&#39;, &#39;vdom&#39;: &#39;vdom&#39;, &#39;intf_type&#39;: &#39;type&#39;, &#39;vrf&#39;: &#39;vrf&#39;,
+                           &#39;allowaccess&#39;: &#39;allowaccess&#39;, &#39;role&#39;: &#39;role&#39;, &#39;vlanid&#39;: &#39;vlanid&#39;,
+                           &#39;phys_intf&#39;: &#39;interface&#39;, &#39;device_ident&#39;: &#39;device-identification&#39;,
+                           &#39;alias&#39;: &#39;alias&#39;, &#39;description&#39;: &#39;description&#39;}
+
+        self.cli_ignore_attrs = [&#39;name&#39;]
+
+        # Set instance attributes
+        self.set_name(name)
+        self.set_ip(ip)
+        self.set_mode(mode)
+        self.set_intf_type(intf_type)
+        self.set_vrf(vrf)
+        self.set_allowaccess(allowaccess)
+        self.set_role(role)
+        self.set_vlanid(vlanid)
+        self.set_phys_intf(phys_intf)
+        self.set_device_ident(device_ident)
+        self.set_alias(alias)
+        self.set_description(description)
+
+
+    @classmethod
+    def standard_intf(cls, name: str, ip: str = None, mode: str = None, vdom: str = None, vrf: int = None,
+                      allowaccess: str = None, role: str = None, device_ident: bool = None, alias: str = None,
+                      description: str = None):
+        &#34;&#34;&#34; Class method to streamline instantiating instance of type &#34;standard&#34; aka ethernet/virtual/physical
+
+        Args:
+            name (str): Name of interface
+            ip (str): IP address of interface
+            mode (str): Interface mode, i.e. static or dhcp
+            vdom (str): Vdom interface configured for
+            vrf (int): VRF interface is configured for
+            allowaccess (str):  Interface allowaccess policy.  i.e. &#34;ping http, https snmp, etc&#34;
+            role (str):  Interface role type
+            device_ident (bool): device-identification for interface enabled or disabled
+            alias (str): Interface alias
+            description (str): Interface description
+
+        Returns:
+            Class Instance
+        &#34;&#34;&#34;
+
+        intf_type = None
+        vlanid = None
+        phys_intf = None
+
+        obj = cls(name=name, ip=ip, mode=mode, intf_type=intf_type, vdom=vdom, vrf=vrf, allowaccess=allowaccess,
+                  role=role, vlanid=vlanid, phys_intf=phys_intf, device_ident=device_ident, alias=alias,
+                  description=description)
+
+        return obj
+
+    @classmethod
+    def vlan_intf(cls, name: str, vlanid: int, phys_intf: str, ip: str = None, mode: str = &#39;static&#39;, vdom: str = None,
+                  vrf: int = None, allowaccess: str = None, role: str = None, device_ident: bool = None,
+                  alias: str = None, description: str = None):
+        &#34;&#34;&#34; Class method to streamline instantiating instance of type vlan
+
+        Args:
+            name (str): Name of interface
+            vlanid (int): interface vlanid
+            phys_intf (str): name of parent interface for vlan attachment
+            ip (str): IP address of interface
+            mode (str): Interface mode, i.e. static or dhcp
+            vdom (str): Vdom interface configured for
+            vrf (int): VRF interface is configured for
+            allowaccess (str):  Interface allowaccess policy.  i.e. &#34;ping http, https snmp, etc&#34;
+            role (str):  Interface role type
+            device_ident (bool): device-identification for interface enabled or disabled
+            alias (str): Interface alias
+            description (str): Interface description
+
+        Returns:
+            Class Instance
+        &#34;&#34;&#34;
+
+        if not vlanid: raise Exception(&#34;\&#34;vlan_intf()\&#34;, requires to provide a \&#34;vlanid\&#34;. vlanid should be type: int, &#34;
+                                       &#34;between 1 and 4960&#34;)
+
+        if not phys_intf: raise Exception(&#34;\&#34;vlan_intf\&#34;, requires to provide \&#34;phys_intf\&#34;, phys_intf should be type: &#34;
+                                          &#34;str between 1 and 15 chars&#34;)
+
+        intf_type = &#39;vlan&#39;
+
+        obj = cls(name=name, ip=ip, mode=mode, intf_type=intf_type, vdom=vdom, vrf=vrf, allowaccess=allowaccess,
+                  role=role, vlanid=vlanid, phys_intf=phys_intf, device_ident=device_ident, alias=alias,
+                  description=description)
+
+        return obj
+
+    def set_name(self, name):
+        &#34;&#34;&#34; Set self.name to name if name meets requirements
+
+        Args:
+            name (str): Interface name to set.
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if name:
+            if name.isspace(): raise Exception(&#34;\&#34;name\&#34;, cannot be an empty string&#34;)
+            if isinstance(name, str):
+                if len(name) &lt; 15:
+                    self.name = name
+                else:
+                    raise Exception(&#34;\&#34;name\&#34;, must be less than 15 chars&#34;)
+            else:
+                raise Exception(&#34;\&#34;name\&#34;, must be a string&#34;)
+        else:
+            raise Exception(&#34;Value \&#34;name\&#34; is required but was not provided&#34;)
+
+    def set_ip(self, ip):
+        &#34;&#34;&#34; Set self.ip as IP address for interface if IP is valid ipv4 address.  Otherwise raise Exception.
+
+        Args:
+            ip: Interface IPv4 address to set.  Must be valid IP/netmask.  IP without netmask = /32
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if ip:
+            try:
+                self.ip = str(ipaddress.ip_interface(ip))
+            except ValueError:
+                raise ValueError(&#34;\ip\&#34; must be valide ipv4 address&#34;)
+        else:
+            self.ip = None
+
+    def set_intf_type(self, intf_type):
+        &#34;&#34;&#34; Set self.intf_type if intf type matches allowed types
+
+        Args:
+            intf_type (str): Interface type to set.  May be: &#39;vlan&#39;, &#39;standard&#39;, &#39;loopback&#39;, None (default standard or existing setting)
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if intf_type:
+            if intf_type.lower() == &#39;vlan&#39;:
+                self. intf_type = &#39;vlan&#39;
+            elif intf_type.lower() == &#39;standard&#39;:
+                self.intf_type = None
+            elif intf_type.lower() == &#39;loopback&#39;:
+                self.intf_type = &#39;loopback&#39;
+            else:
+                raise Exception(&#34;Interface type provided is not recognized: {}&#34;.format(intf_type))
+        else:
+            self.intf_type = None
+
+    def set_role(self, role):
+        &#34;&#34;&#34; Set self.role if role matches allowed role types.
+
+        Args:
+            role (str): Interface role to set.   Allowed types:  &#39;wan&#39;, &#39;lan&#39;, &#39;dmz&#39;, &#39;undefined&#39;, None (use existing setting)
+
+        Returns:
+
+        &#34;&#34;&#34;
+        if role:
+            if role.lower == &#39;wan&#39;:
+                self.role = &#39;wan&#39;
+            elif role.lower() == &#39;lan&#39;:
+                self.role = &#39;lan&#39;
+            elif role.lower() == &#39;dmz&#39;:
+                self.role = &#39;dmz&#39;
+            else:
+                self.role = &#39;undefined&#39;
+        else:
+            self.role = None
+
+    def set_mode(self, mode):
+        &#34;&#34;&#34; Set self.mode to mode if mode set with valid argument
+
+        Args:
+            mode (str): Interface Mode to set.   May be: &#39;dhcp&#39;, &#39;static&#39;, None (None uses existing intf setting)
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if mode:
+            if mode.lower() == &#39;dhcp&#39;:
+                self.mode = &#39;dhcp&#39;
+            elif mode.lower() == &#39;static&#39;:
+                self.mode = &#39;static&#39;
+            else:
+                raise Exception(&#34;If set, \&#34;mode\&#34;, must be set to either dhcp or static&#34;)
+        else:
+            self.mode = &#39;dhcp&#39;
+
+    def set_allowaccess(self, allowaccess):
+        &#34;&#34;&#34; Set self.allowaccess  to allowaccess if allowaccess contains allowed params
+
+        Args:
+            allowaccess (str): Interface mgmt access setting. Single string with spaces to separate multiple values
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if allowaccess:
+            for service in list(allowaccess.split(&#34; &#34;)):
+                if service.lower() in [&#39;ping&#39;, &#39;http&#39;, &#39;https&#39;, &#39;snmp&#39;, &#39;ssh&#39;, &#39;telnet&#39;, &#39;fgfm&#39;, &#39;radius=acct&#39;,
+                                       &#39;probe-response&#39;, &#39;capwap&#39;, &#39;ftm&#39;]:
+                    continue
+                else:
+                    raise Exception(&#34;\&#34;allowaccces\&#34; has unrecognized services defined: {}&#34;.format(service))
+            self.allowaccess = allowaccess
+        else:
+            self.allowaccess = None
+
+    def set_vlanid(self, vlanid):
+        &#34;&#34;&#34;  Set self.vlanid if vlanid is valid
+
+        Args:
+            vlanid: Interface vlanid to set.  Must be between 1 and 4096
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if vlanid:
+            if isinstance(vlanid, int):
+                if 1 &lt;= vlanid &lt;= 4096:
+                    self.vlanid = vlanid
+                else:
+                    raise Exception(&#34;vlanid must be integer between 1 and 4096&#34;)
+            else:
+                raise Exception(&#34;vlanid, when set, must be an integer&#34;)
+        else:
+            self.vlanid = None
+
+    def set_phys_intf(self, phys_intf):
+        &#34;&#34;&#34; Set self.phys_intf to phys_intf if phys_intf valid
+
+        Args:
+            phys_intf (str): Parent interface for virtual interface type, such as vlan to set.
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if phys_intf:
+            if phys_intf.isspace():
+                raise Exception(&#34;\&#34;phys_intf\&#34; cannot be an empty string&#34;)
+
+            if isinstance(phys_intf, str):
+                if 1 &lt;= len(phys_intf) &lt;= 31:
+                    self.phys_intf = phys_intf
+                else:
+                    raise Exception(&#34;\&#34;phys_intf\&#34;, when set, must be type str between 1 and 31 chars&#34;)
+            else:
+                raise Exception(&#34;\&#34;phys_intf\&#34;, when set, must be type str&#34;)
+        else:
+            self.phys_intf = None
+
+    def set_vrf(self, vrf):
+        &#34;&#34;&#34; Set self.vrf if vrf valid
+
+        Args:
+            vrf (int): Interface VRF to set
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if vrf:
+            if isinstance(vrf, int):
+                if 0 &lt;= vrf &lt;= 31:
+                    self.vrf = vrf
+                else:
+                    raise Exception(&#34;\&#34;vrf\&#34;, when set, must be an integer between 0 and 31&#34;)
+            else:
+                raise Exception(&#34;\&#34;vrf\&#34;, when set, must be an integer between 0 and 31&#34;)
+        else:
+            self.vrf = None
+
+    def set_device_ident(self, device_ident):
+        &#34;&#34;&#34; Set self.device_idnent if device_ident valid
+
+        Args:
+            device_ident (bool): Set device-identification for interface True=(enable), False=Disable, None=inherrit
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if device_ident:
+            if isinstance(device_ident, bool):
+                self.device_ident = True
+        else:
+            self.device_ident = False
+
+    def set_alias(self, alias):
+        &#34;&#34;&#34; Set self.alias to alias if alias valid
+
+        Args:
+            alias: Interface Alias to set
+
+        Returns:
+
+        &#34;&#34;&#34;
+        if alias:
+            if isinstance(alias, str):
+                if 1 &lt;= len(alias) &lt;= 25:
+                    self.alias = alias
+                else:
+                    raise Exception(&#34;\&#34;alias\&#34;, when set, must be type str between 1 and 25 chars&#34;)
+            else:
+                raise Exception(&#34;\&#34;alias\&#34;, when set, must be type str&#34;)
+        else:
+            self.alias = None
+
+    def set_description(self, description):
+        &#34;&#34;&#34; Set self.description to description if description is valid
+
+        Args:
+            description: Interface description to set.
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if description:
+            if isinstance(description, str):
+                if 1 &lt;= len(description) &lt;= 255:
+                    self.description = description
+                else:
+                    raise Exception(&#34;\&#34;description\&#34;, when set, must be type str between 1 and 255 chars&#34;)
+            else:
+                raise Exception(&#34;\&#34;description\&#34;, when set, must be type str&#34;)
+        else:
+            self.description = None</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fgobjlib.fg_sys_interface.FgInterfaceIpv4"><code class="flex name class">
+<span>class <span class="ident">FgInterfaceIpv4</span></span>
+<span>(</span><span>name=None, ip=None, mode=None, intf_type=None, vdom=None, vrf=None, allowaccess=None, role=None, vlanid=None, phys_intf=None, device_ident=None, alias=None, description=None)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>FgInterface class represents FortiGate Firewall interface object and provides methods for validating parameters
+and generating both cli and api configuration data for use in external configuration applications</p>
+<p>Currently supports interface types of "standard" i.e. ethernet/physical or vlan</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>Name of interface</dd>
+<dt><strong><code>ip</code></strong> :&ensp;<code>str</code></dt>
+<dd>IP address of interface</dd>
+<dt><strong><code>mode</code></strong> :&ensp;<code>str</code></dt>
+<dd>Interface mode, i.e. static or dhcp</dd>
+<dt><strong><code>intf_type</code></strong> :&ensp;<code>str</code></dt>
+<dd>Interface type, i.e. physical/virtual (default) or vlan</dd>
+<dt><strong><code>vdom</code></strong> :&ensp;<code>str</code></dt>
+<dd>Vdom interface configured for</dd>
+<dt><strong><code>vrf</code></strong> :&ensp;<code>int</code></dt>
+<dd>VRF interface is configured for</dd>
+<dt><strong><code>allowaccess</code></strong> :&ensp;<code>str</code></dt>
+<dd>Interface allowaccess policy.
+i.e. "ping http, https snmp, etc"</dd>
+<dt><strong><code>role</code></strong> :&ensp;<code>str</code></dt>
+<dd>Interface role type</dd>
+<dt><strong><code>vlanid</code></strong> :&ensp;<code>str</code></dt>
+<dd>Interface vlanid</dd>
+<dt><strong><code>phys_intf</code></strong> :&ensp;<code>str</code></dt>
+<dd>Interfaces physical intf attachment.
+(if intf_type is vlan)</dd>
+<dt><strong><code>device_ident</code></strong> :&ensp;<code>bool</code></dt>
+<dd>device-identification for interface enabled or disabled</dd>
+<dt><strong><code>alias</code></strong> :&ensp;<code>str</code></dt>
+<dd>Interface alias</dd>
+<dt><strong><code>description</code></strong> :&ensp;<code>str</code></dt>
+<dd>Interface description</dd>
+</dl>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>Name of interface</dd>
+<dt><strong><code>ip</code></strong> :&ensp;<code>str</code></dt>
+<dd>IP address of interface</dd>
+<dt><strong><code>mode</code></strong> :&ensp;<code>str</code></dt>
+<dd>Interface mode, i.e. static or dhcp</dd>
+<dt><strong><code>intf_type</code></strong> :&ensp;<code>str</code></dt>
+<dd>Interface type, i.e. physical/virtual (default) or vlan</dd>
+<dt><strong><code>vdom</code></strong> :&ensp;<code>str</code></dt>
+<dd>Vdom interface configured for</dd>
+<dt><strong><code>vrf</code></strong> :&ensp;<code>int</code></dt>
+<dd>VRF interface is configured for</dd>
+<dt><strong><code>allowaccess</code></strong> :&ensp;<code>str</code></dt>
+<dd>Interface allowaccess policy.
+i.e. "ping http, https snmp, etc"</dd>
+<dt><strong><code>role</code></strong> :&ensp;<code>str</code></dt>
+<dd>Interface role type</dd>
+<dt><strong><code>vlanid</code></strong> :&ensp;<code>str</code></dt>
+<dd>Interface vlanid</dd>
+<dt><strong><code>phys_intf</code></strong> :&ensp;<code>str</code></dt>
+<dd>Interfaces physical intf attachment.
+(if intf_type is vlan)</dd>
+<dt><strong><code>device_ident</code></strong> :&ensp;<code>bool</code></dt>
+<dd>device-identification for interface enabled or disabled</dd>
+<dt><strong><code>alias</code></strong> :&ensp;<code>str</code></dt>
+<dd>Interface alias</dd>
+<dt><strong><code>description</code></strong> :&ensp;<code>str</code></dt>
+<dd>Interface description</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class FgInterfaceIpv4(FgObject):
+    &#34;&#34;&#34;
+    FgInterface class represents FortiGate Firewall interface object and provides methods for validating parameters
+    and generating both cli and api configuration data for use in external configuration applications
+
+    Currently supports interface types of &#34;standard&#34; i.e. ethernet/physical or vlan
+
+    Attributes:
+        name (str): Name of interface
+        ip (str): IP address of interface
+        mode (str): Interface mode, i.e. static or dhcp
+        intf_type (str): Interface type, i.e. physical/virtual (default) or vlan
+        vdom (str): Vdom interface configured for
+        vrf (int): VRF interface is configured for
+        allowaccess (str):  Interface allowaccess policy.  i.e. &#34;ping http, https snmp, etc&#34;
+        role (str):  Interface role type
+        vlanid (str): Interface vlanid
+        phys_intf (str): Interfaces physical intf attachment.  (if intf_type is vlan)
+        device_ident (bool): device-identification for interface enabled or disabled
+        alias (str): Interface alias
+        description (str): Interface description
+    &#34;&#34;&#34;
+
+    def __init__(self, name: str = None, ip: str = None, mode: str = None, intf_type: str = None, vdom: str = None,
+                 vrf: int = None, allowaccess: str = None, role: str = None, vlanid: int = None, phys_intf: str = None,
+                 device_ident: bool = None, alias: str = None, description: str = None):
+        &#34;&#34;&#34;
+        Args:
+            name (str): Name of interface
+            ip (str): IP address of interface
+            mode (str): Interface mode, i.e. static or dhcp
+            intf_type (str): Interface type, i.e. physical/virtual (default) or vlan
+            vdom (str): Vdom interface configured for
+            vrf (int): VRF interface is configured for
+            allowaccess (str):  Interface allowaccess policy.  i.e. &#34;ping http, https snmp, etc&#34;
+            role (str):  Interface role type
+            vlanid (str): Interface vlanid
+            phys_intf (str): Interfaces physical intf attachment.  (if intf_type is vlan)
+            device_ident (bool): device-identification for interface enabled or disabled
+            alias (str): Interface alias
+            description (str): Interface description
+        &#34;&#34;&#34;
+
+        # Initialize the parent class
+        super().__init__(api=&#39;cmdb&#39;, api_path=&#39;system&#39;, api_name=&#39;interface&#39;, cli_path=&#34;config system interface&#34;,
+                         obj_id=name, vdom=vdom)
+
+        ### Set parent class attributes ###
+        # Map instance attribute names to fg attribute names
+        self.data_attrs = {&#39;name&#39;: &#39;name&#39;, &#39;ip&#39;: &#39;ip&#39;, &#39;vdom&#39;: &#39;vdom&#39;, &#39;intf_type&#39;: &#39;type&#39;, &#39;vrf&#39;: &#39;vrf&#39;,
+                           &#39;allowaccess&#39;: &#39;allowaccess&#39;, &#39;role&#39;: &#39;role&#39;, &#39;vlanid&#39;: &#39;vlanid&#39;,
+                           &#39;phys_intf&#39;: &#39;interface&#39;, &#39;device_ident&#39;: &#39;device-identification&#39;,
+                           &#39;alias&#39;: &#39;alias&#39;, &#39;description&#39;: &#39;description&#39;}
+
+        self.cli_ignore_attrs = [&#39;name&#39;]
+
+        # Set instance attributes
+        self.set_name(name)
+        self.set_ip(ip)
+        self.set_mode(mode)
+        self.set_intf_type(intf_type)
+        self.set_vrf(vrf)
+        self.set_allowaccess(allowaccess)
+        self.set_role(role)
+        self.set_vlanid(vlanid)
+        self.set_phys_intf(phys_intf)
+        self.set_device_ident(device_ident)
+        self.set_alias(alias)
+        self.set_description(description)
+
+
+    @classmethod
+    def standard_intf(cls, name: str, ip: str = None, mode: str = None, vdom: str = None, vrf: int = None,
+                      allowaccess: str = None, role: str = None, device_ident: bool = None, alias: str = None,
+                      description: str = None):
+        &#34;&#34;&#34; Class method to streamline instantiating instance of type &#34;standard&#34; aka ethernet/virtual/physical
+
+        Args:
+            name (str): Name of interface
+            ip (str): IP address of interface
+            mode (str): Interface mode, i.e. static or dhcp
+            vdom (str): Vdom interface configured for
+            vrf (int): VRF interface is configured for
+            allowaccess (str):  Interface allowaccess policy.  i.e. &#34;ping http, https snmp, etc&#34;
+            role (str):  Interface role type
+            device_ident (bool): device-identification for interface enabled or disabled
+            alias (str): Interface alias
+            description (str): Interface description
+
+        Returns:
+            Class Instance
+        &#34;&#34;&#34;
+
+        intf_type = None
+        vlanid = None
+        phys_intf = None
+
+        obj = cls(name=name, ip=ip, mode=mode, intf_type=intf_type, vdom=vdom, vrf=vrf, allowaccess=allowaccess,
+                  role=role, vlanid=vlanid, phys_intf=phys_intf, device_ident=device_ident, alias=alias,
+                  description=description)
+
+        return obj
+
+    @classmethod
+    def vlan_intf(cls, name: str, vlanid: int, phys_intf: str, ip: str = None, mode: str = &#39;static&#39;, vdom: str = None,
+                  vrf: int = None, allowaccess: str = None, role: str = None, device_ident: bool = None,
+                  alias: str = None, description: str = None):
+        &#34;&#34;&#34; Class method to streamline instantiating instance of type vlan
+
+        Args:
+            name (str): Name of interface
+            vlanid (int): interface vlanid
+            phys_intf (str): name of parent interface for vlan attachment
+            ip (str): IP address of interface
+            mode (str): Interface mode, i.e. static or dhcp
+            vdom (str): Vdom interface configured for
+            vrf (int): VRF interface is configured for
+            allowaccess (str):  Interface allowaccess policy.  i.e. &#34;ping http, https snmp, etc&#34;
+            role (str):  Interface role type
+            device_ident (bool): device-identification for interface enabled or disabled
+            alias (str): Interface alias
+            description (str): Interface description
+
+        Returns:
+            Class Instance
+        &#34;&#34;&#34;
+
+        if not vlanid: raise Exception(&#34;\&#34;vlan_intf()\&#34;, requires to provide a \&#34;vlanid\&#34;. vlanid should be type: int, &#34;
+                                       &#34;between 1 and 4960&#34;)
+
+        if not phys_intf: raise Exception(&#34;\&#34;vlan_intf\&#34;, requires to provide \&#34;phys_intf\&#34;, phys_intf should be type: &#34;
+                                          &#34;str between 1 and 15 chars&#34;)
+
+        intf_type = &#39;vlan&#39;
+
+        obj = cls(name=name, ip=ip, mode=mode, intf_type=intf_type, vdom=vdom, vrf=vrf, allowaccess=allowaccess,
+                  role=role, vlanid=vlanid, phys_intf=phys_intf, device_ident=device_ident, alias=alias,
+                  description=description)
+
+        return obj
+
+    def set_name(self, name):
+        &#34;&#34;&#34; Set self.name to name if name meets requirements
+
+        Args:
+            name (str): Interface name to set.
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if name:
+            if name.isspace(): raise Exception(&#34;\&#34;name\&#34;, cannot be an empty string&#34;)
+            if isinstance(name, str):
+                if len(name) &lt; 15:
+                    self.name = name
+                else:
+                    raise Exception(&#34;\&#34;name\&#34;, must be less than 15 chars&#34;)
+            else:
+                raise Exception(&#34;\&#34;name\&#34;, must be a string&#34;)
+        else:
+            raise Exception(&#34;Value \&#34;name\&#34; is required but was not provided&#34;)
+
+    def set_ip(self, ip):
+        &#34;&#34;&#34; Set self.ip as IP address for interface if IP is valid ipv4 address.  Otherwise raise Exception.
+
+        Args:
+            ip: Interface IPv4 address to set.  Must be valid IP/netmask.  IP without netmask = /32
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if ip:
+            try:
+                self.ip = str(ipaddress.ip_interface(ip))
+            except ValueError:
+                raise ValueError(&#34;\ip\&#34; must be valide ipv4 address&#34;)
+        else:
+            self.ip = None
+
+    def set_intf_type(self, intf_type):
+        &#34;&#34;&#34; Set self.intf_type if intf type matches allowed types
+
+        Args:
+            intf_type (str): Interface type to set.  May be: &#39;vlan&#39;, &#39;standard&#39;, &#39;loopback&#39;, None (default standard or existing setting)
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if intf_type:
+            if intf_type.lower() == &#39;vlan&#39;:
+                self. intf_type = &#39;vlan&#39;
+            elif intf_type.lower() == &#39;standard&#39;:
+                self.intf_type = None
+            elif intf_type.lower() == &#39;loopback&#39;:
+                self.intf_type = &#39;loopback&#39;
+            else:
+                raise Exception(&#34;Interface type provided is not recognized: {}&#34;.format(intf_type))
+        else:
+            self.intf_type = None
+
+    def set_role(self, role):
+        &#34;&#34;&#34; Set self.role if role matches allowed role types.
+
+        Args:
+            role (str): Interface role to set.   Allowed types:  &#39;wan&#39;, &#39;lan&#39;, &#39;dmz&#39;, &#39;undefined&#39;, None (use existing setting)
+
+        Returns:
+
+        &#34;&#34;&#34;
+        if role:
+            if role.lower == &#39;wan&#39;:
+                self.role = &#39;wan&#39;
+            elif role.lower() == &#39;lan&#39;:
+                self.role = &#39;lan&#39;
+            elif role.lower() == &#39;dmz&#39;:
+                self.role = &#39;dmz&#39;
+            else:
+                self.role = &#39;undefined&#39;
+        else:
+            self.role = None
+
+    def set_mode(self, mode):
+        &#34;&#34;&#34; Set self.mode to mode if mode set with valid argument
+
+        Args:
+            mode (str): Interface Mode to set.   May be: &#39;dhcp&#39;, &#39;static&#39;, None (None uses existing intf setting)
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if mode:
+            if mode.lower() == &#39;dhcp&#39;:
+                self.mode = &#39;dhcp&#39;
+            elif mode.lower() == &#39;static&#39;:
+                self.mode = &#39;static&#39;
+            else:
+                raise Exception(&#34;If set, \&#34;mode\&#34;, must be set to either dhcp or static&#34;)
+        else:
+            self.mode = &#39;dhcp&#39;
+
+    def set_allowaccess(self, allowaccess):
+        &#34;&#34;&#34; Set self.allowaccess  to allowaccess if allowaccess contains allowed params
+
+        Args:
+            allowaccess (str): Interface mgmt access setting. Single string with spaces to separate multiple values
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if allowaccess:
+            for service in list(allowaccess.split(&#34; &#34;)):
+                if service.lower() in [&#39;ping&#39;, &#39;http&#39;, &#39;https&#39;, &#39;snmp&#39;, &#39;ssh&#39;, &#39;telnet&#39;, &#39;fgfm&#39;, &#39;radius=acct&#39;,
+                                       &#39;probe-response&#39;, &#39;capwap&#39;, &#39;ftm&#39;]:
+                    continue
+                else:
+                    raise Exception(&#34;\&#34;allowaccces\&#34; has unrecognized services defined: {}&#34;.format(service))
+            self.allowaccess = allowaccess
+        else:
+            self.allowaccess = None
+
+    def set_vlanid(self, vlanid):
+        &#34;&#34;&#34;  Set self.vlanid if vlanid is valid
+
+        Args:
+            vlanid: Interface vlanid to set.  Must be between 1 and 4096
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if vlanid:
+            if isinstance(vlanid, int):
+                if 1 &lt;= vlanid &lt;= 4096:
+                    self.vlanid = vlanid
+                else:
+                    raise Exception(&#34;vlanid must be integer between 1 and 4096&#34;)
+            else:
+                raise Exception(&#34;vlanid, when set, must be an integer&#34;)
+        else:
+            self.vlanid = None
+
+    def set_phys_intf(self, phys_intf):
+        &#34;&#34;&#34; Set self.phys_intf to phys_intf if phys_intf valid
+
+        Args:
+            phys_intf (str): Parent interface for virtual interface type, such as vlan to set.
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if phys_intf:
+            if phys_intf.isspace():
+                raise Exception(&#34;\&#34;phys_intf\&#34; cannot be an empty string&#34;)
+
+            if isinstance(phys_intf, str):
+                if 1 &lt;= len(phys_intf) &lt;= 31:
+                    self.phys_intf = phys_intf
+                else:
+                    raise Exception(&#34;\&#34;phys_intf\&#34;, when set, must be type str between 1 and 31 chars&#34;)
+            else:
+                raise Exception(&#34;\&#34;phys_intf\&#34;, when set, must be type str&#34;)
+        else:
+            self.phys_intf = None
+
+    def set_vrf(self, vrf):
+        &#34;&#34;&#34; Set self.vrf if vrf valid
+
+        Args:
+            vrf (int): Interface VRF to set
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if vrf:
+            if isinstance(vrf, int):
+                if 0 &lt;= vrf &lt;= 31:
+                    self.vrf = vrf
+                else:
+                    raise Exception(&#34;\&#34;vrf\&#34;, when set, must be an integer between 0 and 31&#34;)
+            else:
+                raise Exception(&#34;\&#34;vrf\&#34;, when set, must be an integer between 0 and 31&#34;)
+        else:
+            self.vrf = None
+
+    def set_device_ident(self, device_ident):
+        &#34;&#34;&#34; Set self.device_idnent if device_ident valid
+
+        Args:
+            device_ident (bool): Set device-identification for interface True=(enable), False=Disable, None=inherrit
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if device_ident:
+            if isinstance(device_ident, bool):
+                self.device_ident = True
+        else:
+            self.device_ident = False
+
+    def set_alias(self, alias):
+        &#34;&#34;&#34; Set self.alias to alias if alias valid
+
+        Args:
+            alias: Interface Alias to set
+
+        Returns:
+
+        &#34;&#34;&#34;
+        if alias:
+            if isinstance(alias, str):
+                if 1 &lt;= len(alias) &lt;= 25:
+                    self.alias = alias
+                else:
+                    raise Exception(&#34;\&#34;alias\&#34;, when set, must be type str between 1 and 25 chars&#34;)
+            else:
+                raise Exception(&#34;\&#34;alias\&#34;, when set, must be type str&#34;)
+        else:
+            self.alias = None
+
+    def set_description(self, description):
+        &#34;&#34;&#34; Set self.description to description if description is valid
+
+        Args:
+            description: Interface description to set.
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if description:
+            if isinstance(description, str):
+                if 1 &lt;= len(description) &lt;= 255:
+                    self.description = description
+                else:
+                    raise Exception(&#34;\&#34;description\&#34;, when set, must be type str between 1 and 255 chars&#34;)
+            else:
+                raise Exception(&#34;\&#34;description\&#34;, when set, must be type str&#34;)
+        else:
+            self.description = None</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fgobjlib.fg_object.FgObject" href="fg_object.html#fgobjlib.fg_object.FgObject">FgObject</a></li>
+</ul>
+<h3>Static methods</h3>
+<dl>
+<dt id="fgobjlib.fg_sys_interface.FgInterfaceIpv4.standard_intf"><code class="name flex">
+<span>def <span class="ident">standard_intf</span></span>(<span>name, ip=None, mode=None, vdom=None, vrf=None, allowaccess=None, role=None, device_ident=None, alias=None, description=None)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Class method to streamline instantiating instance of type "standard" aka ethernet/virtual/physical</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>Name of interface</dd>
+<dt><strong><code>ip</code></strong> :&ensp;<code>str</code></dt>
+<dd>IP address of interface</dd>
+<dt><strong><code>mode</code></strong> :&ensp;<code>str</code></dt>
+<dd>Interface mode, i.e. static or dhcp</dd>
+<dt><strong><code>vdom</code></strong> :&ensp;<code>str</code></dt>
+<dd>Vdom interface configured for</dd>
+<dt><strong><code>vrf</code></strong> :&ensp;<code>int</code></dt>
+<dd>VRF interface is configured for</dd>
+<dt><strong><code>allowaccess</code></strong> :&ensp;<code>str</code></dt>
+<dd>Interface allowaccess policy.
+i.e. "ping http, https snmp, etc"</dd>
+<dt><strong><code>role</code></strong> :&ensp;<code>str</code></dt>
+<dd>Interface role type</dd>
+<dt><strong><code>device_ident</code></strong> :&ensp;<code>bool</code></dt>
+<dd>device-identification for interface enabled or disabled</dd>
+<dt><strong><code>alias</code></strong> :&ensp;<code>str</code></dt>
+<dd>Interface alias</dd>
+<dt><strong><code>description</code></strong> :&ensp;<code>str</code></dt>
+<dd>Interface description</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Class</code> <code>Instance</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def standard_intf(cls, name: str, ip: str = None, mode: str = None, vdom: str = None, vrf: int = None,
+                  allowaccess: str = None, role: str = None, device_ident: bool = None, alias: str = None,
+                  description: str = None):
+    &#34;&#34;&#34; Class method to streamline instantiating instance of type &#34;standard&#34; aka ethernet/virtual/physical
+
+    Args:
+        name (str): Name of interface
+        ip (str): IP address of interface
+        mode (str): Interface mode, i.e. static or dhcp
+        vdom (str): Vdom interface configured for
+        vrf (int): VRF interface is configured for
+        allowaccess (str):  Interface allowaccess policy.  i.e. &#34;ping http, https snmp, etc&#34;
+        role (str):  Interface role type
+        device_ident (bool): device-identification for interface enabled or disabled
+        alias (str): Interface alias
+        description (str): Interface description
+
+    Returns:
+        Class Instance
+    &#34;&#34;&#34;
+
+    intf_type = None
+    vlanid = None
+    phys_intf = None
+
+    obj = cls(name=name, ip=ip, mode=mode, intf_type=intf_type, vdom=vdom, vrf=vrf, allowaccess=allowaccess,
+              role=role, vlanid=vlanid, phys_intf=phys_intf, device_ident=device_ident, alias=alias,
+              description=description)
+
+    return obj</code></pre>
+</details>
+</dd>
+<dt id="fgobjlib.fg_sys_interface.FgInterfaceIpv4.vlan_intf"><code class="name flex">
+<span>def <span class="ident">vlan_intf</span></span>(<span>name, vlanid, phys_intf, ip=None, mode='static', vdom=None, vrf=None, allowaccess=None, role=None, device_ident=None, alias=None, description=None)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Class method to streamline instantiating instance of type vlan</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>Name of interface</dd>
+<dt><strong><code>vlanid</code></strong> :&ensp;<code>int</code></dt>
+<dd>interface vlanid</dd>
+<dt><strong><code>phys_intf</code></strong> :&ensp;<code>str</code></dt>
+<dd>name of parent interface for vlan attachment</dd>
+<dt><strong><code>ip</code></strong> :&ensp;<code>str</code></dt>
+<dd>IP address of interface</dd>
+<dt><strong><code>mode</code></strong> :&ensp;<code>str</code></dt>
+<dd>Interface mode, i.e. static or dhcp</dd>
+<dt><strong><code>vdom</code></strong> :&ensp;<code>str</code></dt>
+<dd>Vdom interface configured for</dd>
+<dt><strong><code>vrf</code></strong> :&ensp;<code>int</code></dt>
+<dd>VRF interface is configured for</dd>
+<dt><strong><code>allowaccess</code></strong> :&ensp;<code>str</code></dt>
+<dd>Interface allowaccess policy.
+i.e. "ping http, https snmp, etc"</dd>
+<dt><strong><code>role</code></strong> :&ensp;<code>str</code></dt>
+<dd>Interface role type</dd>
+<dt><strong><code>device_ident</code></strong> :&ensp;<code>bool</code></dt>
+<dd>device-identification for interface enabled or disabled</dd>
+<dt><strong><code>alias</code></strong> :&ensp;<code>str</code></dt>
+<dd>Interface alias</dd>
+<dt><strong><code>description</code></strong> :&ensp;<code>str</code></dt>
+<dd>Interface description</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Class</code> <code>Instance</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def vlan_intf(cls, name: str, vlanid: int, phys_intf: str, ip: str = None, mode: str = &#39;static&#39;, vdom: str = None,
+              vrf: int = None, allowaccess: str = None, role: str = None, device_ident: bool = None,
+              alias: str = None, description: str = None):
+    &#34;&#34;&#34; Class method to streamline instantiating instance of type vlan
+
+    Args:
+        name (str): Name of interface
+        vlanid (int): interface vlanid
+        phys_intf (str): name of parent interface for vlan attachment
+        ip (str): IP address of interface
+        mode (str): Interface mode, i.e. static or dhcp
+        vdom (str): Vdom interface configured for
+        vrf (int): VRF interface is configured for
+        allowaccess (str):  Interface allowaccess policy.  i.e. &#34;ping http, https snmp, etc&#34;
+        role (str):  Interface role type
+        device_ident (bool): device-identification for interface enabled or disabled
+        alias (str): Interface alias
+        description (str): Interface description
+
+    Returns:
+        Class Instance
+    &#34;&#34;&#34;
+
+    if not vlanid: raise Exception(&#34;\&#34;vlan_intf()\&#34;, requires to provide a \&#34;vlanid\&#34;. vlanid should be type: int, &#34;
+                                   &#34;between 1 and 4960&#34;)
+
+    if not phys_intf: raise Exception(&#34;\&#34;vlan_intf\&#34;, requires to provide \&#34;phys_intf\&#34;, phys_intf should be type: &#34;
+                                      &#34;str between 1 and 15 chars&#34;)
+
+    intf_type = &#39;vlan&#39;
+
+    obj = cls(name=name, ip=ip, mode=mode, intf_type=intf_type, vdom=vdom, vrf=vrf, allowaccess=allowaccess,
+              role=role, vlanid=vlanid, phys_intf=phys_intf, device_ident=device_ident, alias=alias,
+              description=description)
+
+    return obj</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_alias"><code class="name flex">
+<span>def <span class="ident">set_alias</span></span>(<span>self, alias)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Set self.alias to alias if alias valid</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>alias</code></strong></dt>
+<dd>Interface Alias to set</dd>
+</dl>
+<p>Returns:</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_alias(self, alias):
+    &#34;&#34;&#34; Set self.alias to alias if alias valid
+
+    Args:
+        alias: Interface Alias to set
+
+    Returns:
+
+    &#34;&#34;&#34;
+    if alias:
+        if isinstance(alias, str):
+            if 1 &lt;= len(alias) &lt;= 25:
+                self.alias = alias
+            else:
+                raise Exception(&#34;\&#34;alias\&#34;, when set, must be type str between 1 and 25 chars&#34;)
+        else:
+            raise Exception(&#34;\&#34;alias\&#34;, when set, must be type str&#34;)
+    else:
+        self.alias = None</code></pre>
+</details>
+</dd>
+<dt id="fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_allowaccess"><code class="name flex">
+<span>def <span class="ident">set_allowaccess</span></span>(<span>self, allowaccess)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Set self.allowaccess
+to allowaccess if allowaccess contains allowed params</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>allowaccess</code></strong> :&ensp;<code>str</code></dt>
+<dd>Interface mgmt access setting. Single string with spaces to separate multiple values</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_allowaccess(self, allowaccess):
+    &#34;&#34;&#34; Set self.allowaccess  to allowaccess if allowaccess contains allowed params
+
+    Args:
+        allowaccess (str): Interface mgmt access setting. Single string with spaces to separate multiple values
+
+    Returns:
+        None
+    &#34;&#34;&#34;
+    if allowaccess:
+        for service in list(allowaccess.split(&#34; &#34;)):
+            if service.lower() in [&#39;ping&#39;, &#39;http&#39;, &#39;https&#39;, &#39;snmp&#39;, &#39;ssh&#39;, &#39;telnet&#39;, &#39;fgfm&#39;, &#39;radius=acct&#39;,
+                                   &#39;probe-response&#39;, &#39;capwap&#39;, &#39;ftm&#39;]:
+                continue
+            else:
+                raise Exception(&#34;\&#34;allowaccces\&#34; has unrecognized services defined: {}&#34;.format(service))
+        self.allowaccess = allowaccess
+    else:
+        self.allowaccess = None</code></pre>
+</details>
+</dd>
+<dt id="fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_description"><code class="name flex">
+<span>def <span class="ident">set_description</span></span>(<span>self, description)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Set self.description to description if description is valid</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>description</code></strong></dt>
+<dd>Interface description to set.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_description(self, description):
+    &#34;&#34;&#34; Set self.description to description if description is valid
+
+    Args:
+        description: Interface description to set.
+
+    Returns:
+        None
+    &#34;&#34;&#34;
+    if description:
+        if isinstance(description, str):
+            if 1 &lt;= len(description) &lt;= 255:
+                self.description = description
+            else:
+                raise Exception(&#34;\&#34;description\&#34;, when set, must be type str between 1 and 255 chars&#34;)
+        else:
+            raise Exception(&#34;\&#34;description\&#34;, when set, must be type str&#34;)
+    else:
+        self.description = None</code></pre>
+</details>
+</dd>
+<dt id="fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_device_ident"><code class="name flex">
+<span>def <span class="ident">set_device_ident</span></span>(<span>self, device_ident)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Set self.device_idnent if device_ident valid</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>device_ident</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Set device-identification for interface True=(enable), False=Disable, None=inherrit</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_device_ident(self, device_ident):
+    &#34;&#34;&#34; Set self.device_idnent if device_ident valid
+
+    Args:
+        device_ident (bool): Set device-identification for interface True=(enable), False=Disable, None=inherrit
+
+    Returns:
+        None
+    &#34;&#34;&#34;
+    if device_ident:
+        if isinstance(device_ident, bool):
+            self.device_ident = True
+    else:
+        self.device_ident = False</code></pre>
+</details>
+</dd>
+<dt id="fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_intf_type"><code class="name flex">
+<span>def <span class="ident">set_intf_type</span></span>(<span>self, intf_type)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Set self.intf_type if intf type matches allowed types</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>intf_type</code></strong> :&ensp;<code>str</code></dt>
+<dd>Interface type to set.
+May be: 'vlan', 'standard', 'loopback', None (default standard or existing setting)</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_intf_type(self, intf_type):
+    &#34;&#34;&#34; Set self.intf_type if intf type matches allowed types
+
+    Args:
+        intf_type (str): Interface type to set.  May be: &#39;vlan&#39;, &#39;standard&#39;, &#39;loopback&#39;, None (default standard or existing setting)
+
+    Returns:
+        None
+    &#34;&#34;&#34;
+    if intf_type:
+        if intf_type.lower() == &#39;vlan&#39;:
+            self. intf_type = &#39;vlan&#39;
+        elif intf_type.lower() == &#39;standard&#39;:
+            self.intf_type = None
+        elif intf_type.lower() == &#39;loopback&#39;:
+            self.intf_type = &#39;loopback&#39;
+        else:
+            raise Exception(&#34;Interface type provided is not recognized: {}&#34;.format(intf_type))
+    else:
+        self.intf_type = None</code></pre>
+</details>
+</dd>
+<dt id="fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_ip"><code class="name flex">
+<span>def <span class="ident">set_ip</span></span>(<span>self, ip)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Set self.ip as IP address for interface if IP is valid ipv4 address.
+Otherwise raise Exception.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>ip</code></strong></dt>
+<dd>Interface IPv4 address to set.
+Must be valid IP/netmask.
+IP without netmask = /32</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_ip(self, ip):
+    &#34;&#34;&#34; Set self.ip as IP address for interface if IP is valid ipv4 address.  Otherwise raise Exception.
+
+    Args:
+        ip: Interface IPv4 address to set.  Must be valid IP/netmask.  IP without netmask = /32
+
+    Returns:
+        None
+    &#34;&#34;&#34;
+    if ip:
+        try:
+            self.ip = str(ipaddress.ip_interface(ip))
+        except ValueError:
+            raise ValueError(&#34;\ip\&#34; must be valide ipv4 address&#34;)
+    else:
+        self.ip = None</code></pre>
+</details>
+</dd>
+<dt id="fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_mode"><code class="name flex">
+<span>def <span class="ident">set_mode</span></span>(<span>self, mode)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Set self.mode to mode if mode set with valid argument</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>mode</code></strong> :&ensp;<code>str</code></dt>
+<dd>Interface Mode to set.
+May be: 'dhcp', 'static', None (None uses existing intf setting)</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_mode(self, mode):
+    &#34;&#34;&#34; Set self.mode to mode if mode set with valid argument
+
+    Args:
+        mode (str): Interface Mode to set.   May be: &#39;dhcp&#39;, &#39;static&#39;, None (None uses existing intf setting)
+
+    Returns:
+        None
+    &#34;&#34;&#34;
+    if mode:
+        if mode.lower() == &#39;dhcp&#39;:
+            self.mode = &#39;dhcp&#39;
+        elif mode.lower() == &#39;static&#39;:
+            self.mode = &#39;static&#39;
+        else:
+            raise Exception(&#34;If set, \&#34;mode\&#34;, must be set to either dhcp or static&#34;)
+    else:
+        self.mode = &#39;dhcp&#39;</code></pre>
+</details>
+</dd>
+<dt id="fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_name"><code class="name flex">
+<span>def <span class="ident">set_name</span></span>(<span>self, name)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Set self.name to name if name meets requirements</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>Interface name to set.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_name(self, name):
+    &#34;&#34;&#34; Set self.name to name if name meets requirements
+
+    Args:
+        name (str): Interface name to set.
+
+    Returns:
+        None
+    &#34;&#34;&#34;
+    if name:
+        if name.isspace(): raise Exception(&#34;\&#34;name\&#34;, cannot be an empty string&#34;)
+        if isinstance(name, str):
+            if len(name) &lt; 15:
+                self.name = name
+            else:
+                raise Exception(&#34;\&#34;name\&#34;, must be less than 15 chars&#34;)
+        else:
+            raise Exception(&#34;\&#34;name\&#34;, must be a string&#34;)
+    else:
+        raise Exception(&#34;Value \&#34;name\&#34; is required but was not provided&#34;)</code></pre>
+</details>
+</dd>
+<dt id="fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_phys_intf"><code class="name flex">
+<span>def <span class="ident">set_phys_intf</span></span>(<span>self, phys_intf)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Set self.phys_intf to phys_intf if phys_intf valid</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>phys_intf</code></strong> :&ensp;<code>str</code></dt>
+<dd>Parent interface for virtual interface type, such as vlan to set.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_phys_intf(self, phys_intf):
+    &#34;&#34;&#34; Set self.phys_intf to phys_intf if phys_intf valid
+
+    Args:
+        phys_intf (str): Parent interface for virtual interface type, such as vlan to set.
+
+    Returns:
+        None
+    &#34;&#34;&#34;
+    if phys_intf:
+        if phys_intf.isspace():
+            raise Exception(&#34;\&#34;phys_intf\&#34; cannot be an empty string&#34;)
+
+        if isinstance(phys_intf, str):
+            if 1 &lt;= len(phys_intf) &lt;= 31:
+                self.phys_intf = phys_intf
+            else:
+                raise Exception(&#34;\&#34;phys_intf\&#34;, when set, must be type str between 1 and 31 chars&#34;)
+        else:
+            raise Exception(&#34;\&#34;phys_intf\&#34;, when set, must be type str&#34;)
+    else:
+        self.phys_intf = None</code></pre>
+</details>
+</dd>
+<dt id="fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_role"><code class="name flex">
+<span>def <span class="ident">set_role</span></span>(<span>self, role)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Set self.role if role matches allowed role types.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>role</code></strong> :&ensp;<code>str</code></dt>
+<dd>Interface role to set.
+Allowed types:
+'wan', 'lan', 'dmz', 'undefined', None (use existing setting)</dd>
+</dl>
+<p>Returns:</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_role(self, role):
+    &#34;&#34;&#34; Set self.role if role matches allowed role types.
+
+    Args:
+        role (str): Interface role to set.   Allowed types:  &#39;wan&#39;, &#39;lan&#39;, &#39;dmz&#39;, &#39;undefined&#39;, None (use existing setting)
+
+    Returns:
+
+    &#34;&#34;&#34;
+    if role:
+        if role.lower == &#39;wan&#39;:
+            self.role = &#39;wan&#39;
+        elif role.lower() == &#39;lan&#39;:
+            self.role = &#39;lan&#39;
+        elif role.lower() == &#39;dmz&#39;:
+            self.role = &#39;dmz&#39;
+        else:
+            self.role = &#39;undefined&#39;
+    else:
+        self.role = None</code></pre>
+</details>
+</dd>
+<dt id="fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_vlanid"><code class="name flex">
+<span>def <span class="ident">set_vlanid</span></span>(<span>self, vlanid)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Set self.vlanid if vlanid is valid</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>vlanid</code></strong></dt>
+<dd>Interface vlanid to set.
+Must be between 1 and 4096</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_vlanid(self, vlanid):
+    &#34;&#34;&#34;  Set self.vlanid if vlanid is valid
+
+    Args:
+        vlanid: Interface vlanid to set.  Must be between 1 and 4096
+
+    Returns:
+        None
+    &#34;&#34;&#34;
+    if vlanid:
+        if isinstance(vlanid, int):
+            if 1 &lt;= vlanid &lt;= 4096:
+                self.vlanid = vlanid
+            else:
+                raise Exception(&#34;vlanid must be integer between 1 and 4096&#34;)
+        else:
+            raise Exception(&#34;vlanid, when set, must be an integer&#34;)
+    else:
+        self.vlanid = None</code></pre>
+</details>
+</dd>
+<dt id="fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_vrf"><code class="name flex">
+<span>def <span class="ident">set_vrf</span></span>(<span>self, vrf)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Set self.vrf if vrf valid</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>vrf</code></strong> :&ensp;<code>int</code></dt>
+<dd>Interface VRF to set</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_vrf(self, vrf):
+    &#34;&#34;&#34; Set self.vrf if vrf valid
+
+    Args:
+        vrf (int): Interface VRF to set
+
+    Returns:
+        None
+    &#34;&#34;&#34;
+    if vrf:
+        if isinstance(vrf, int):
+            if 0 &lt;= vrf &lt;= 31:
+                self.vrf = vrf
+            else:
+                raise Exception(&#34;\&#34;vrf\&#34;, when set, must be an integer between 0 and 31&#34;)
+        else:
+            raise Exception(&#34;\&#34;vrf\&#34;, when set, must be an integer between 0 and 31&#34;)
+    else:
+        self.vrf = None</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fgobjlib.fg_object.FgObject" href="fg_object.html#fgobjlib.fg_object.FgObject">FgObject</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fgobjlib.fg_object.FgObject.get_api_config_add" href="fg_object.html#fgobjlib.fg_object.FgObject.get_api_config_add">get_api_config_add</a></code></li>
+<li><code><a title="fgobjlib.fg_object.FgObject.get_api_config_del" href="fg_object.html#fgobjlib.fg_object.FgObject.get_api_config_del">get_api_config_del</a></code></li>
+<li><code><a title="fgobjlib.fg_object.FgObject.get_api_config_get" href="fg_object.html#fgobjlib.fg_object.FgObject.get_api_config_get">get_api_config_get</a></code></li>
+<li><code><a title="fgobjlib.fg_object.FgObject.get_api_config_update" href="fg_object.html#fgobjlib.fg_object.FgObject.get_api_config_update">get_api_config_update</a></code></li>
+<li><code><a title="fgobjlib.fg_object.FgObject.get_cli_config_add" href="fg_object.html#fgobjlib.fg_object.FgObject.get_cli_config_add">get_cli_config_add</a></code></li>
+<li><code><a title="fgobjlib.fg_object.FgObject.get_cli_config_del" href="fg_object.html#fgobjlib.fg_object.FgObject.get_cli_config_del">get_cli_config_del</a></code></li>
+<li><code><a title="fgobjlib.fg_object.FgObject.get_cli_config_update" href="fg_object.html#fgobjlib.fg_object.FgObject.get_cli_config_update">get_cli_config_update</a></code></li>
+<li><code><a title="fgobjlib.fg_object.FgObject.set_vdom" href="fg_object.html#fgobjlib.fg_object.FgObject.set_vdom">set_vdom</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fgobjlib" href="index.html">fgobjlib</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fgobjlib.fg_sys_interface.FgInterfaceIpv4" href="#fgobjlib.fg_sys_interface.FgInterfaceIpv4">FgInterfaceIpv4</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_alias" href="#fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_alias">set_alias</a></code></li>
+<li><code><a title="fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_allowaccess" href="#fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_allowaccess">set_allowaccess</a></code></li>
+<li><code><a title="fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_description" href="#fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_description">set_description</a></code></li>
+<li><code><a title="fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_device_ident" href="#fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_device_ident">set_device_ident</a></code></li>
+<li><code><a title="fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_intf_type" href="#fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_intf_type">set_intf_type</a></code></li>
+<li><code><a title="fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_ip" href="#fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_ip">set_ip</a></code></li>
+<li><code><a title="fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_mode" href="#fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_mode">set_mode</a></code></li>
+<li><code><a title="fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_name" href="#fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_name">set_name</a></code></li>
+<li><code><a title="fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_phys_intf" href="#fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_phys_intf">set_phys_intf</a></code></li>
+<li><code><a title="fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_role" href="#fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_role">set_role</a></code></li>
+<li><code><a title="fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_vlanid" href="#fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_vlanid">set_vlanid</a></code></li>
+<li><code><a title="fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_vrf" href="#fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_vrf">set_vrf</a></code></li>
+<li><code><a title="fgobjlib.fg_sys_interface.FgInterfaceIpv4.standard_intf" href="#fgobjlib.fg_sys_interface.FgInterfaceIpv4.standard_intf">standard_intf</a></code></li>
+<li><code><a title="fgobjlib.fg_sys_interface.FgInterfaceIpv4.vlan_intf" href="#fgobjlib.fg_sys_interface.FgInterfaceIpv4.vlan_intf">vlan_intf</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.1</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

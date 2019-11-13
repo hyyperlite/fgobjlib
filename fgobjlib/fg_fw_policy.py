@@ -3,22 +3,50 @@ from fgobjlib import FgObject
 class FgFwPolicy(FgObject):
     """
     FgFwPolicy class represents FortiGate Firewall policy object and provides methods for validating parameters
-    and generating both cli and api configuration data for use in external configuration applications
+    and generating both cli and api configuration data for use in external configuration applications.
+
+    Attributes:
+        data_attrs (dict): Dictionary to define relevant config attributes and map instance attr names to fg attr names
+        cli_ignore_attrs (list): List of attributes to ignore when generating CLI configurations
+        policyid (int): Object ID
+        srcintf (list):  Policy source interface(s), may be string or list of strings
+        dstintf (list): Policy destination interface(s), may be string or list of strings
+        srcaddr (list): Policy source address(es), may be string or list of strings
+        dstaddr (list): Policy destination address(es), may be string or list of strings
+        schedule (str): Policy schedule
+        action (str):  Policy action, may be 'accept' or 'deny'
+        logtraffic (str): Policy log action, may be 'utm', 'all' or 'disabled'
+        nat (bool):  Source NAT for policy, True or False
+        comment (str): Object comment
+        vdom (str):  VDOM policy configured in  (if any)
     """
 
     def __init__(self, policyid: int = None, srcintf: list = None, dstintf: list = None, srcaddr: list = None,
-                 dstaddr: list = None, service: list = None, schedule: list = None, action: str = None,
+                 dstaddr: list = None, service: list = None, schedule: str = None, action: str = None,
                  logtraffic: str = None, nat: bool = None, vdom: str = None, srcaddr_negate: bool = None,
                  dstaddr_negate: bool = None, name: str = None, comment: str = None):
+        """
+        Args:
+            policyid (int): optional - ID of object.  Defines ID used in configs when API or CLI for config methods (default: 0)
+            srcintf (list): required - string or list of strings referencing src interface(s) of policy
+            dstintf (list): required - string or list of strings referencing dst interface(s) of policy
+            srcaddr (list): required - string or list of strings referencing src address(s) of policy
+            dstaddr (list): required - string or list of strings referencing dst address(s) of policy
+            schedule (str): optional - string referencing schedule to associated with policy (default: 'always')
+            action (str): optional - string sets action to assign to policy; may be 'accept' or 'deny' (default: deny)
+            logtraffic (str): optional - string set logtraffic action to assign; may be utm/all/disabled (default: disabled)
+            nat (bool): optional - string
+            comment (str): optional - Set a comment up to 255 characters (default: None)
+            vdom (str): optional - Set vdom.  If unset object configs uses default fg context (default: None)
+        """
+
 
         # Initialize the parent class - we do set this here, because the subclass will first verify obj_id
         # is acceptable for this class type in the above attribute set functions
-        super().__init__(api='cmdb', api_path='firewall', api_name='policy', api_mkey=None, obj_id=policyid, vdom=vdom)
+        super().__init__(api='cmdb', api_path='firewall', api_name='policy', cli_path="config firewall policy",
+                         obj_id=policyid, vdom=vdom)
 
         ### Set parent class attributes ###
-        # CLI config path for this object type
-        self.cli_path = "config firewall policy"
-
         # Map instance attribute names to fg attribute names
         self.data_attrs = {'policyid': 'policyid', 'srcintf': 'srcintf', 'dstintf': 'dstintf', 'srcaddr': 'srcaddr',
                            'service': 'service', 'schedule': 'schedule', 'action': 'action', 'logtraffic': 'logtraffic',
@@ -37,12 +65,19 @@ class FgFwPolicy(FgObject):
         self.set_action(action)
         self.set_logtraffic(logtraffic)
         self.set_nat(nat)
-        self.srcaddr_negate = self.set_negate(srcaddr_negate)
-        self.dstaddr_negate = self.set_negate(dstaddr_negate)
-        self.set_name(name)
+        self.set_negate(srcaddr_negate, 'srcaddr_negate')
+        self.set_negate(dstaddr_negate, 'dstaddr_negate')
         self.set_comment(comment)
 
     def set_policyid(self, policyid):
+        """ Set self.policyid to policyid if policyid is valid or if not provided set policyid = 0.
+
+        Args:
+            policyid (int):  Integer representing ID of policy.
+
+        Returns:
+            None
+        """
         if policyid:
             if isinstance(policyid, int):
                 self.policyid = policyid
@@ -52,17 +87,20 @@ class FgFwPolicy(FgObject):
             self.policyid = 0
 
 
-    @staticmethod
-    def set_policy_objects(policy_object, obj_type):
-        """
-        set_policy_objects: checks validity of srcintf, dstintf, srcaddr and dstaddr objects and returns a list
-        of objects if they meet requirements otherwise raise an exception if requirements not met
+    def set_policy_objects(self, policy_object, obj_type):
+        """ Check the validity of srcintf, dstintf, srcaddr and dstaddr objects and returns a list.
+
+        Args:
+            policy_object (list): string or list of strings containing srcintf(s), dstintf(s), srcaddr(s) or dstaddr(s)
+            obj_type (str): sets the type of object, may be one of 'srcintf', 'dstintf', 'srcaddr' or 'dstaddr'
         """
 
-        if policy_object:
-            obj_list = []
+        if policy_object  and obj_type:
             # IF a single object was passed as a string, append it to intf_list else iterate the list and pull
             # out the strings of interfaces and append each to intf_list
+
+            obj_list = []
+
             if isinstance(policy_object, str):
                 obj_list.append({'name': policy_object})
 
@@ -84,12 +122,22 @@ class FgFwPolicy(FgObject):
 
                 else:
                     raise Exception("{}, must be type str or a list (array) of strings".format(obj_type))
-            return obj_list
+
+            # set self.<obj_type> attribute with the verified and formatted obj_list
+            setattr(self, obj_type, obj_list)
 
         else:
             raise Exception("{} is required but was not provided".format(type))
 
     def set_schedule(self, schedule):
+        """ Set self.schedule to 'schedule' if 'schedule' name provided meets requirements
+
+        Args:
+            schedule (str): Policy schedule name
+
+        Returns:
+            None
+        """
         if schedule:
             if isinstance(schedule, str):
                 if not len(schedule) <= 36:
@@ -105,13 +153,33 @@ class FgFwPolicy(FgObject):
             self.schedule = 'always'
 
     def set_action(self, action):
+        """ Set self.action to 'action' if action meets requirements
+
+        Args:
+            action (str): policy action, may be 'accept' or 'deny'
+
+        Returns:
+            None
+        """
         if action:
             if action.lower() == 'accept' or action.lower() == 'allow':
                 self.action = 'accept'
+            elif action.lower() == 'deny' or action.lower() == 'drop':
+                self.action = 'deny'
+            else:
+                raise ValueError("\"action\", when set, must be either 'accept' or 'deny'")
         else:
             self.action = None
 
     def set_logtraffic(self, logtraffic):
+        """ Set self.logtraffic to 'logtraffic' if logtraffic is valid
+
+        Args:
+            logtraffic (str): Policy log action.  May be 'utm', 'all' or 'disabled'
+
+        Returns:
+            None
+        """
         if logtraffic:
             if logtraffic.lower() == 'utm':
 
@@ -125,31 +193,35 @@ class FgFwPolicy(FgObject):
             elif logtraffic.lower() == 'all':
                 self.logtraffic = 'all'
 
-            elif logtraffic.lower() == 'disabled':
+            elif logtraffic.lower() == 'disabled' or logtraffic.lower() == 'disable':
                 self.logtraffic = 'disabled'
         else:
             self.logtraffic = None
 
     def set_nat(self, nat):
+        """ Set self.nat to 'nat' if valid.  True=enable, False=disable
+
+        Args:
+            nat (bool): Policy source NAT, true (enable) or false (disable)
+
+        Returns:
+            None
+        """
         if nat:
             if isinstance(nat, bool):
                 self.nat = True
         else:
             self.nat = False
 
-    def set_name(self, name):
-        if name:
-            if isinstance(name, str):
-                if 1 <= len(name) <= 35:
-                    self.name = name
-                else:
-                    raise Exception("\"name\", when set, must be type str between 1 and 35 chars")
-            else:
-                raise Exception("\"name\", when set, must be type str")
-        else:
-            self.name = None
-
     def set_comment(self, comment):
+        """ Set self.comment to 'comment' if comment string within requirements
+
+        Args:
+            comment (str):  Comment for this policy object
+
+        Returns:
+            None
+        """
         if comment:
             if isinstance(comment, str):
                 if 1 <= len(comment) <= 1023:
@@ -161,113 +233,23 @@ class FgFwPolicy(FgObject):
         else:
             self.comment = None
 
-    @staticmethod
-    def set_negate(negate):
-        if negate and isinstance(negate, bool):
-            return True
-        else:
-            return False
+    def set_negate(self, negate, obj_type):
+        """ Set the self.<obj_type> attribute representing negate type in policy
 
-    # def get_cli_config_add(self):
-    #     conf = ''
-    #
-    #     # Set config parameters where needed
-    #     if self.vdom: conf += "config vdom\n edit {} \n".format(self.vdom)
-    #
-    #     conf += "config firewall policy\n  edit \"{}\" \n".format(self.policyid)
-    #
-    #     if self.srcsintf: conf += "    set srcintf {} \n".format(' '.join(self.srcintf))
-    #     if self.dstintf: conf += "    set dstintf {} \n".format(' '.join(self.dstintf))
-    #     if self.srcaddr: conf += "    set srcaddr {} \n".format(' '.join(self.srcaddr))
-    #     if self.dstaddr: conf += "    set dstaddr {} \n".format(' '.join(self.dstaddr))
-    #     if self.service: conf += "    set service {} \n".format(' '.join(self.service))
-    #     if self.schedule: conf += "    set schedule {} \n".format(self.schedule)
-    #     if self.action: conf += "    set action {} \n".format(self.action)
-    #     if self.log_traffic: conf += "    set logtraffic {} \n".format(self.log_traffic)
-    #     if self.nat: conf += "    set nat enable \n"
-    #     if self.srcaddr_negate: conf += "    set srcaddr-negate enable \n"
-    #     if self.dstaddr_negate: conf += "    set dstaddr-negate enable \n"
-    #     if self.name: conf += "    set name {} \n".format(self.name)
-    #     if self.comment: conf += "    set comments \"{}\" \n".format(self.comment)
-    #
-    #     conf += "end\n"
-    #     if self.vdom: conf += "end\n"
-    #     return conf
-    #
-    # def get_cli_config_update(self):
-    #     conf = self.get_cli_config_add()
-    #     return conf
-    #
-    # def get_api_config_add(self):
-    #     conf = {'api': self.API, 'path': self.API_PATH, 'name': self.API_NAME, 'mkey': self.API_MKEY, 'action': None}
-    #     data = {}
-    #     params = {}
-    #
-    #     # Set the VDOM, if necessary
-    #     if self.vdom:
-    #         params.update({'vdom': self.vdom})
-    #         data.update({'vdom': self.vdom})
-    #
-    #     if self.policyid: data.update({'policyid': self.policyid})
-    #     if self.srcintf: data.update({'srcintf': self.srcintf})
-    #     if self.dstintf: data.update({'dstintf': self.dstintf})
-    #     if self.srcaddr: data.update({'srcaddr': self.srcaddr})
-    #     if self.dstaddr: data.update({'dstaddr': self.dstaddr})
-    #     if self.service: data.update({'service': self.service})
-    #     if self.schedule: data.update({'schedule': self.schedule})
-    #     if self.action: data.update({'action': self.action})
-    #     if self.log_traffic: data.update({'logtraffic': self.log_traffic})
-    #     if self.nat: data.update({'nat': self.nat})
-    #     if self.srcaddr_negate: data.update({'srcaddr-negate': self.srcaddr_negate})
-    #     if self.dstaddr_negate: data.update({'dstaddr-negate': self.dstaddr_negate})
-    #     if self.name: data.update({'name': self.name})
-    #     if self.comment: data.update({'comments': self.comment})
-    #
-    #     conf.update({'data': data})
-    #     conf.update({'parameters': params})
-    #
-    #     return conf
-    #
-    # def get_api_config_update(self):
-    #     # Need to set mkey to interfac name when doing updates (puts) or deletes
-    #     self.API_MKEY = self.policyid
-    #
-    #     conf = self.get_api_config_add()
-    #     return conf
-    #
-    # def get_cli_config_del(self):
-    #     conf = ''
-    #     if self.policyid:
-    #         if self.vdom: conf += "config vdom\nedit {}\n".format(self.vdom)
-    #         conf += "config system interface\n"
-    #         conf += "delete {}\n".format(self.policyid)
-    #         conf += "end\n"
-    #         if self.vdom: conf += "end\n"
-    #         return conf
-    #     else:
-    #         raise Exception("Policy id must be set in order to configure it for delete")
-    #
-    # def get_api_config_del(self):
-    #     conf = {'api': self.API, 'path': self.API_PATH, 'name': self.API_NAME, 'mkey': self.API_MKEY, 'action': None}
-    #     data = {}
-    #     params = {}
-    #
-    #     # Set the VDOM, if necessary
-    #     if self.vdom:
-    #         params.update({'vdom': self.vdom})
-    #         data.update({'vdom': self.vdom})
-    #
-    #     if self.policyid:
-    #         # Set the mkey value to interface name and updated other vars
-    #         conf['mkey'] = self.policyid
-    #         conf.update({'data': data})
-    #         conf.update({'parameters': params})
-    #
-    #     else:
-    #         raise Exception("policy \"id\" must be set in order get or delete an existing policy")
-    #
-    #     return conf
-    #
-    # def get_api_config_get(self):
-    #     conf = self.get_api_config_del()
-    #     return conf
+        Args:
+            negate (bool): True = (enable negating), False = (disable negating)
+            obj_type (str): Name of self attribute representing negate to be set (ex. self.srcaddr_negate)
+
+        Returns:
+            None
+        """
+        if negate:
+            if obj_type:
+                if isinstance(negate, bool):
+                    # Set self.<obj_type> attribute with negate bool value
+                    setattr(self, obj_type, negate)
+                else:
+                    raise ValueError("\"negate\", when set, must be type bool")
+        else:
+            setattr(self, obj_type, None)
+
