@@ -26,9 +26,8 @@
 </summary>
 <pre><code class="python">from fgobjlib import FgObject
 
-
 class FgVdomLink(FgObject):
-    &#34;&#34;&#34; FgInterface class represents FortiGate system vdom-link object and provides methods for validating parameters
+    &#34;&#34;&#34; FgVdomLink class represents FortiGate system vdom-link object and provides methods for validating parameters
     and generating both cli and api configuration data for use in external configuration applications
 
     Attributes:
@@ -36,7 +35,7 @@ class FgVdomLink(FgObject):
         vdom_enabled (bool):  Vdom enabled on target object True or False
     &#34;&#34;&#34;
 
-    def __init__(self, name: str = None, vdom_enabled: bool = None):
+    def __init__(self, name: str = None, vlink_type: str = None, vdom_enabled: bool = None):
         &#34;&#34;&#34;
         Args:
             name (str): Name of vdom-link object
@@ -51,12 +50,14 @@ class FgVdomLink(FgObject):
 
         ### Set parent class attributes ###
         # Map instance attribute names to fg attribute names
-        self.data_attrs = {&#39;name&#39;: &#39;name&#39;}
+        self.data_attrs = {&#39;name&#39;: &#39;name&#39;, &#39;vlink_type&#39;: &#39;type&#39;}
         self.cli_ignore_attrs = []
+
         if vdom_enabled == True: self.vdom_enabled = True
 
         # Set instance attributes
         self.set_name(name)
+        self.set_vlink_type(vlink_type)
 
     def set_name(self, name):
         &#34;&#34;&#34; Set self.name to name if name is valid
@@ -77,7 +78,18 @@ class FgVdomLink(FgObject):
             else:
                 raise Exception(&#34;\&#34;name\&#34;, must be a string&#34;)
         else:
-            raise Exception(&#34;Value \&#34;name\&#34; is required but was not provided&#34;)</code></pre>
+            raise Exception(&#34;Value \&#34;name\&#34; is required but was not provided&#34;)
+
+    def set_vlink_type(self, vlink_type):
+        if vlink_type:
+            if vlink_type.lower() == &#39;ppp&#39;:
+                self.vlink_type = &#39;ppp&#39;
+            elif vlink_type.lower() == &#39;ethernet&#39; or vlink_type == &#39;eth&#39;:
+                self.vlink_type = &#39;ethernet&#39;
+            else:
+                raise ValueError(&#34;\&#34;vlink_type\&#34;, when set, must be either ppp or ethernet&#34;)
+        else:
+            self.vlink_type = None</code></pre>
 </details>
 </section>
 <section>
@@ -91,10 +103,10 @@ class FgVdomLink(FgObject):
 <dl>
 <dt id="fgobjlib.fg_sys_vdomlink.FgVdomLink"><code class="flex name class">
 <span>class <span class="ident">FgVdomLink</span></span>
-<span>(</span><span>name=None, vdom_enabled=None)</span>
+<span>(</span><span>name=None, vlink_type=None, vdom_enabled=None)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>FgInterface class represents FortiGate system vdom-link object and provides methods for validating parameters
+<section class="desc"><p>FgVdomLink class represents FortiGate system vdom-link object and provides methods for validating parameters
 and generating both cli and api configuration data for use in external configuration applications</p>
 <h2 id="attributes">Attributes</h2>
 <dl>
@@ -116,7 +128,7 @@ Set to True if VDOMS enabled False if not.</dd>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class FgVdomLink(FgObject):
-    &#34;&#34;&#34; FgInterface class represents FortiGate system vdom-link object and provides methods for validating parameters
+    &#34;&#34;&#34; FgVdomLink class represents FortiGate system vdom-link object and provides methods for validating parameters
     and generating both cli and api configuration data for use in external configuration applications
 
     Attributes:
@@ -124,7 +136,7 @@ Set to True if VDOMS enabled False if not.</dd>
         vdom_enabled (bool):  Vdom enabled on target object True or False
     &#34;&#34;&#34;
 
-    def __init__(self, name: str = None, vdom_enabled: bool = None):
+    def __init__(self, name: str = None, vlink_type: str = None, vdom_enabled: bool = None):
         &#34;&#34;&#34;
         Args:
             name (str): Name of vdom-link object
@@ -139,12 +151,14 @@ Set to True if VDOMS enabled False if not.</dd>
 
         ### Set parent class attributes ###
         # Map instance attribute names to fg attribute names
-        self.data_attrs = {&#39;name&#39;: &#39;name&#39;}
+        self.data_attrs = {&#39;name&#39;: &#39;name&#39;, &#39;vlink_type&#39;: &#39;type&#39;}
         self.cli_ignore_attrs = []
+
         if vdom_enabled == True: self.vdom_enabled = True
 
         # Set instance attributes
         self.set_name(name)
+        self.set_vlink_type(vlink_type)
 
     def set_name(self, name):
         &#34;&#34;&#34; Set self.name to name if name is valid
@@ -165,7 +179,18 @@ Set to True if VDOMS enabled False if not.</dd>
             else:
                 raise Exception(&#34;\&#34;name\&#34;, must be a string&#34;)
         else:
-            raise Exception(&#34;Value \&#34;name\&#34; is required but was not provided&#34;)</code></pre>
+            raise Exception(&#34;Value \&#34;name\&#34; is required but was not provided&#34;)
+
+    def set_vlink_type(self, vlink_type):
+        if vlink_type:
+            if vlink_type.lower() == &#39;ppp&#39;:
+                self.vlink_type = &#39;ppp&#39;
+            elif vlink_type.lower() == &#39;ethernet&#39; or vlink_type == &#39;eth&#39;:
+                self.vlink_type = &#39;ethernet&#39;
+            else:
+                raise ValueError(&#34;\&#34;vlink_type\&#34;, when set, must be either ppp or ethernet&#34;)
+        else:
+            self.vlink_type = None</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -214,6 +239,27 @@ Set to True if VDOMS enabled False if not.</dd>
         raise Exception(&#34;Value \&#34;name\&#34; is required but was not provided&#34;)</code></pre>
 </details>
 </dd>
+<dt id="fgobjlib.fg_sys_vdomlink.FgVdomLink.set_vlink_type"><code class="name flex">
+<span>def <span class="ident">set_vlink_type</span></span>(<span>self, vlink_type)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_vlink_type(self, vlink_type):
+    if vlink_type:
+        if vlink_type.lower() == &#39;ppp&#39;:
+            self.vlink_type = &#39;ppp&#39;
+        elif vlink_type.lower() == &#39;ethernet&#39; or vlink_type == &#39;eth&#39;:
+            self.vlink_type = &#39;ethernet&#39;
+        else:
+            raise ValueError(&#34;\&#34;vlink_type\&#34;, when set, must be either ppp or ethernet&#34;)
+    else:
+        self.vlink_type = None</code></pre>
+</details>
+</dd>
 </dl>
 <h3>Inherited members</h3>
 <ul class="hlist">
@@ -251,6 +297,7 @@ Set to True if VDOMS enabled False if not.</dd>
 <h4><code><a title="fgobjlib.fg_sys_vdomlink.FgVdomLink" href="#fgobjlib.fg_sys_vdomlink.FgVdomLink">FgVdomLink</a></code></h4>
 <ul class="">
 <li><code><a title="fgobjlib.fg_sys_vdomlink.FgVdomLink.set_name" href="#fgobjlib.fg_sys_vdomlink.FgVdomLink.set_name">set_name</a></code></li>
+<li><code><a title="fgobjlib.fg_sys_vdomlink.FgVdomLink.set_vlink_type" href="#fgobjlib.fg_sys_vdomlink.FgVdomLink.set_vlink_type">set_vlink_type</a></code></li>
 </ul>
 </li>
 </ul>

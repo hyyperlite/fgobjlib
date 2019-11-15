@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.7.1" />
-<title>fgobjlib.fg_sys_vdom_link API documentation</title>
+<title>fgobjlib.fg_sys_vdom API documentation</title>
 <meta name="description" content="" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
@@ -17,7 +17,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>fgobjlib.fg_sys_vdom_link</code></h1>
+<h1 class="title">Module <code>fgobjlib.fg_sys_vdom</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
@@ -26,25 +26,25 @@
 </summary>
 <pre><code class="python">from fgobjlib import FgObject
 
-
-class FgVdomLink(FgObject):
-    &#34;&#34;&#34; FgInterface class represents FortiGate system vdom-link object and provides methods for validating parameters
+class FgVdom(FgObject):
+    &#34;&#34;&#34; FGVdom class represents a FortiGate VDOM object and provides methods for validating parameters
     and generating both cli and api configuration data for use in external configuration applications
+
+    Note: VDOMs must be enabled on FortiGate prior to using results from this object for configuring FortiGates
 
     Attributes:
         name (str): Name of vdom-link object
-        vdom_enabled (bool):  Vdom enabled on target object True or False
     &#34;&#34;&#34;
 
-    def __init__(self, name: str = None, vdom_enabled: bool = None):
+    def __init__(self, name: str = None):
         &#34;&#34;&#34;
         Args:
-            name (str): Name of vdom-link object
-            vdom_enabled (bool): VDOMs enabled on target FortiGate?  Set to True if VDOMS enabled False if not.
+            name (str): Name of vdom
+            vdom_enabled (bool): VDOMs enabled on target FortiGate?  Set to True if VDOMs enabled False if not.
         &#34;&#34;&#34;
 
         # Initialize the parent class
-        super().__init__(api=&#39;cmdb&#39;, api_path=&#39;system&#39;, api_name=&#39;vdom-link&#39;, cli_path=&#34;config system vdom-link&#34;,
+        super().__init__(api=&#39;cmdb&#39;, api_path=&#39;system&#39;, api_name=&#39;vdom&#39;, cli_path=&#34;config vdom&#34;,
                          vdom=&#39;global&#39;, obj_id=name)
 
 
@@ -52,32 +52,38 @@ class FgVdomLink(FgObject):
         ### Set parent class attributes ###
         # Map instance attribute names to fg attribute names
         self.data_attrs = {&#39;name&#39;: &#39;name&#39;}
-        self.cli_ignore_attrs = []
-        if vdom_enabled == True: self.vdom_enabled = True
+        self.cli_ignore_attrs = [&#39;name&#39;]
+
+        # Enable global config instead of per VDOM
+        self.is_global = True
 
         # Set instance attributes
         self.set_name(name)
+
 
     def set_name(self, name):
         &#34;&#34;&#34; Set self.name to name if name is valid
 
         Args:
-            name (str): Name of vdom-link
+            name (str): Name of vdom
 
         Returns:
             None
         &#34;&#34;&#34;
         if name:
-            if name.isspace(): raise Exception(&#34;\&#34;intf\&#34;, cannot be an empty string&#34;)
+            if name.isspace(): raise ValueError(&#34;\&#34;name\&#34;, cannot be an empty string&#34;)
+            for char in name:
+                if char.isspace():
+                    raise ValueError(&#34;\&#34;name\&#34; may not contain spaces&#34;)
             if isinstance(name, str):
-                if 1 &lt;= len(name) &lt;= 11:
+                if 1 &lt;= len(name) &lt;= 31:
                     self.name = name
                 else:
-                    raise Exception(&#34;\&#34;name\&#34;, must be less than or equal to 11 chars&#34;)
+                    raise ValueError(&#34;\&#34;name\&#34;, must be less than or equal to 31 chars&#34;)
             else:
-                raise Exception(&#34;\&#34;name\&#34;, must be a string&#34;)
+                raise ValueError(&#34;\&#34;name\&#34;, must be a string&#34;)
         else:
-            raise Exception(&#34;Value \&#34;name\&#34; is required but was not provided&#34;)</code></pre>
+            raise ValueError(&#34;Value \&#34;name\&#34; is required but was not provided&#34;)</code></pre>
 </details>
 </section>
 <section>
@@ -89,50 +95,50 @@ class FgVdomLink(FgObject):
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="fgobjlib.fg_sys_vdom_link.FgVdomLink"><code class="flex name class">
-<span>class <span class="ident">FgVdomLink</span></span>
-<span>(</span><span>name=None, vdom_enabled=None)</span>
+<dt id="fgobjlib.fg_sys_vdom.FgVdom"><code class="flex name class">
+<span>class <span class="ident">FgVdom</span></span>
+<span>(</span><span>name=None)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>FgInterface class represents FortiGate system vdom-link object and provides methods for validating parameters
+<section class="desc"><p>FGVdom class represents a FortiGate VDOM object and provides methods for validating parameters
 and generating both cli and api configuration data for use in external configuration applications</p>
+<p>Note: VDOMs must be enabled on FortiGate prior to using results from this object for configuring FortiGates</p>
 <h2 id="attributes">Attributes</h2>
 <dl>
 <dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
 <dd>Name of vdom-link object</dd>
-<dt><strong><code>vdom_enabled</code></strong> :&ensp;<code>bool</code></dt>
-<dd>Vdom enabled on target object True or False</dd>
 </dl>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
-<dd>Name of vdom-link object</dd>
+<dd>Name of vdom</dd>
 <dt><strong><code>vdom_enabled</code></strong> :&ensp;<code>bool</code></dt>
 <dd>VDOMs enabled on target FortiGate?
-Set to True if VDOMS enabled False if not.</dd>
+Set to True if VDOMs enabled False if not.</dd>
 </dl></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class FgVdomLink(FgObject):
-    &#34;&#34;&#34; FgInterface class represents FortiGate system vdom-link object and provides methods for validating parameters
+<pre><code class="python">class FgVdom(FgObject):
+    &#34;&#34;&#34; FGVdom class represents a FortiGate VDOM object and provides methods for validating parameters
     and generating both cli and api configuration data for use in external configuration applications
+
+    Note: VDOMs must be enabled on FortiGate prior to using results from this object for configuring FortiGates
 
     Attributes:
         name (str): Name of vdom-link object
-        vdom_enabled (bool):  Vdom enabled on target object True or False
     &#34;&#34;&#34;
 
-    def __init__(self, name: str = None, vdom_enabled: bool = None):
+    def __init__(self, name: str = None):
         &#34;&#34;&#34;
         Args:
-            name (str): Name of vdom-link object
-            vdom_enabled (bool): VDOMs enabled on target FortiGate?  Set to True if VDOMS enabled False if not.
+            name (str): Name of vdom
+            vdom_enabled (bool): VDOMs enabled on target FortiGate?  Set to True if VDOMs enabled False if not.
         &#34;&#34;&#34;
 
         # Initialize the parent class
-        super().__init__(api=&#39;cmdb&#39;, api_path=&#39;system&#39;, api_name=&#39;vdom-link&#39;, cli_path=&#34;config system vdom-link&#34;,
+        super().__init__(api=&#39;cmdb&#39;, api_path=&#39;system&#39;, api_name=&#39;vdom&#39;, cli_path=&#34;config vdom&#34;,
                          vdom=&#39;global&#39;, obj_id=name)
 
 
@@ -140,32 +146,38 @@ Set to True if VDOMS enabled False if not.</dd>
         ### Set parent class attributes ###
         # Map instance attribute names to fg attribute names
         self.data_attrs = {&#39;name&#39;: &#39;name&#39;}
-        self.cli_ignore_attrs = []
-        if vdom_enabled == True: self.vdom_enabled = True
+        self.cli_ignore_attrs = [&#39;name&#39;]
+
+        # Enable global config instead of per VDOM
+        self.is_global = True
 
         # Set instance attributes
         self.set_name(name)
+
 
     def set_name(self, name):
         &#34;&#34;&#34; Set self.name to name if name is valid
 
         Args:
-            name (str): Name of vdom-link
+            name (str): Name of vdom
 
         Returns:
             None
         &#34;&#34;&#34;
         if name:
-            if name.isspace(): raise Exception(&#34;\&#34;intf\&#34;, cannot be an empty string&#34;)
+            if name.isspace(): raise ValueError(&#34;\&#34;name\&#34;, cannot be an empty string&#34;)
+            for char in name:
+                if char.isspace():
+                    raise ValueError(&#34;\&#34;name\&#34; may not contain spaces&#34;)
             if isinstance(name, str):
-                if 1 &lt;= len(name) &lt;= 11:
+                if 1 &lt;= len(name) &lt;= 31:
                     self.name = name
                 else:
-                    raise Exception(&#34;\&#34;name\&#34;, must be less than or equal to 11 chars&#34;)
+                    raise ValueError(&#34;\&#34;name\&#34;, must be less than or equal to 31 chars&#34;)
             else:
-                raise Exception(&#34;\&#34;name\&#34;, must be a string&#34;)
+                raise ValueError(&#34;\&#34;name\&#34;, must be a string&#34;)
         else:
-            raise Exception(&#34;Value \&#34;name\&#34; is required but was not provided&#34;)</code></pre>
+            raise ValueError(&#34;Value \&#34;name\&#34; is required but was not provided&#34;)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -173,7 +185,7 @@ Set to True if VDOMS enabled False if not.</dd>
 </ul>
 <h3>Methods</h3>
 <dl>
-<dt id="fgobjlib.fg_sys_vdom_link.FgVdomLink.set_name"><code class="name flex">
+<dt id="fgobjlib.fg_sys_vdom.FgVdom.set_name"><code class="name flex">
 <span>def <span class="ident">set_name</span></span>(<span>self, name)</span>
 </code></dt>
 <dd>
@@ -181,7 +193,7 @@ Set to True if VDOMS enabled False if not.</dd>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
-<dd>Name of vdom-link</dd>
+<dd>Name of vdom</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -196,22 +208,25 @@ Set to True if VDOMS enabled False if not.</dd>
     &#34;&#34;&#34; Set self.name to name if name is valid
 
     Args:
-        name (str): Name of vdom-link
+        name (str): Name of vdom
 
     Returns:
         None
     &#34;&#34;&#34;
     if name:
-        if name.isspace(): raise Exception(&#34;\&#34;intf\&#34;, cannot be an empty string&#34;)
+        if name.isspace(): raise ValueError(&#34;\&#34;name\&#34;, cannot be an empty string&#34;)
+        for char in name:
+            if char.isspace():
+                raise ValueError(&#34;\&#34;name\&#34; may not contain spaces&#34;)
         if isinstance(name, str):
-            if 1 &lt;= len(name) &lt;= 11:
+            if 1 &lt;= len(name) &lt;= 31:
                 self.name = name
             else:
-                raise Exception(&#34;\&#34;name\&#34;, must be less than or equal to 11 chars&#34;)
+                raise ValueError(&#34;\&#34;name\&#34;, must be less than or equal to 31 chars&#34;)
         else:
-            raise Exception(&#34;\&#34;name\&#34;, must be a string&#34;)
+            raise ValueError(&#34;\&#34;name\&#34;, must be a string&#34;)
     else:
-        raise Exception(&#34;Value \&#34;name\&#34; is required but was not provided&#34;)</code></pre>
+        raise ValueError(&#34;Value \&#34;name\&#34; is required but was not provided&#34;)</code></pre>
 </details>
 </dd>
 </dl>
@@ -248,9 +263,9 @@ Set to True if VDOMS enabled False if not.</dd>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="fgobjlib.fg_sys_vdom_link.FgVdomLink" href="#fgobjlib.fg_sys_vdom_link.FgVdomLink">FgVdomLink</a></code></h4>
+<h4><code><a title="fgobjlib.fg_sys_vdom.FgVdom" href="#fgobjlib.fg_sys_vdom.FgVdom">FgVdom</a></code></h4>
 <ul class="">
-<li><code><a title="fgobjlib.fg_sys_vdom_link.FgVdomLink.set_name" href="#fgobjlib.fg_sys_vdom_link.FgVdomLink.set_name">set_name</a></code></li>
+<li><code><a title="fgobjlib.fg_sys_vdom.FgVdom.set_name" href="#fgobjlib.fg_sys_vdom.FgVdom.set_name">set_name</a></code></li>
 </ul>
 </li>
 </ul>
