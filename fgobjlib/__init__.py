@@ -7,3 +7,4 @@ from .fg_fw_service import FgFwService
 from .fg_vpn_ipsec_p1_interface import FgIpsecP1Interface
 from .fg_vpn_ipsec_p2_interface import FgIpsecP2Interface
 from .fg_sys_vdomlink import FgVdomLink
+from .fg_sys_vdom import FgVdom

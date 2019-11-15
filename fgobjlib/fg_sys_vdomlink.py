@@ -1,8 +1,7 @@
 from fgobjlib import FgObject
 
-
 class FgVdomLink(FgObject):
-    """ FgInterface class represents FortiGate system vdom-link object and provides methods for validating parameters
+    """ FgVdomLink class represents FortiGate system vdom-link object and provides methods for validating parameters
     and generating both cli and api configuration data for use in external configuration applications
 
     Attributes:
@@ -10,7 +9,7 @@ class FgVdomLink(FgObject):
         vdom_enabled (bool):  Vdom enabled on target object True or False
     """
 
-    def __init__(self, name: str = None, vdom_enabled: bool = None):
+    def __init__(self, name: str = None, vlink_type: str = None, vdom_enabled: bool = None):
         """
         Args:
             name (str): Name of vdom-link object
@@ -25,12 +24,14 @@ class FgVdomLink(FgObject):
 
         ### Set parent class attributes ###
         # Map instance attribute names to fg attribute names
-        self.data_attrs = {'name': 'name'}
+        self.data_attrs = {'name': 'name', 'vlink_type': 'type'}
         self.cli_ignore_attrs = []
+
         if vdom_enabled == True: self.vdom_enabled = True
 
         # Set instance attributes
         self.set_name(name)
+        self.set_vlink_type(vlink_type)
 
     def set_name(self, name):
         """ Set self.name to name if name is valid
@@ -53,3 +54,13 @@ class FgVdomLink(FgObject):
         else:
             raise Exception("Value \"name\" is required but was not provided")
 
+    def set_vlink_type(self, vlink_type):
+        if vlink_type:
+            if vlink_type.lower() == 'ppp':
+                self.vlink_type = 'ppp'
+            elif vlink_type.lower() == 'ethernet' or vlink_type == 'eth':
+                self.vlink_type = 'ethernet'
+            else:
+                raise ValueError("\"vlink_type\", when set, must be either ppp or ethernet")
+        else:
+            self.vlink_type = None

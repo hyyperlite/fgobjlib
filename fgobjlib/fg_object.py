@@ -50,6 +50,7 @@ class FgObject:
         # these allow to determine if cli should use "config system global" or just configure the object
         # depending on whether vdom is enabled
         self.vdom_enabled = None
+        self.is_global = None
 
         # Map of instance attribute names to fg attribute names
         self.data_attrs = {}
@@ -116,7 +117,9 @@ class FgObject:
         params = {}
 
         # Set the VDOM, if necessary
-        if self.vdom:
+        if self.is_global:
+            pass
+        elif self.vdom:
             if self.vdom == 'global':
                 pass
             else:
@@ -341,9 +344,9 @@ class FgObject:
             if self.vdom:
                 if self.vdom == 'global' and self.vdom_enabled:
                     conf += "config global\n"
-            else:
-                conf += "config vdom\n"
-                conf += " edit {} \n".format(self.vdom)
+                else:
+                    conf += "config vdom\n"
+                    conf += " edit {} \n".format(self.vdom)
 
             conf += "{}\n".format(self.CLI_PATH)
             conf += "  delete {}\n".format(self.obj_id)

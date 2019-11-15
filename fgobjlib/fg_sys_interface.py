@@ -27,7 +27,7 @@ class FgInterfaceIpv4(FgObject):
 
     def __init__(self, name: str = None, ip: str = None, mode: str = None, intf_type: str = None, vdom: str = None,
                  vrf: int = None, allowaccess: str = None, role: str = None, vlanid: int = None, phys_intf: str = None,
-                 device_ident: bool = None, alias: str = None, description: str = None):
+                 device_ident: bool = None, alias: str = None, description: str = None, is_global: bool = None):
         """
         Args:
             name (str): Name of interface
@@ -56,7 +56,12 @@ class FgInterfaceIpv4(FgObject):
                            'phys_intf': 'interface', 'device_ident': 'device-identification',
                            'alias': 'alias', 'description': 'description'}
 
+        # Attributes to ignore for cli config
         self.cli_ignore_attrs = ['name']
+
+        # For objects types that can be configured from global or vdom context,
+        # set is_global = True if need to config from global context instead of vdom
+        self.is_global = is_global
 
         # Set instance attributes
         self.set_name(name)
@@ -212,7 +217,7 @@ class FgInterfaceIpv4(FgObject):
 
         """
         if role:
-            if role.lower == 'wan':
+            if role.lower() == 'wan':
                 self.role = 'wan'
             elif role.lower() == 'lan':
                 self.role = 'lan'
