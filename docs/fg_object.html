@@ -34,14 +34,15 @@
     is extended by the specific FortiGate object child classes such as FgFwPolicy.
 
     Attributes:
-        API: string representing the FortiGate API to be called.  (this will almost always be &#39;cmdb&#39;)
-        API_PATH: string representing the api path associated with this object. (ex. system, router, firewall, etc..)
-        API_NAME: string representing the object type within the api_path to add/update/delete/get.
+        API (str): string representing the FortiGate API to be called.  (this will almost always be &#39;cmdb&#39;)
+        API_PATH (str): string representing the api path associated with this object. (ex. system, router, firewall, etc..)
+        API_NAME (str): string representing the object type within the api_path to add/update/delete/get.
         API_MKEY: updated with object_id for update/delete/get operations
-        CLI_PATH:  string with base FG cli context configurations for this object (ex: &#34;config system interface&#34;)
+        CLI_PATH (str):  string with base FG cli context configurations for this object (ex: &#34;config system interface&#34;)
         obj_id: this may be string, integer or other type that defines the object ID for use in api and cli config.
         vdom: defines the vdom this object is to be configured/updated/deleted/got from.
-        vdom_enabled: used for objects configured from global context to determine correct cli config path
+        vdom_enabled: used for objects which &#34;may&#34; be configured from global context to determine correct cli config path
+        is_global (bool): Set if the object should be configured from global context only
         data_attrs: the attributes from child classes to be used in generating configurations
         cli_ignore_attrs: attributes from child classes that should be ignored
 &#34;&#34;&#34;
@@ -417,23 +418,25 @@ data are also within this FgObject class. This class is typically not called dir
 is extended by the specific FortiGate object child classes such as FgFwPolicy.</p>
 <h2 id="attributes">Attributes</h2>
 <dl>
-<dt><strong><code>API</code></strong></dt>
+<dt><strong><code>API</code></strong> :&ensp;<code>str</code></dt>
 <dd>string representing the FortiGate API to be called.
 (this will almost always be 'cmdb')</dd>
-<dt><strong><code>API_PATH</code></strong></dt>
+<dt><strong><code>API_PATH</code></strong> :&ensp;<code>str</code></dt>
 <dd>string representing the api path associated with this object. (ex. system, router, firewall, etc..)</dd>
-<dt><strong><code>API_NAME</code></strong></dt>
+<dt><strong><code>API_NAME</code></strong> :&ensp;<code>str</code></dt>
 <dd>string representing the object type within the api_path to add/update/delete/get.</dd>
 <dt><strong><code>API_MKEY</code></strong></dt>
 <dd>updated with object_id for update/delete/get operations</dd>
-<dt><strong><code>CLI_PATH</code></strong></dt>
+<dt><strong><code>CLI_PATH</code></strong> :&ensp;<code>str</code></dt>
 <dd>string with base FG cli context configurations for this object (ex: "config system interface")</dd>
 <dt><strong><code>obj_id</code></strong></dt>
 <dd>this may be string, integer or other type that defines the object ID for use in api and cli config.</dd>
 <dt><strong><code>vdom</code></strong></dt>
 <dd>defines the vdom this object is to be configured/updated/deleted/got from.</dd>
 <dt><strong><code>vdom_enabled</code></strong></dt>
-<dd>used for objects configured from global context to determine correct cli config path</dd>
+<dd>used for objects which "may" be configured from global context to determine correct cli config path</dd>
+<dt><strong><code>is_global</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Set if the object should be configured from global context only</dd>
 <dt><strong><code>data_attrs</code></strong></dt>
 <dd>the attributes from child classes to be used in generating configurations</dd>
 <dt><strong><code>cli_ignore_attrs</code></strong></dt>
@@ -470,14 +473,15 @@ is extended by the specific FortiGate object child classes such as FgFwPolicy.</
     is extended by the specific FortiGate object child classes such as FgFwPolicy.
 
     Attributes:
-        API: string representing the FortiGate API to be called.  (this will almost always be &#39;cmdb&#39;)
-        API_PATH: string representing the api path associated with this object. (ex. system, router, firewall, etc..)
-        API_NAME: string representing the object type within the api_path to add/update/delete/get.
+        API (str): string representing the FortiGate API to be called.  (this will almost always be &#39;cmdb&#39;)
+        API_PATH (str): string representing the api path associated with this object. (ex. system, router, firewall, etc..)
+        API_NAME (str): string representing the object type within the api_path to add/update/delete/get.
         API_MKEY: updated with object_id for update/delete/get operations
-        CLI_PATH:  string with base FG cli context configurations for this object (ex: &#34;config system interface&#34;)
+        CLI_PATH (str):  string with base FG cli context configurations for this object (ex: &#34;config system interface&#34;)
         obj_id: this may be string, integer or other type that defines the object ID for use in api and cli config.
         vdom: defines the vdom this object is to be configured/updated/deleted/got from.
-        vdom_enabled: used for objects configured from global context to determine correct cli config path
+        vdom_enabled: used for objects which &#34;may&#34; be configured from global context to determine correct cli config path
+        is_global (bool): Set if the object should be configured from global context only
         data_attrs: the attributes from child classes to be used in generating configurations
         cli_ignore_attrs: attributes from child classes that should be ignored
 &#34;&#34;&#34;

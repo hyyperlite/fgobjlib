@@ -47,16 +47,17 @@ class FgFwService(FgObject):
             protocol_number (int):  IP protocol Number
             comment (str): Comment for this object
             visibility (bool): Visibility of this object in GUI.  True=visible, False=hidden
-            session_ttl (int):  Session TTL for TCP seessions
+            session_ttl (int):  Session TTL for TCP sessions
             udp_idle_timer (int): Idle timer setting for UDP sessions
             category (str): Category to assign service object to in FG
-            icmp_type (int): Value of icmp type.  Used when self&#39;s protocol is &#39;icmp&#39;
+            icmptype (int): Value of icmp type.  Used when self&#39;s protocol is &#39;icmp&#39;
+            icmpcode (int): Value of icmp type.  Used when self&#39;s protocol is &#39;icmp&#39;
     &#34;&#34;&#34;
 
     def __init__(self, name: str = None, vdom: str = None, protocol: str = None, tcp_portrange: list = None,
                  udp_portrange: list = None, sctp_portrange: list = None, protocol_number: int = None,
                  comment: str = None, visibility: bool = None, session_ttl: int = None, udp_idle_timer: int = None,
-                 category: str = None, icmp_type: int = None):
+                 category: str = None, icmptype: int = None, icmpcode: int = None):
         &#34;&#34;&#34;
         Args:
             name (str): Name of this FG object
@@ -71,7 +72,8 @@ class FgFwService(FgObject):
             session_ttl (int):  Session TTL for TCP sessions
             udp_idle_timer (int): Idle timer setting for UDP sessions
             category (str): Category to assign service object to in FG
-            icmp_type (int): Value of icmp type.  Used when self&#39;s protocol is &#39;icmp&#39;
+            icmptype (int): Value of icmp type.  Used when self&#39;s protocol is &#39;icmp&#39;
+            icmpcode (int): Value of icmp code.  Used when self&#39;s protocol is &#39;icmp&#39;
         &#34;&#34;&#34;
 
         # Initialize the parent class
@@ -82,9 +84,9 @@ class FgFwService(FgObject):
         # Map instance attribute names to fg attribute names
         self.data_attrs = {&#39;name&#39;: &#39;name&#39;,  &#39;protocol&#39;: &#39;protocol&#39;, &#39;tcp_portrange&#39;: &#39;tcp-portrange&#39;,
                            &#39;udp_portrange&#39;: &#39;udp-portrange&#39;, &#39;sctp_portrange&#39;: &#39;sctp-portrange&#39;,
-                           &#39;icmp_type&#39;: &#39;icmp-type&#39;, &#39;comment&#39;: &#39;comments&#39;, &#39;visibility&#39;: &#39;visibility&#39;,
+                           &#39;icmptype&#39;: &#39;icmptype&#39;, &#39;comment&#39;: &#39;comments&#39;, &#39;visibility&#39;: &#39;visibility&#39;,
                            &#39;session_ttl&#39;: &#39;session-ttl&#39;, &#39;udp_idle_timer&#39;: &#39;udp-idle-timer&#39;, &#39;category&#39;: &#39;category&#39;,
-                           &#39;protocol_number&#39;: &#39;protocol-number&#39;}
+                           &#39;protocol_number&#39;: &#39;protocol-number&#39;, &#39;icmpcode&#39;: &#39;icmpcode&#39;}
 
         # Set attributes to ignore on CLI based configuration
         self.cli_ignore_attrs = []
@@ -101,7 +103,8 @@ class FgFwService(FgObject):
         self.set_session_ttl(session_ttl)
         self.set_udp_idle_timer(udp_idle_timer)
         self.set_category(category)
-        self.set_icmp_type(icmp_type)
+        self.set_icmptype(icmptype)
+        self.set_icmpcode(icmpcode)
 
 
     def set_name(self, name):
@@ -305,25 +308,45 @@ class FgFwService(FgObject):
         else:
             self.category = None
 
-    def set_icmp_type(self, icmp_type):
-        &#34;&#34;&#34; Set self.icmp_type to icmp_type if icmp_type valid
+    def set_icmptype(self, icmptype):
+        &#34;&#34;&#34; Set self.icmptype to icmp_type if icmptype valid
 
         Args:
-            icmp_type (int): ICMP type.   Integer between 0 and 255.
+            icmptype (int): ICMP type.   Integer between 0 and 255.
 
         Returns:
             None
         &#34;&#34;&#34;
-        if icmp_type:
-            if isinstance(icmp_type, int):
-                if 0 &lt;= icmp_type &lt;= 255:
-                    self.icmp_type = icmp_type
+        if icmptype:
+            if isinstance(icmptype, int):
+                if 0 &lt;= icmptype &lt;= 255:
+                    self.icmptype = icmptype
                 else:
-                    raise ValueError(&#34;\&#34;icmp_type\&#34;, when set, must be type int between 0 and 255&#34;)
+                    raise ValueError(&#34;\&#34;icmptype\&#34;, when set, must be type int between 0 and 255&#34;)
             else:
-                raise ValueError(&#34;\&#34;icmp_type\&#34;, when set, must be type int&#34;)
+                raise ValueError(&#34;\&#34;icmptype\&#34;, when set, must be type int&#34;)
         else:
-            self.icmp_type = None</code></pre>
+            self.icmptype = None
+
+    def set_icmpcode(self, icmpcode):
+        &#34;&#34;&#34; Set self.icmpcode to icmpcode if icmp_type valid
+
+        Args:
+            icmpcode (int): ICMP code.   Integer between 0 and 255.
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if icmpcode:
+            if isinstance(icmpcode, int):
+                if 0 &lt;= icmpcode &lt;= 255:
+                    self.icmpcode = icmpcode
+                else:
+                    raise ValueError(&#34;\&#34;icmpcode\&#34;, when set, must be type int between 0 and 255&#34;)
+            else:
+                raise ValueError(&#34;\&#34;icmpcode\&#34;, when set, must be type int&#34;)
+        else:
+            self.icmpcode = None</code></pre>
 </details>
 </section>
 <section>
@@ -337,7 +360,7 @@ class FgFwService(FgObject):
 <dl>
 <dt id="fgobjlib.fg_fw_service.FgFwService"><code class="flex name class">
 <span>class <span class="ident">FgFwService</span></span>
-<span>(</span><span>name=None, vdom=None, protocol=None, tcp_portrange=None, udp_portrange=None, sctp_portrange=None, protocol_number=None, comment=None, visibility=None, session_ttl=None, udp_idle_timer=None, category=None, icmp_type=None)</span>
+<span>(</span><span>name=None, vdom=None, protocol=None, tcp_portrange=None, udp_portrange=None, sctp_portrange=None, protocol_number=None, comment=None, visibility=None, session_ttl=None, udp_idle_timer=None, category=None, icmptype=None, icmpcode=None)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>FgFwService class represents FortiGate Firewall service custom object and provides methods for validating parameters
@@ -371,12 +394,15 @@ May be string or list of strings. ex. ['80', '1024-65553']</dd>
 <dd>Visibility of this object in GUI.
 True=visible, False=hidden</dd>
 <dt><strong><code>session_ttl</code></strong> :&ensp;<code>int</code></dt>
-<dd>Session TTL for TCP seessions</dd>
+<dd>Session TTL for TCP sessions</dd>
 <dt><strong><code>udp_idle_timer</code></strong> :&ensp;<code>int</code></dt>
 <dd>Idle timer setting for UDP sessions</dd>
 <dt><strong><code>category</code></strong> :&ensp;<code>str</code></dt>
 <dd>Category to assign service object to in FG</dd>
-<dt><strong><code>icmp_type</code></strong> :&ensp;<code>int</code></dt>
+<dt><strong><code>icmptype</code></strong> :&ensp;<code>int</code></dt>
+<dd>Value of icmp type.
+Used when self's protocol is 'icmp'</dd>
+<dt><strong><code>icmpcode</code></strong> :&ensp;<code>int</code></dt>
 <dd>Value of icmp type.
 Used when self's protocol is 'icmp'</dd>
 </dl>
@@ -411,8 +437,11 @@ True=visible, False=hidden</dd>
 <dd>Idle timer setting for UDP sessions</dd>
 <dt><strong><code>category</code></strong> :&ensp;<code>str</code></dt>
 <dd>Category to assign service object to in FG</dd>
-<dt><strong><code>icmp_type</code></strong> :&ensp;<code>int</code></dt>
+<dt><strong><code>icmptype</code></strong> :&ensp;<code>int</code></dt>
 <dd>Value of icmp type.
+Used when self's protocol is 'icmp'</dd>
+<dt><strong><code>icmpcode</code></strong> :&ensp;<code>int</code></dt>
+<dd>Value of icmp code.
 Used when self's protocol is 'icmp'</dd>
 </dl></section>
 <details class="source">
@@ -439,16 +468,17 @@ Used when self's protocol is 'icmp'</dd>
             protocol_number (int):  IP protocol Number
             comment (str): Comment for this object
             visibility (bool): Visibility of this object in GUI.  True=visible, False=hidden
-            session_ttl (int):  Session TTL for TCP seessions
+            session_ttl (int):  Session TTL for TCP sessions
             udp_idle_timer (int): Idle timer setting for UDP sessions
             category (str): Category to assign service object to in FG
-            icmp_type (int): Value of icmp type.  Used when self&#39;s protocol is &#39;icmp&#39;
+            icmptype (int): Value of icmp type.  Used when self&#39;s protocol is &#39;icmp&#39;
+            icmpcode (int): Value of icmp type.  Used when self&#39;s protocol is &#39;icmp&#39;
     &#34;&#34;&#34;
 
     def __init__(self, name: str = None, vdom: str = None, protocol: str = None, tcp_portrange: list = None,
                  udp_portrange: list = None, sctp_portrange: list = None, protocol_number: int = None,
                  comment: str = None, visibility: bool = None, session_ttl: int = None, udp_idle_timer: int = None,
-                 category: str = None, icmp_type: int = None):
+                 category: str = None, icmptype: int = None, icmpcode: int = None):
         &#34;&#34;&#34;
         Args:
             name (str): Name of this FG object
@@ -463,7 +493,8 @@ Used when self's protocol is 'icmp'</dd>
             session_ttl (int):  Session TTL for TCP sessions
             udp_idle_timer (int): Idle timer setting for UDP sessions
             category (str): Category to assign service object to in FG
-            icmp_type (int): Value of icmp type.  Used when self&#39;s protocol is &#39;icmp&#39;
+            icmptype (int): Value of icmp type.  Used when self&#39;s protocol is &#39;icmp&#39;
+            icmpcode (int): Value of icmp code.  Used when self&#39;s protocol is &#39;icmp&#39;
         &#34;&#34;&#34;
 
         # Initialize the parent class
@@ -474,9 +505,9 @@ Used when self's protocol is 'icmp'</dd>
         # Map instance attribute names to fg attribute names
         self.data_attrs = {&#39;name&#39;: &#39;name&#39;,  &#39;protocol&#39;: &#39;protocol&#39;, &#39;tcp_portrange&#39;: &#39;tcp-portrange&#39;,
                            &#39;udp_portrange&#39;: &#39;udp-portrange&#39;, &#39;sctp_portrange&#39;: &#39;sctp-portrange&#39;,
-                           &#39;icmp_type&#39;: &#39;icmp-type&#39;, &#39;comment&#39;: &#39;comments&#39;, &#39;visibility&#39;: &#39;visibility&#39;,
+                           &#39;icmptype&#39;: &#39;icmptype&#39;, &#39;comment&#39;: &#39;comments&#39;, &#39;visibility&#39;: &#39;visibility&#39;,
                            &#39;session_ttl&#39;: &#39;session-ttl&#39;, &#39;udp_idle_timer&#39;: &#39;udp-idle-timer&#39;, &#39;category&#39;: &#39;category&#39;,
-                           &#39;protocol_number&#39;: &#39;protocol-number&#39;}
+                           &#39;protocol_number&#39;: &#39;protocol-number&#39;, &#39;icmpcode&#39;: &#39;icmpcode&#39;}
 
         # Set attributes to ignore on CLI based configuration
         self.cli_ignore_attrs = []
@@ -493,7 +524,8 @@ Used when self's protocol is 'icmp'</dd>
         self.set_session_ttl(session_ttl)
         self.set_udp_idle_timer(udp_idle_timer)
         self.set_category(category)
-        self.set_icmp_type(icmp_type)
+        self.set_icmptype(icmptype)
+        self.set_icmpcode(icmpcode)
 
 
     def set_name(self, name):
@@ -697,25 +729,45 @@ Used when self's protocol is 'icmp'</dd>
         else:
             self.category = None
 
-    def set_icmp_type(self, icmp_type):
-        &#34;&#34;&#34; Set self.icmp_type to icmp_type if icmp_type valid
+    def set_icmptype(self, icmptype):
+        &#34;&#34;&#34; Set self.icmptype to icmp_type if icmptype valid
 
         Args:
-            icmp_type (int): ICMP type.   Integer between 0 and 255.
+            icmptype (int): ICMP type.   Integer between 0 and 255.
 
         Returns:
             None
         &#34;&#34;&#34;
-        if icmp_type:
-            if isinstance(icmp_type, int):
-                if 0 &lt;= icmp_type &lt;= 255:
-                    self.icmp_type = icmp_type
+        if icmptype:
+            if isinstance(icmptype, int):
+                if 0 &lt;= icmptype &lt;= 255:
+                    self.icmptype = icmptype
                 else:
-                    raise ValueError(&#34;\&#34;icmp_type\&#34;, when set, must be type int between 0 and 255&#34;)
+                    raise ValueError(&#34;\&#34;icmptype\&#34;, when set, must be type int between 0 and 255&#34;)
             else:
-                raise ValueError(&#34;\&#34;icmp_type\&#34;, when set, must be type int&#34;)
+                raise ValueError(&#34;\&#34;icmptype\&#34;, when set, must be type int&#34;)
         else:
-            self.icmp_type = None</code></pre>
+            self.icmptype = None
+
+    def set_icmpcode(self, icmpcode):
+        &#34;&#34;&#34; Set self.icmpcode to icmpcode if icmp_type valid
+
+        Args:
+            icmpcode (int): ICMP code.   Integer between 0 and 255.
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        if icmpcode:
+            if isinstance(icmpcode, int):
+                if 0 &lt;= icmpcode &lt;= 255:
+                    self.icmpcode = icmpcode
+                else:
+                    raise ValueError(&#34;\&#34;icmpcode\&#34;, when set, must be type int between 0 and 255&#34;)
+            else:
+                raise ValueError(&#34;\&#34;icmpcode\&#34;, when set, must be type int&#34;)
+        else:
+            self.icmpcode = None</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -804,14 +856,55 @@ String between 1 and 63 chars.</dd>
         self.comment = None</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_fw_service.FgFwService.set_icmp_type"><code class="name flex">
-<span>def <span class="ident">set_icmp_type</span></span>(<span>self, icmp_type)</span>
+<dt id="fgobjlib.fg_fw_service.FgFwService.set_icmpcode"><code class="name flex">
+<span>def <span class="ident">set_icmpcode</span></span>(<span>self, icmpcode)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Set self.icmp_type to icmp_type if icmp_type valid</p>
+<section class="desc"><p>Set self.icmpcode to icmpcode if icmp_type valid</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>icmp_type</code></strong> :&ensp;<code>int</code></dt>
+<dt><strong><code>icmpcode</code></strong> :&ensp;<code>int</code></dt>
+<dd>ICMP code.
+Integer between 0 and 255.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_icmpcode(self, icmpcode):
+    &#34;&#34;&#34; Set self.icmpcode to icmpcode if icmp_type valid
+
+    Args:
+        icmpcode (int): ICMP code.   Integer between 0 and 255.
+
+    Returns:
+        None
+    &#34;&#34;&#34;
+    if icmpcode:
+        if isinstance(icmpcode, int):
+            if 0 &lt;= icmpcode &lt;= 255:
+                self.icmpcode = icmpcode
+            else:
+                raise ValueError(&#34;\&#34;icmpcode\&#34;, when set, must be type int between 0 and 255&#34;)
+        else:
+            raise ValueError(&#34;\&#34;icmpcode\&#34;, when set, must be type int&#34;)
+    else:
+        self.icmpcode = None</code></pre>
+</details>
+</dd>
+<dt id="fgobjlib.fg_fw_service.FgFwService.set_icmptype"><code class="name flex">
+<span>def <span class="ident">set_icmptype</span></span>(<span>self, icmptype)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Set self.icmptype to icmp_type if icmptype valid</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>icmptype</code></strong> :&ensp;<code>int</code></dt>
 <dd>ICMP type.
 Integer between 0 and 255.</dd>
 </dl>
@@ -824,25 +917,25 @@ Integer between 0 and 255.</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_icmp_type(self, icmp_type):
-    &#34;&#34;&#34; Set self.icmp_type to icmp_type if icmp_type valid
+<pre><code class="python">def set_icmptype(self, icmptype):
+    &#34;&#34;&#34; Set self.icmptype to icmp_type if icmptype valid
 
     Args:
-        icmp_type (int): ICMP type.   Integer between 0 and 255.
+        icmptype (int): ICMP type.   Integer between 0 and 255.
 
     Returns:
         None
     &#34;&#34;&#34;
-    if icmp_type:
-        if isinstance(icmp_type, int):
-            if 0 &lt;= icmp_type &lt;= 255:
-                self.icmp_type = icmp_type
+    if icmptype:
+        if isinstance(icmptype, int):
+            if 0 &lt;= icmptype &lt;= 255:
+                self.icmptype = icmptype
             else:
-                raise ValueError(&#34;\&#34;icmp_type\&#34;, when set, must be type int between 0 and 255&#34;)
+                raise ValueError(&#34;\&#34;icmptype\&#34;, when set, must be type int between 0 and 255&#34;)
         else:
-            raise ValueError(&#34;\&#34;icmp_type\&#34;, when set, must be type int&#34;)
+            raise ValueError(&#34;\&#34;icmptype\&#34;, when set, must be type int&#34;)
     else:
-        self.icmp_type = None</code></pre>
+        self.icmptype = None</code></pre>
 </details>
 </dd>
 <dt id="fgobjlib.fg_fw_service.FgFwService.set_name"><code class="name flex">
@@ -1191,7 +1284,8 @@ Acceptable range = 0-86400</dd>
 <ul class="two-column">
 <li><code><a title="fgobjlib.fg_fw_service.FgFwService.set_category" href="#fgobjlib.fg_fw_service.FgFwService.set_category">set_category</a></code></li>
 <li><code><a title="fgobjlib.fg_fw_service.FgFwService.set_comment" href="#fgobjlib.fg_fw_service.FgFwService.set_comment">set_comment</a></code></li>
-<li><code><a title="fgobjlib.fg_fw_service.FgFwService.set_icmp_type" href="#fgobjlib.fg_fw_service.FgFwService.set_icmp_type">set_icmp_type</a></code></li>
+<li><code><a title="fgobjlib.fg_fw_service.FgFwService.set_icmpcode" href="#fgobjlib.fg_fw_service.FgFwService.set_icmpcode">set_icmpcode</a></code></li>
+<li><code><a title="fgobjlib.fg_fw_service.FgFwService.set_icmptype" href="#fgobjlib.fg_fw_service.FgFwService.set_icmptype">set_icmptype</a></code></li>
 <li><code><a title="fgobjlib.fg_fw_service.FgFwService.set_name" href="#fgobjlib.fg_fw_service.FgFwService.set_name">set_name</a></code></li>
 <li><code><a title="fgobjlib.fg_fw_service.FgFwService.set_portrange" href="#fgobjlib.fg_fw_service.FgFwService.set_portrange">set_portrange</a></code></li>
 <li><code><a title="fgobjlib.fg_fw_service.FgFwService.set_protocol" href="#fgobjlib.fg_fw_service.FgFwService.set_protocol">set_protocol</a></code></li>

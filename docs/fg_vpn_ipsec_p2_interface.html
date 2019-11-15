@@ -44,7 +44,7 @@ class FgIpsecP2Interface(FgObject):
         keepalive (int): keepalive in seconds
         replay (bool): replay protection (True=enabled, False=disable, None=inherit)
         comment (str): phase2 comment
-        auto_negotiation (bool): auto-negotiation (True=enabled, False=disabled, None=inherit)
+        auto_negotiate (bool): auto-negotiation (True=enabled, False=disabled, None=inherit)
         vdom (str): associated VDOM
         src_subnet (str):  source selector, for selectors type subnet
         dst_subnet (str): destination selector, for selectors type subnet
@@ -63,7 +63,7 @@ class FgIpsecP2Interface(FgObject):
             keepalive (int): keepalive in seconds
             replay (bool): replay protection (True=enabled, False=disable, None=inherit)
             comment (str): phase2 comment
-            auto_negotiation (bool): auto-negotiation (True=enabled, False=disabled, None=inherit)
+            auto_negotiate (bool): auto-negotiation (True=enabled, False=disabled, None=inherit)
             vdom (str): associated VDOM
             src_subnet (str):  source selector, for selectors type subnet
             dst_subnet (str): destination selector, for selectors type subnet
@@ -106,7 +106,7 @@ class FgIpsecP2Interface(FgObject):
         Returns:
             None
         &#34;&#34;&#34;
-        if name:
+        if not name is None:
             if name.isspace(): raise Exception(&#34;\&#34;name\&#34;, cannot be an empty string&#34;)
             if isinstance(name, str):
                 if len(name) &lt;= 35:
@@ -127,17 +127,17 @@ class FgIpsecP2Interface(FgObject):
         Returns:
             None
         &#34;&#34;&#34;
-        if phase1name:
+        if not phase1name is None:
             if phase1name.isspace(): raise Exception(&#34;\&#34;phase1_name\&#34;, cannot be an empty string&#34;)
             if isinstance(phase1name, str):
                 if len(phase1name) &lt;= 35:
                     self.phase1name = phase1name
                 else:
-                    raise Exception(&#34;\&#34;phase1_name\&#34;, must be less than 35 chars or less&#34;)
+                    raise Exception(&#34;\&#34;phase1name\&#34;, must be less than 35 chars or less&#34;)
             else:
-                raise Exception(&#34;\&#34;phase1_name\&#34;, must be a string&#34;)
+                raise Exception(&#34;\&#34;phase1name\&#34;, must be a string&#34;)
         else:
-            raise Exception(&#34;Value \&#34;phase1_name\&#34; is required but was not provided&#34;)
+            raise Exception(&#34;Value \&#34;phase1name\&#34; is required but was not provided&#34;)
 
     def set_proposal(self, proposal):
         &#34;&#34;&#34; Set self.proposal to proposal if proposal contains valid FG proposals
@@ -160,7 +160,7 @@ class FgIpsecP2Interface(FgObject):
                            &#39;null-sha512&#39;, &#39;des-null&#39;, &#39;3des-null&#39;, &#39;aes128-null&#39;, &#39;aes192-null&#39;, &#39;aes256-null&#39;,
                            &#39;aria128-null&#39;, &#39;seed-null&#39;]
 
-        if proposal:
+        if not proposal is None:
             proposal_items = &#39;&#39;
 
             # IF a single object was passed as a string, append it to intf_list else iterate the list and pull
@@ -191,7 +191,7 @@ class FgIpsecP2Interface(FgObject):
             self.proposal = proposal_items
 
         else:
-            raise Exception(&#34;\&#34;proposal\&#34; is required but not provided&#34;)
+            self.propsoal = None
 
     def set_dhgrp(self, dhgrp):
         &#34;&#34;&#34;  Set self.dhgrp to string containing values dhgrp if dhgrp contains valid FortiGate proposals
@@ -205,7 +205,7 @@ class FgIpsecP2Interface(FgObject):
         Returns:
             None
         &#34;&#34;&#34;
-        if dhgrp:
+        if not dhgrp is None:
             dhgrp_items = &#39;&#39;
             valid_dhgrps = [1, 2, 5, 14, 15, 16, 17, 18, 19, 20, 21, 27, 28, 30, 31, 32]
 
@@ -245,7 +245,7 @@ class FgIpsecP2Interface(FgObject):
         Returns:
             None
         &#34;&#34;&#34;
-        if comment:
+        if not comment is None:
             if isinstance(comment, str):
                 if 1 &lt;= len(comment) &lt;= 1023:
                     self.comment = comment
@@ -260,12 +260,12 @@ class FgIpsecP2Interface(FgObject):
         &#34;&#34;&#34; Set self.keepalive to keepalive if keepalive valid
 
         Args:
-            keepalive (str):  phase2-interface keepalive
+            keepalive (int):  phase2-interface keepalive
 
         Returns:
             None
         &#34;&#34;&#34;
-        if keepalive:
+        if not keepalive is None:
             if isinstance(keepalive, int):
                 if 10 &lt;= keepalive &lt;= 900:
                     self.keepalive = keepalive
@@ -285,7 +285,7 @@ class FgIpsecP2Interface(FgObject):
         Returns:
             None
         &#34;&#34;&#34;
-        if pfs:
+        if not pfs is None:
             if isinstance(pfs, bool):
                 self.pfs = &#39;enable&#39; if pfs else &#39;disable&#39;
             else:
@@ -302,7 +302,7 @@ class FgIpsecP2Interface(FgObject):
         Returns:
             None
         &#34;&#34;&#34;
-        if replay:
+        if not replay is None:
             if isinstance(replay, bool):
                 self.replay = &#39;enable&#39; if replay else &#39;disable&#39;
             else:
@@ -319,7 +319,7 @@ class FgIpsecP2Interface(FgObject):
         Returns:
         None
         &#34;&#34;&#34;
-        if auto_negotiate:
+        if not auto_negotiate is None:
             if isinstance(auto_negotiate, bool):
                 self.auto_negotiate = &#39;enable&#39; if auto_negotiate else &#39;disable&#39;
             else:
@@ -336,7 +336,7 @@ class FgIpsecP2Interface(FgObject):
         Returns:
             None
         &#34;&#34;&#34;
-        if src_subnet:
+        if not src_subnet is None:
             try:
                 ipaddress.ip_network(src_subnet)
             except ValueError:
@@ -355,7 +355,7 @@ class FgIpsecP2Interface(FgObject):
         Returns:
             None
         &#34;&#34;&#34;
-        if dst_subnet:
+        if not dst_subnet is None:
             try:
                 ipaddress.ip_network(dst_subnet)
             except ValueError:
@@ -402,7 +402,7 @@ applications and ftntlib</p>
 <dd>replay protection (True=enabled, False=disable, None=inherit)</dd>
 <dt><strong><code>comment</code></strong> :&ensp;<code>str</code></dt>
 <dd>phase2 comment</dd>
-<dt><strong><code>auto_negotiation</code></strong> :&ensp;<code>bool</code></dt>
+<dt><strong><code>auto_negotiate</code></strong> :&ensp;<code>bool</code></dt>
 <dd>auto-negotiation (True=enabled, False=disabled, None=inherit)</dd>
 <dt><strong><code>vdom</code></strong> :&ensp;<code>str</code></dt>
 <dd>associated VDOM</dd>
@@ -429,7 +429,7 @@ applications and ftntlib</p>
 <dd>replay protection (True=enabled, False=disable, None=inherit)</dd>
 <dt><strong><code>comment</code></strong> :&ensp;<code>str</code></dt>
 <dd>phase2 comment</dd>
-<dt><strong><code>auto_negotiation</code></strong> :&ensp;<code>bool</code></dt>
+<dt><strong><code>auto_negotiate</code></strong> :&ensp;<code>bool</code></dt>
 <dd>auto-negotiation (True=enabled, False=disabled, None=inherit)</dd>
 <dt><strong><code>vdom</code></strong> :&ensp;<code>str</code></dt>
 <dd>associated VDOM</dd>
@@ -459,7 +459,7 @@ applications and ftntlib</p>
         keepalive (int): keepalive in seconds
         replay (bool): replay protection (True=enabled, False=disable, None=inherit)
         comment (str): phase2 comment
-        auto_negotiation (bool): auto-negotiation (True=enabled, False=disabled, None=inherit)
+        auto_negotiate (bool): auto-negotiation (True=enabled, False=disabled, None=inherit)
         vdom (str): associated VDOM
         src_subnet (str):  source selector, for selectors type subnet
         dst_subnet (str): destination selector, for selectors type subnet
@@ -478,7 +478,7 @@ applications and ftntlib</p>
             keepalive (int): keepalive in seconds
             replay (bool): replay protection (True=enabled, False=disable, None=inherit)
             comment (str): phase2 comment
-            auto_negotiation (bool): auto-negotiation (True=enabled, False=disabled, None=inherit)
+            auto_negotiate (bool): auto-negotiation (True=enabled, False=disabled, None=inherit)
             vdom (str): associated VDOM
             src_subnet (str):  source selector, for selectors type subnet
             dst_subnet (str): destination selector, for selectors type subnet
@@ -521,7 +521,7 @@ applications and ftntlib</p>
         Returns:
             None
         &#34;&#34;&#34;
-        if name:
+        if not name is None:
             if name.isspace(): raise Exception(&#34;\&#34;name\&#34;, cannot be an empty string&#34;)
             if isinstance(name, str):
                 if len(name) &lt;= 35:
@@ -542,17 +542,17 @@ applications and ftntlib</p>
         Returns:
             None
         &#34;&#34;&#34;
-        if phase1name:
+        if not phase1name is None:
             if phase1name.isspace(): raise Exception(&#34;\&#34;phase1_name\&#34;, cannot be an empty string&#34;)
             if isinstance(phase1name, str):
                 if len(phase1name) &lt;= 35:
                     self.phase1name = phase1name
                 else:
-                    raise Exception(&#34;\&#34;phase1_name\&#34;, must be less than 35 chars or less&#34;)
+                    raise Exception(&#34;\&#34;phase1name\&#34;, must be less than 35 chars or less&#34;)
             else:
-                raise Exception(&#34;\&#34;phase1_name\&#34;, must be a string&#34;)
+                raise Exception(&#34;\&#34;phase1name\&#34;, must be a string&#34;)
         else:
-            raise Exception(&#34;Value \&#34;phase1_name\&#34; is required but was not provided&#34;)
+            raise Exception(&#34;Value \&#34;phase1name\&#34; is required but was not provided&#34;)
 
     def set_proposal(self, proposal):
         &#34;&#34;&#34; Set self.proposal to proposal if proposal contains valid FG proposals
@@ -575,7 +575,7 @@ applications and ftntlib</p>
                            &#39;null-sha512&#39;, &#39;des-null&#39;, &#39;3des-null&#39;, &#39;aes128-null&#39;, &#39;aes192-null&#39;, &#39;aes256-null&#39;,
                            &#39;aria128-null&#39;, &#39;seed-null&#39;]
 
-        if proposal:
+        if not proposal is None:
             proposal_items = &#39;&#39;
 
             # IF a single object was passed as a string, append it to intf_list else iterate the list and pull
@@ -606,7 +606,7 @@ applications and ftntlib</p>
             self.proposal = proposal_items
 
         else:
-            raise Exception(&#34;\&#34;proposal\&#34; is required but not provided&#34;)
+            self.propsoal = None
 
     def set_dhgrp(self, dhgrp):
         &#34;&#34;&#34;  Set self.dhgrp to string containing values dhgrp if dhgrp contains valid FortiGate proposals
@@ -620,7 +620,7 @@ applications and ftntlib</p>
         Returns:
             None
         &#34;&#34;&#34;
-        if dhgrp:
+        if not dhgrp is None:
             dhgrp_items = &#39;&#39;
             valid_dhgrps = [1, 2, 5, 14, 15, 16, 17, 18, 19, 20, 21, 27, 28, 30, 31, 32]
 
@@ -660,7 +660,7 @@ applications and ftntlib</p>
         Returns:
             None
         &#34;&#34;&#34;
-        if comment:
+        if not comment is None:
             if isinstance(comment, str):
                 if 1 &lt;= len(comment) &lt;= 1023:
                     self.comment = comment
@@ -675,12 +675,12 @@ applications and ftntlib</p>
         &#34;&#34;&#34; Set self.keepalive to keepalive if keepalive valid
 
         Args:
-            keepalive (str):  phase2-interface keepalive
+            keepalive (int):  phase2-interface keepalive
 
         Returns:
             None
         &#34;&#34;&#34;
-        if keepalive:
+        if not keepalive is None:
             if isinstance(keepalive, int):
                 if 10 &lt;= keepalive &lt;= 900:
                     self.keepalive = keepalive
@@ -700,7 +700,7 @@ applications and ftntlib</p>
         Returns:
             None
         &#34;&#34;&#34;
-        if pfs:
+        if not pfs is None:
             if isinstance(pfs, bool):
                 self.pfs = &#39;enable&#39; if pfs else &#39;disable&#39;
             else:
@@ -717,7 +717,7 @@ applications and ftntlib</p>
         Returns:
             None
         &#34;&#34;&#34;
-        if replay:
+        if not replay is None:
             if isinstance(replay, bool):
                 self.replay = &#39;enable&#39; if replay else &#39;disable&#39;
             else:
@@ -734,7 +734,7 @@ applications and ftntlib</p>
         Returns:
         None
         &#34;&#34;&#34;
-        if auto_negotiate:
+        if not auto_negotiate is None:
             if isinstance(auto_negotiate, bool):
                 self.auto_negotiate = &#39;enable&#39; if auto_negotiate else &#39;disable&#39;
             else:
@@ -751,7 +751,7 @@ applications and ftntlib</p>
         Returns:
             None
         &#34;&#34;&#34;
-        if src_subnet:
+        if not src_subnet is None:
             try:
                 ipaddress.ip_network(src_subnet)
             except ValueError:
@@ -770,7 +770,7 @@ applications and ftntlib</p>
         Returns:
             None
         &#34;&#34;&#34;
-        if dst_subnet:
+        if not dst_subnet is None:
             try:
                 ipaddress.ip_network(dst_subnet)
             except ValueError:
@@ -812,7 +812,7 @@ applications and ftntlib</p>
     Returns:
     None
     &#34;&#34;&#34;
-    if auto_negotiate:
+    if not auto_negotiate is None:
         if isinstance(auto_negotiate, bool):
             self.auto_negotiate = &#39;enable&#39; if auto_negotiate else &#39;disable&#39;
         else:
@@ -849,7 +849,7 @@ applications and ftntlib</p>
     Returns:
         None
     &#34;&#34;&#34;
-    if comment:
+    if not comment is None:
         if isinstance(comment, str):
             if 1 &lt;= len(comment) &lt;= 1023:
                 self.comment = comment
@@ -895,7 +895,7 @@ of those to a space separated values string and set in self.dhgrp</p>
     Returns:
         None
     &#34;&#34;&#34;
-    if dhgrp:
+    if not dhgrp is None:
         dhgrp_items = &#39;&#39;
         valid_dhgrps = [1, 2, 5, 14, 15, 16, 17, 18, 19, 20, 21, 27, 28, 30, 31, 32]
 
@@ -956,7 +956,7 @@ Must be valid ipv4 network/mask.</dd>
     Returns:
         None
     &#34;&#34;&#34;
-    if dst_subnet:
+    if not dst_subnet is None:
         try:
             ipaddress.ip_network(dst_subnet)
         except ValueError:
@@ -974,7 +974,7 @@ Must be valid ipv4 network/mask.</dd>
 <section class="desc"><p>Set self.keepalive to keepalive if keepalive valid</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>keepalive</code></strong> :&ensp;<code>str</code></dt>
+<dt><strong><code>keepalive</code></strong> :&ensp;<code>int</code></dt>
 <dd>phase2-interface keepalive</dd>
 </dl>
 <h2 id="returns">Returns</h2>
@@ -990,12 +990,12 @@ Must be valid ipv4 network/mask.</dd>
     &#34;&#34;&#34; Set self.keepalive to keepalive if keepalive valid
 
     Args:
-        keepalive (str):  phase2-interface keepalive
+        keepalive (int):  phase2-interface keepalive
 
     Returns:
         None
     &#34;&#34;&#34;
-    if keepalive:
+    if not keepalive is None:
         if isinstance(keepalive, int):
             if 10 &lt;= keepalive &lt;= 900:
                 self.keepalive = keepalive
@@ -1035,7 +1035,7 @@ Must be valid ipv4 network/mask.</dd>
     Returns:
         None
     &#34;&#34;&#34;
-    if name:
+    if not name is None:
         if name.isspace(): raise Exception(&#34;\&#34;name\&#34;, cannot be an empty string&#34;)
         if isinstance(name, str):
             if len(name) &lt;= 35:
@@ -1077,7 +1077,7 @@ Must be valid ipv4 network/mask.</dd>
     Returns:
         None
     &#34;&#34;&#34;
-    if pfs:
+    if not pfs is None:
         if isinstance(pfs, bool):
             self.pfs = &#39;enable&#39; if pfs else &#39;disable&#39;
         else:
@@ -1114,17 +1114,17 @@ Must be valid ipv4 network/mask.</dd>
     Returns:
         None
     &#34;&#34;&#34;
-    if phase1name:
+    if not phase1name is None:
         if phase1name.isspace(): raise Exception(&#34;\&#34;phase1_name\&#34;, cannot be an empty string&#34;)
         if isinstance(phase1name, str):
             if len(phase1name) &lt;= 35:
                 self.phase1name = phase1name
             else:
-                raise Exception(&#34;\&#34;phase1_name\&#34;, must be less than 35 chars or less&#34;)
+                raise Exception(&#34;\&#34;phase1name\&#34;, must be less than 35 chars or less&#34;)
         else:
-            raise Exception(&#34;\&#34;phase1_name\&#34;, must be a string&#34;)
+            raise Exception(&#34;\&#34;phase1name\&#34;, must be a string&#34;)
     else:
-        raise Exception(&#34;Value \&#34;phase1_name\&#34; is required but was not provided&#34;)</code></pre>
+        raise Exception(&#34;Value \&#34;phase1name\&#34; is required but was not provided&#34;)</code></pre>
 </details>
 </dd>
 <dt id="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.set_proposal"><code class="name flex">
@@ -1169,7 +1169,7 @@ i.e. 'des-md5' or ['des-md5', '3des-md5']</dd>
                        &#39;null-sha512&#39;, &#39;des-null&#39;, &#39;3des-null&#39;, &#39;aes128-null&#39;, &#39;aes192-null&#39;, &#39;aes256-null&#39;,
                        &#39;aria128-null&#39;, &#39;seed-null&#39;]
 
-    if proposal:
+    if not proposal is None:
         proposal_items = &#39;&#39;
 
         # IF a single object was passed as a string, append it to intf_list else iterate the list and pull
@@ -1200,7 +1200,7 @@ i.e. 'des-md5' or ['des-md5', '3des-md5']</dd>
         self.proposal = proposal_items
 
     else:
-        raise Exception(&#34;\&#34;proposal\&#34; is required but not provided&#34;)</code></pre>
+        self.propsoal = None</code></pre>
 </details>
 </dd>
 <dt id="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.set_replay"><code class="name flex">
@@ -1231,7 +1231,7 @@ i.e. 'des-md5' or ['des-md5', '3des-md5']</dd>
     Returns:
         None
     &#34;&#34;&#34;
-    if replay:
+    if not replay is None:
         if isinstance(replay, bool):
             self.replay = &#39;enable&#39; if replay else &#39;disable&#39;
         else:
@@ -1269,7 +1269,7 @@ Must be valid ipv4 network/mask.</dd>
     Returns:
         None
     &#34;&#34;&#34;
-    if src_subnet:
+    if not src_subnet is None:
         try:
             ipaddress.ip_network(src_subnet)
         except ValueError:
