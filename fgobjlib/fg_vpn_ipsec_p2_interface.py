@@ -18,7 +18,7 @@ class FgIpsecP2Interface(FgObject):
         keepalive (int): keepalive in seconds
         replay (bool): replay protection (True=enabled, False=disable, None=inherit)
         comment (str): phase2 comment
-        auto_negotiation (bool): auto-negotiation (True=enabled, False=disabled, None=inherit)
+        auto_negotiate (bool): auto-negotiation (True=enabled, False=disabled, None=inherit)
         vdom (str): associated VDOM
         src_subnet (str):  source selector, for selectors type subnet
         dst_subnet (str): destination selector, for selectors type subnet
@@ -37,7 +37,7 @@ class FgIpsecP2Interface(FgObject):
             keepalive (int): keepalive in seconds
             replay (bool): replay protection (True=enabled, False=disable, None=inherit)
             comment (str): phase2 comment
-            auto_negotiation (bool): auto-negotiation (True=enabled, False=disabled, None=inherit)
+            auto_negotiate (bool): auto-negotiation (True=enabled, False=disabled, None=inherit)
             vdom (str): associated VDOM
             src_subnet (str):  source selector, for selectors type subnet
             dst_subnet (str): destination selector, for selectors type subnet
@@ -80,7 +80,7 @@ class FgIpsecP2Interface(FgObject):
         Returns:
             None
         """
-        if name:
+        if not name is None:
             if name.isspace(): raise Exception("\"name\", cannot be an empty string")
             if isinstance(name, str):
                 if len(name) <= 35:
@@ -101,17 +101,17 @@ class FgIpsecP2Interface(FgObject):
         Returns:
             None
         """
-        if phase1name:
+        if not phase1name is None:
             if phase1name.isspace(): raise Exception("\"phase1_name\", cannot be an empty string")
             if isinstance(phase1name, str):
                 if len(phase1name) <= 35:
                     self.phase1name = phase1name
                 else:
-                    raise Exception("\"phase1_name\", must be less than 35 chars or less")
+                    raise Exception("\"phase1name\", must be less than 35 chars or less")
             else:
-                raise Exception("\"phase1_name\", must be a string")
+                raise Exception("\"phase1name\", must be a string")
         else:
-            raise Exception("Value \"phase1_name\" is required but was not provided")
+            raise Exception("Value \"phase1name\" is required but was not provided")
 
     def set_proposal(self, proposal):
         """ Set self.proposal to proposal if proposal contains valid FG proposals
@@ -134,7 +134,7 @@ class FgIpsecP2Interface(FgObject):
                            'null-sha512', 'des-null', '3des-null', 'aes128-null', 'aes192-null', 'aes256-null',
                            'aria128-null', 'seed-null']
 
-        if proposal:
+        if not proposal is None:
             proposal_items = ''
 
             # IF a single object was passed as a string, append it to intf_list else iterate the list and pull
@@ -165,7 +165,7 @@ class FgIpsecP2Interface(FgObject):
             self.proposal = proposal_items
 
         else:
-            raise Exception("\"proposal\" is required but not provided")
+            self.propsoal = None
 
     def set_dhgrp(self, dhgrp):
         """  Set self.dhgrp to string containing values dhgrp if dhgrp contains valid FortiGate proposals
@@ -179,7 +179,7 @@ class FgIpsecP2Interface(FgObject):
         Returns:
             None
         """
-        if dhgrp:
+        if not dhgrp is None:
             dhgrp_items = ''
             valid_dhgrps = [1, 2, 5, 14, 15, 16, 17, 18, 19, 20, 21, 27, 28, 30, 31, 32]
 
@@ -219,7 +219,7 @@ class FgIpsecP2Interface(FgObject):
         Returns:
             None
         """
-        if comment:
+        if not comment is None:
             if isinstance(comment, str):
                 if 1 <= len(comment) <= 1023:
                     self.comment = comment
@@ -234,12 +234,12 @@ class FgIpsecP2Interface(FgObject):
         """ Set self.keepalive to keepalive if keepalive valid
 
         Args:
-            keepalive (str):  phase2-interface keepalive
+            keepalive (int):  phase2-interface keepalive
 
         Returns:
             None
         """
-        if keepalive:
+        if not keepalive is None:
             if isinstance(keepalive, int):
                 if 10 <= keepalive <= 900:
                     self.keepalive = keepalive
@@ -259,7 +259,7 @@ class FgIpsecP2Interface(FgObject):
         Returns:
             None
         """
-        if pfs:
+        if not pfs is None:
             if isinstance(pfs, bool):
                 self.pfs = 'enable' if pfs else 'disable'
             else:
@@ -276,7 +276,7 @@ class FgIpsecP2Interface(FgObject):
         Returns:
             None
         """
-        if replay:
+        if not replay is None:
             if isinstance(replay, bool):
                 self.replay = 'enable' if replay else 'disable'
             else:
@@ -293,7 +293,7 @@ class FgIpsecP2Interface(FgObject):
         Returns:
         None
         """
-        if auto_negotiate:
+        if not auto_negotiate is None:
             if isinstance(auto_negotiate, bool):
                 self.auto_negotiate = 'enable' if auto_negotiate else 'disable'
             else:
@@ -310,7 +310,7 @@ class FgIpsecP2Interface(FgObject):
         Returns:
             None
         """
-        if src_subnet:
+        if not src_subnet is None:
             try:
                 ipaddress.ip_network(src_subnet)
             except ValueError:
@@ -329,7 +329,7 @@ class FgIpsecP2Interface(FgObject):
         Returns:
             None
         """
-        if dst_subnet:
+        if not dst_subnet is None:
             try:
                 ipaddress.ip_network(dst_subnet)
             except ValueError:

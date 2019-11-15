@@ -27,15 +27,15 @@ class FgIpsecP1Interface(FgObject):
         tunnel_search (str):  tunnel-search ('next-hop', 'selectors' or None=inherit)
         dpd (str): phase1 DPD ('on-demand', 'on-idle', 'disable' or None=inherit)
         dhgrp (str): dhgrp
-        nat_traversal (str): nat-traversal ('enable', 'disable', 'forced' or None=inherit)
-        exchange_interface_ip: exchange-interfce-ip (True=enable, False=disable, None=inherit)
+        nattraversal (str): nattraversal ('enable', 'disable', 'forced' or None=inherit)
+        exchange_interface_ip: exchange-interface-ip (True=enable, False=disable, None=inherit)
     """
 
     def __init__(self, name: str = None, p1_type: str = None, local_intf: str = None, proposal: list = None,
                  ike_version: int = None, local_gw: str = None, psk: str = None, local_id: str = None,
                  remote_gw: str = None, add_route: bool = None, add_gw_route: bool = None, keepalive: int = None,
                  net_device: bool = None, comment: str = None, vdom: str = None,  tunnel_search: str = None,
-                 dpd: str = None, dhgrp: list = None, nat_traversal: str = None, exchange_interface_ip: bool = None):
+                 dpd: str = None, dhgrp: list = None, nattraversal: str = None, exchange_interface_ip: bool = None):
 
         """
         Args:
@@ -56,7 +56,7 @@ class FgIpsecP1Interface(FgObject):
             vdom (str): Set associated VDOM, if applicable
             tunnel_search (str):  Set tunnel-search ('next-hop', 'selectors' or None=inherit)
             dpd (list): Set phase1 DPD ('on-demand', 'on-idle', 'disable' or None=inherit)
-            nat_traversal (str): Set nat-traversal ('enable', 'disable', 'forced' or None=inherit)
+            nattraversal (str): Set nattraversal ('enable', 'disable', 'forced' or None=inherit)
             exchange_interface_ip: Set exchange-interfce-ip (True=enable, False=disable, None=inherit)
         """
 
@@ -74,7 +74,7 @@ class FgIpsecP1Interface(FgObject):
                            'local_id': 'localid', 'remote_gw': 'remote-gw', 'comment': 'comments',
                            'add_route': 'add-route', 'add_gw_route': 'add-gw-route', 'keepalive': 'keepalive',
                            'net_device': 'net-device', 'tunnel_search': 'tunnel-search', 'dpd': 'dpd', 'dhgrp': 'dhgrp',
-                           'nat_traversal': 'nattraversal', 'exchange_interface_ip': 'exchange-interface-ip'}
+                           'nattraversal': 'nattraversal', 'exchange_interface_ip': 'exchange-interface-ip'}
 
         self.cli_ignore_attrs = ['name']
 
@@ -97,7 +97,7 @@ class FgIpsecP1Interface(FgObject):
         self.set_tunnel_search(tunnel_search)
         self.set_dpd(dpd)
         self.set_dhgrp(dhgrp)
-        self.set_nat_traversal(nat_traversal)
+        self.set_nattraversal(nattraversal)
         self.set_exchange_interface_ip(exchange_interface_ip)
 
 
@@ -490,27 +490,27 @@ class FgIpsecP1Interface(FgObject):
         else:
             self.dpd = None
 
-    def set_nat_traversal(self, nat_traversal):
+    def set_nattraversal(self, nattraversal):
         """ Set self.nat_traversal
 
         Args:
-            nat_traversal (str): nat-traversal.  ('enable', 'disable', 'forced', None=inherit)
+            nattraversal (str): nat-traversal.  ('enable', 'disable', 'forced', None=inherit)
 
         Returns:
             None
         """
-        if isinstance(nat_traversal, str):
-            if nat_traversal.lower() == 'enable':
-                self.nat_traversal = 'enable'
-            elif nat_traversal.lower() == 'disable':
-                self.nat_traversal = 'disable'
-            elif nat_traversal.lower() == 'forced':
-                self.nat_traversal = 'forced'
+        if isinstance(nattraversal, str):
+            if nattraversal.lower() == 'enable':
+                self.nattraversal = 'enable'
+            elif nattraversal.lower() == 'disable':
+                self.nattraversal = 'disable'
+            elif nattraversal.lower() == 'forced':
+                self.nattraversal = 'forced'
             else:
-                raise Exception("\"nat_traversal\" when set, must be a string value of \"enable\", "
+                raise Exception("\"nattraversal\" when set, must be a string value of \"enable\", "
                                 "\"disable\" or \"forced\"")
         else:
-            self.nat_traversal = None
+            self.nattraversal = None
 
     def set_exchange_interface_ip(self, exchange_interface_ip):
         """ Set self.exchange_interface_ip
