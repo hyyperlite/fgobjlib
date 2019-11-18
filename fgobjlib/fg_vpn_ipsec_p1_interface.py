@@ -88,7 +88,6 @@ class FgIpsecP1Interface(FgObject):
         self.set_psk(psk)
         self.set_local_id(local_id)
         self.set_remote_gw(remote_gw)
-        self.set_vdom(vdom)
         self.set_comment(comment)
         self.set_add_route(add_route)
         self.set_keepalive(keepalive)
@@ -100,7 +99,16 @@ class FgIpsecP1Interface(FgObject):
         self.set_nattraversal(nattraversal)
         self.set_exchange_interface_ip(exchange_interface_ip)
 
+        self.obj_to_str += f', name={name}, p1_type={p1_type}, local_intf={self.set_local_intf}, ' \
+                          f'proposal={self.proposal}, ike_version={self.ike_version}, local_gw={self.local_gw}, ' \
+                          f'psk={self.psk}, local_id={self.local_id}, remote_gw={self.remote_gw}, ' \
+                          f'comment={self.comment}, add_route={self.add_route}, add_gw_route={self.add_gw_route}, ' \
+                          f'keepalive={self.keepalive}, net_device={self.net_device}, ' \
+                          f'tunnel_search={self.tunnel_search}, dpd={self.dpd}, dhgrp={self.dhgrp},' \
+                          f'nattraversal={self.nattraversal}, exchange_interface_ip={self.exchange_interface_ip}'
 
+
+    # Instance Methods
     def set_name(self, name):
         """ Set self.name to name if name is valid
 
@@ -110,17 +118,18 @@ class FgIpsecP1Interface(FgObject):
         Returns:
             None
         """
-        if name:
-            if name.isspace(): raise Exception("\"name\", cannot be an empty string")
+        if name is None:
+            self.name = None
+
+        else:
+            if name.isspace(): raise Exception("'name', cannot be an empty string")
             if isinstance(name, str):
                 if len(name) <= 35:
                     self.name = name
                 else:
-                    raise Exception("\"name\", must be less than 35 chars or less")
+                    raise Exception("'name', must be less than 35 chars or less")
             else:
-                raise Exception("\"name\", must be a string")
-        else:
-            raise Exception("Value \"name\" is required but was not provided")
+                raise Exception("'name', must be a string")
 
     def set_proposal(self, proposal):
         """ Set self.proposal with list of proposals from proposal if items are all acceptable FG proposals
@@ -141,7 +150,10 @@ class FgIpsecP1Interface(FgObject):
                            'aria256-sha384', 'aria256-sha512', 'seed-md5', 'seed-sha1', 'seed-sha256', 'seed-sha384',
                            'seed-sha512']
 
-        if proposal:
+        if proposal is None:
+            self.proposal = None
+
+        else:
             proposal_items = ''
 
             # IF a single object was passed as a string, append it to intf_list else iterate the list and pull
@@ -150,10 +162,9 @@ class FgIpsecP1Interface(FgObject):
 
                 # compare proposal to valid_proposals list
                 if proposal in valid_proposals:
-                    proposal_items += "{} ".format(proposal)
+                    proposal_items += f"{proposal} "
                 else:
-                    raise Exception("\"proposal\" provided: {} is not a valid fortigate phase1 proposal "
-                                    "option".format(proposal))
+                    raise ValueError(f"'proposal' provided: {proposal} is not a valid FortiGate phase1 proposal")
 
             elif isinstance(proposal, list):
                 for item in proposal:
@@ -161,18 +172,14 @@ class FgIpsecP1Interface(FgObject):
 
                         # compare proposal to valid proposals list
                         if item in valid_proposals:
-                            proposal_items += "{} ".format(item)
+                            proposal_items += f"{item} "
                         else:
-                            raise Exception("\"proposal\" provided: {} is not a valid fortigate phase1 proposal "
-                                            "option".format(proposal))
+                            raise ValueError("'proposal' provided: {proposal} is not a valid FortiGate phase1 proposal")
             else:
-                raise Exception("proposal must be provided as type string (with single proposal referenced or as a "
-                                "list for multiple proposal references")
+                raise ValueError("proposal must be provided as type string (with single proposal referenced or as a "
+                                 "list for multiple proposal references")
 
             self.proposal = proposal_items
-
-        else:
-            self.proposal = None
 
     def set_dhgrp(self, dhgrp):
         """ Set self.dhgrp to dhgrp if dhgrp is valid ForitGate dhgrp
@@ -186,7 +193,11 @@ class FgIpsecP1Interface(FgObject):
         Returns:
             None
         """
-        if dhgrp:
+        if dhgrp is None:
+            self.dhgrp = None
+
+
+        else:
             dhgrp_items = ''
             valid_dhgrps = [1, 2, 5, 14, 15, 16, 17, 18, 19, 20, 21, 27, 28, 30, 31, 32]
 
@@ -197,7 +208,7 @@ class FgIpsecP1Interface(FgObject):
                 if dhgrp in valid_dhgrps:
                     dhgrp_items += "{} ".format(dhgrp)
                 else:
-                    raise Exception("\"dhgrp\" provided: \"{}\", is not a valid fortigate dhgrp".format(dhgrp))
+                    raise ValueError(f"'dhgrp' provided: {dhgrp}, is not a valid fortigate dhgrp")
 
             elif isinstance(dhgrp, list):
                 for item in dhgrp:
@@ -207,15 +218,12 @@ class FgIpsecP1Interface(FgObject):
                         if item in valid_dhgrps:
                             dhgrp_items += "{} ".format(item)
                         else:
-                            raise Exception("At least one \"dhgrp\" provided: {} is not a valid fortigate phase1 "
-                                            "proposal option".format(dhgrp))
+                            raise ValueError(f"At least one 'dhgrp' provided: {dhgrp} is not a valid fortigate phase1 "
+                                             "proposal option")
             else:
-                raise Exception("dhgrp must be provided as type integer")
+                raise ValueError("dhgrp must be provided as type integer")
 
             self.dhgrp = dhgrp_items
-
-        else:
-            self.dhgrp = None
 
     def set_p1_type(self, p1_type):
         """ Set self.pt_type to p1_type if p1_type is valid
@@ -226,20 +234,21 @@ class FgIpsecP1Interface(FgObject):
         Returns:
 
         """
-        if p1_type:
+        if p1_type is None:
+            self.p1_type = None
+
+        else:
             if isinstance(p1_type, str):
                 if p1_type.lower() == 'dynamic':
                     self.p1_type = 'dynamic'
                 elif p1_type.lower() == 'static':
                     self.p1_type = 'static'
                 elif p1_type.lower() == 'ddns':
-                    raise Exception("p1_type of \"ddns\" is not yet supported")
+                    raise ValueError("p1_type of 'ddns' is not yet supported")
                 else:
-                    raise Exception("\"p1_type\": {} is not supported".format(p1_type))
+                    raise ValueError(f"'p1_type': {p1_type} is not supported")
             else:
-                raise Exception("\"p1_type\" when set must be a str with value \"dynamic\" or \"static\"")
-        else:
-            self.p1_type = None
+                raise ValueError("'p1_type', when set, must be a str with value of 'dynamic' or 'static'")
 
     def set_local_intf(self, intf):
         """ set self.local_intfs to intf if intfs is valid
@@ -250,17 +259,18 @@ class FgIpsecP1Interface(FgObject):
         Returns:
             None
         """
-        if intf:
-            if intf.isspace(): raise Exception("\"local_intf\", cannot be an empty string")
+        if intf is None:
+            self.intf = None
+            if intf.isspace(): raise ValueError("'local_intf', cannot be an empty string")
+
+        else:
             if isinstance(intf, str):
                 if len(intf) < 35:
                     self.local_intf = intf
                 else:
-                    raise Exception("\"local_intf\", must be less than 35 chars or less")
+                    raise ValueError("'local_intf', must be less than 35 chars or less")
             else:
-                raise Exception("\"local_intf\", must be a string")
-        else:
-            raise Exception("\"local_intf\" not set, phase1 requires to define the interface")
+                raise ValueError("'local_intf', must be a string")
 
     def set_ike_version(self, ike_version):
         """ Set self.ike_version to 1 or 2 if ike_version = 1 or 2.  Otherwise raise Exception
@@ -271,18 +281,19 @@ class FgIpsecP1Interface(FgObject):
         Returns:
             None
         """
-        if ike_version:
+        if ike_version is None:
+            self.ike_version = None
+
+        else:
             if isinstance(ike_version, int):
                 if ike_version == 1:
                     self.ike_version = 1
                 elif ike_version == 2:
                     self.ike_version = 2
                 else:
-                    raise Exception("\"ike_version\", when set must be type int with value = \"1\" or \"2\"")
+                    raise ValueError("'ike_version', when set must be type int with value = '1' or '2'")
             else:
-                raise Exception("\"ike_version\" when set, must be type int with value = \"1\" or \"2\"")
-        else:
-            self.ike_version = None
+                raise ValueError("'ike_version' when set, must be type int with value = '1' or '2'")
 
     def set_local_gw(self, local_gw):
         """ Set self.local_gw to local_gw if local_gw is valid ipv4 address
@@ -293,15 +304,15 @@ class FgIpsecP1Interface(FgObject):
         Returns:
             None
         """
-        if local_gw:
-            try:
-                ipaddress.ip_address(local_gw)
-            except ValueError:
-                print("\"local_gw\", must be a valid ipv4 or ipv6 address")
-            else:
-                self.local_gw = local_gw
-        else:
+        if local_gw is None:
             self.local_gw = None
+
+        else:
+            try:
+                self.local_gw = ipaddress.ip_address(local_gw)
+            except ValueError:
+                raise ValueError("'local_gw', must be a valid ipv4 or ipv6 address")
+
 
     def set_remote_gw(self, remote_gw):
         """ Set self.remote_gw to remote_gw if remote_gw is valid ipv4 address
@@ -312,18 +323,15 @@ class FgIpsecP1Interface(FgObject):
         Returns:
             None
         """
-        if remote_gw:
-            try:
-                ipaddress.ip_address(remote_gw)
-            except ValueError:
-                print("\"remote_gw\", must be a valid ipv4 address")
-            else:
-                self.remote_gw = remote_gw
+        if remote_gw is None:
+            self.remote_gw = None
+
         else:
-            if self.p1_type == 'dynamic':
-                self.remote_gw = None
-            else:
-                raise Exception("\"remote_gw\" not set, static tunnel types require a remote gateway")
+            try:
+                self.remote_gw = ipaddress.ip_address(remote_gw)
+            except ValueError:
+                raise ValueError("'remote_gw', when set, must be a valid ipv4 address")
+
 
     def set_psk(self, psk):
         """ Set self.psk to psk if psk valid
@@ -334,17 +342,17 @@ class FgIpsecP1Interface(FgObject):
         Returns:
             None
         """
-        print("*** {} ***".format(psk))
-        if psk:
+        if psk is None:
+            self.psk = None
+
+        else:
             if isinstance(psk, str):
                 if 6 <= len(psk) <= 30:
                     self.psk = psk
                 else:
-                    raise Exception("\"psk\", must be an str between 6 and 30 chars")
+                    raise ValueError("'psk', must be an str between 6 and 30 chars")
             else:
-                raise Exception("\"psk\", must be a string")
-        else:
-            raise Exception("\"psk\" is required but was not provided")
+                raise ValueError("'psk', must be a string")
 
     def set_local_id(self, local_id):
         """ Set self.local_id to local_id if local_id is valid
@@ -355,16 +363,17 @@ class FgIpsecP1Interface(FgObject):
        Returns:
             None
         """
-        if local_id:
+        if local_id is None:
+            self.local_id = None
+
+        else:
             if isinstance(local_id, str):
                 if 1 <= len(local_id) <= 63:
                     self.local_id = local_id
                 else:
-                    raise Exception("\"local_id\", when set, must be type str between 1 and 63 chars")
+                    raise ValueError("'local_id', when set, must be type str between 1 and 63 chars")
             else:
-                raise Exception("\"local_id\", when set, must be type str")
-        else:
-            self.local_id = None
+                raise ValueError("'local_id', when set, must be type str")
 
     def set_comment(self, comment):
         """ Set self.comment to comment if comment is valid
@@ -375,16 +384,17 @@ class FgIpsecP1Interface(FgObject):
         Returns:
             None
         """
-        if comment:
+        if comment is None:
+            self.comment = None
+
+        else:
             if isinstance(comment, str):
                 if 1 <= len(comment) <= 1023:
                     self.comment = comment
                 else:
-                    raise Exception("\"description\", when set, must be type str between 1 and 1,023 chars")
+                    raise ValueError("'description', when set, must be type str between 1 and 1,023 chars")
             else:
-                raise Exception("\"description\", when set, must be type str")
-        else:
-            self.comment = None
+                raise Exception("'description', when set, must be type str")
 
     def set_keepalive(self, keepalive):
         """ Set self.keepalive if keepalive valid
@@ -395,16 +405,17 @@ class FgIpsecP1Interface(FgObject):
         Returns:
             None
         """
-        if keepalive:
+        if keepalive is None:
+            self.keepalive = None
+
+        else:
             if isinstance(keepalive, int):
                 if 10 <= keepalive <= 900:
                     self.keepalive = keepalive
                 else:
-                    raise Exception("\"keepalive\", when set, must be type int between 10 and 900")
+                    raise ValueError("'keepalive', when set, must be type int between 10 and 900")
             else:
-                raise Exception("\"keepalive\", when set, must be type int")
-        else:
-            self.keepalive = None
+                raise ValueError("'keepalive', when set, must be type int")
 
     def set_add_route(self, add_route):
         """ Set self.add_route
@@ -415,10 +426,14 @@ class FgIpsecP1Interface(FgObject):
         Returns:
 
         """
-        if isinstance(add_route, bool):
-            self.add_route = 'enable' if add_route else 'disable'
-        else:
+        if add_route is None:
             self.add_route = None
+
+        else:
+            if isinstance(add_route, bool):
+                self.add_route = 'enable' if add_route else 'disable'
+            else:
+                raise ValueError("'add_route', when set, must be type bool")
 
     def set_add_gw_route(self, add_gw_route):
         """ Set self.add_gw_route
@@ -429,10 +444,14 @@ class FgIpsecP1Interface(FgObject):
         Returns:
             None
         """
-        if isinstance(add_gw_route, bool):
-            self.add_gw_route = 'enable' if add_gw_route else 'disable'
-        else:
+        if add_gw_route is None:
             self.add_gw_route = None
+
+        else:
+            if isinstance(add_gw_route, bool):
+                self.add_gw_route = 'enable' if add_gw_route else 'disable'
+            else:
+                raise ValueError("'add_gw_route', when set, must be type bool")
 
     def set_net_device(self, net_device):
         """ set self.net_device

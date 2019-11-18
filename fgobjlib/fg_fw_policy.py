@@ -51,7 +51,7 @@ class FgFwPolicy(FgObject):
         self.data_attrs = {'policyid': 'policyid', 'srcintf': 'srcintf', 'dstintf': 'dstintf', 'srcaddr': 'srcaddr',
                            'service': 'service', 'schedule': 'schedule', 'action': 'action', 'logtraffic': 'logtraffic',
                            'nat': 'nat', 'srcaddr_negate': 'srcaddr-negate', 'dstaddr_negate': 'dstaddr-negate',
-                           'service_negate': 'service-negate'}
+                           'service_negate': 'service-negate', 'name': 'name'}
 
         self.cli_ignore_attrs = ['policyid']
 
@@ -70,8 +70,64 @@ class FgFwPolicy(FgObject):
         self.set_dstaddr_negate(dstaddr_negate)
         self.set_service_negate(service_negate)
         self.set_comment(comment)
+        self.set_name(name)
+
+        # Update the parent defined obj_to_str attribute with this objects str representation
+        self.obj_to_str += f', policyid={self.policyid}, srcintf={self.srcintf}, dstintf={self.dstintf}, ' \
+                          f'srcaddr={self.srcaddr}, dstaddr={self.dstaddr}, service={self.service}, ' \
+                          f'schedule={self.schedule}, action={self.action}, logtraffic={self.logtraffic}, ' \
+                          f'nat={self.nat}, srcaddr_negate={self.srcaddr_negate}, ' \
+                          f'dstaddr_negate={self.dstaddr_negate}, service_negate={self.service_negate}, ' \
+                          f'comment={self.comment}, vdom={self.vdom}'
 
 
+    # Static Methods
+    @staticmethod
+    def _validate_and_get_policy_obj(policy_object):
+        """ Check the validity of policy objects and returns objects as list if valid
+
+        Can be used to validate srcintf, dstintf, srcaddr, dstaddr and service objects
+
+        Args:
+            policy_object (list): string or list of strings containing srcintf(s)
+
+        Returns:
+            List
+        """
+
+        if policy_object is None:
+            return policy_object
+
+        else:
+            # IF a single object was passed as a string, append it to intf_list else iterate the list and pull
+            # out the strings of interfaces and append each to intf_list
+            obj_list = []
+
+            if isinstance(policy_object, str):
+                obj_list.append({'name': policy_object})
+
+            elif isinstance(policy_object, list):
+                for item in policy_object:
+                    obj_list.append({'name': item})
+
+            else:
+                raise Exception("'policy_object(s)', must be provided as string or list of strings")
+
+            # Make sure each interface passed in is not all whitespace and it is less than 80 chars
+            for item in obj_list:
+                if isinstance(item['name'], str):
+                    if item['name'].isspace(): raise Exception(f"{item} cannot be an empty string")
+
+                    if not len(item['name']) < 80:
+                        raise Exception("'policy_object(s)', must be 79 chars or less")
+
+                else:
+                    raise Exception("'policy_objects(s)' must be string or list of strings")
+
+            # set self.<obj_type> attribute with the verified and formatted obj_list
+            return obj_list
+
+    # Instance Methods
     def set_policyid(self, policyid):
         """ Set self.policyid to policyid if policyid is valid or if not provided set policyid = 0.
 
@@ -81,229 +137,84 @@ class FgFwPolicy(FgObject):
         Returns:
             None
         """
-        if policyid:
+        if policyid is None:
+            self.policyid = 0
+
+        else:
             if isinstance(policyid, int):
                 self.policyid = policyid
             else:
-                raise Exception("If setting \"id\" it must be an integer")
-        else:
-            self.policyid = 0
+                raise Exception("'id', when set, must be an integer")
+
 
 
     def set_srcintf(self, policy_object):
-        """ Check the validity of srcintf objects and sets self.srcaddr to list containing objects of srcintf
+        """ Check the validity of srcintf objects and sets self.srcintf to list containing objects of dstintf
+
+        Calls _validate_and_get_policy_obj()
 
         Args:
-            policy_object (list): string or list of strings containing srcintf(s)
+            policy_object (list): string or list of strings containing srcintfs(s)
 
         Returns:
             None
         """
-
-        if policy_object:
-            # IF a single object was passed as a string, append it to intf_list else iterate the list and pull
-            # out the strings of interfaces and append each to intf_list
-
-            obj_list = []
-
-            if isinstance(policy_object, str):
-                obj_list.append({'name': policy_object})
-
-            elif isinstance(policy_object, list):
-                for item in policy_object:
-                    obj_list.append({'name': item})
-
-            else:
-                raise Exception("\"srcintf\", must be provided as string or list of strings")
-
-            # Make sure each interface passed in is not all whitespace and it is less than 80 chars
-            for item in obj_list:
-                if isinstance(item['name'], str):
-                    if item['name'].isspace(): raise Exception("{} cannot be an empty string".format(item))
-
-                    if not len(item['name']) < 80:
-                        raise Exception("\"srcintf(s)\", must be 79 chars or less")
-
-                else:
-                    raise Exception("\"srcintf\" must be string or list of strings")
-
-            # set self.<obj_type> attribute with the verified and formatted obj_list
-            self.srcintf = obj_list
-
-        else:
-            self.srcintf = None
+        self.srcintf = self._validate_and_get_policy_obj(policy_object)
 
     def set_dstintf(self, policy_object):
         """ Check the validity of dstintf objects and sets self.dstintf to list containing objects of dstintf
 
+        Calls _validate_and_get_policy_obj()
+
         Args:
             policy_object (list): string or list of strings containing dstintf(s)
 
         Returns:
             None
         """
-
-        if policy_object:
-            # IF a single object was passed as a string, append it to intf_list else iterate the list and pull
-            # out the strings of interfaces and append each to intf_list
-
-            obj_list = []
-
-            if isinstance(policy_object, str):
-                obj_list.append({'name': policy_object})
-
-            elif isinstance(policy_object, list):
-                for item in policy_object:
-                    obj_list.append({'name': item})
-
-            else:
-                raise Exception("\"dstintf\", must be provided as string or list of strings")
-
-            # Make sure each interface passed in is not all whitespace and it is less than 80 chars
-            for item in obj_list:
-                if isinstance(item['name'], str):
-                    if item['name'].isspace(): raise Exception("{} cannot be an empty string".format(item))
-
-                    if not len(item['name']) < 80:
-                        raise Exception("\"dstintf(s)\", must be 79 chars or less")
-
-                else:
-                    raise Exception("\"dstinf\", must be string or list of strings")
-
-            # set self.<obj_type> attribute with the verified and formatted obj_list
-            self.dstintf = obj_list
-
-        else:
-            self.dstintf = None
+        self.dstintf = self._validate_and_get_policy_obj(policy_object)
 
     def set_srcaddr(self, policy_object):
         """ Check the validity of srcaddr objects and sets self.srcaddr to list containing objects of srcaddr
 
+        Calls _validate_and_get_policy_obj()
+
         Args:
             policy_object (list): string or list of strings containing dstintf(s)
 
         Returns:
             None
         """
+        self.srcaddr = self._validate_and_get_policy_obj(policy_object)
 
-        if policy_object:
-            # IF a single object was passed as a string, append it to obj_list else iterate the list and pull
-            # out the strings of interfaces and append each to obj list
-
-            obj_list = []
-
-            if isinstance(policy_object, str):
-                obj_list.append({'name': policy_object})
-
-            elif isinstance(policy_object, list):
-                for item in policy_object:
-                    obj_list.append({'name': item})
-
-            else:
-                raise Exception("\"srcaddr\", must be provided as string or list of strings")
-
-            # Make sure each interface passed in is not all whitespace and it is less than 80 chars
-            for item in obj_list:
-                if isinstance(item['name'], str):
-                    if item['name'].isspace(): raise Exception("{} cannot be an empty string".format(item))
-
-                    if not len(item['name']) < 80:
-                        raise Exception("\"srcaddrs(s)\", must be 79 chars or less")
-
-                else:
-                    raise Exception("\"srcaddr\" must be string or list of strings")
-
-            # set self.<obj_type> attribute with the verified and formatted obj_list
-            self.srcaddr = obj_list
-
-        else:
-            self.srcaddr = None
 
     def set_dstaddr(self, policy_object):
         """ Check the validity of dstaddr objects and sets self.dstaddr to list containing objects of dstaddr
 
+        Calls _validate_and_get_policy_obj()
+
         Args:
             policy_object (list): string or list of strings containing dstintf(s)
 
         Returns:
             None
         """
+        self.dstaddr = self._validate_and_get_policy_obj(policy_object)
 
-        if policy_object:
-            # IF a single object was passed as a string, append it to obj_list else iterate the list and pull
-            # out the strings of interfaces and append each to obj list
-
-            obj_list = []
-
-            if isinstance(policy_object, str):
-                obj_list.append({'name': policy_object})
-
-            elif isinstance(policy_object, list):
-                for item in policy_object:
-                    obj_list.append({'name': item})
-
-            else:
-                raise Exception("\"dstaddr\",  must be provided as string or list of strings")
-
-            # Make sure each interface passed in is not all whitespace and it is less than 80 chars
-            for item in obj_list:
-                if isinstance(item['name'], str):
-                    if item['name'].isspace(): raise Exception("{} cannot be an empty string".format(item))
-
-                    if not len(item['name']) < 80:
-                        raise Exception("\"dstaddr(s)\", must be 79 chars or less")
-
-                else:
-                    raise Exception("\"dstaddr\" must be string or list of strings")
-
-            # set self.<obj_type> attribute with the verified and formatted obj_list
-            self.dstaddr = obj_list
-
-        else:
-            self.dstaddr = None
 
     def set_service(self, policy_object):
         """ Check the validity of service objects and sets self.service to list containing objects of service
 
+        Calls _validate_and_get_policy_obj()
+
         Args:
             policy_object (list): string or list of strings containing dstintf(s)
 
         Returns:
             None
         """
+        self.service = self._validate_and_get_policy_obj(policy_object)
 
-        if policy_object:
-            # IF a single object was passed as a string, append it to obj_list else iterate the list and pull
-            # out the strings of interfaces and append each to obj list
-
-            obj_list = []
-
-            if isinstance(policy_object, str):
-                obj_list.append({'name': policy_object})
-
-            elif isinstance(policy_object, list):
-                for item in policy_object:
-                    obj_list.append({'name': item})
-
-            else:
-                raise Exception("\"service\", must be provided as string or list of strings")
-
-            # Make sure each interface passed in is not all whitespace and it is less than 80 chars
-            for item in obj_list:
-                if isinstance(item['name'], str):
-                    if item['name'].isspace(): raise Exception("{} cannot be an empty string".format(item))
-
-                    if not len(item['name']) < 80:
-                        raise Exception("\"service(s)\", must be 79 chars or less")
-
-                else:
-                    raise Exception("\"service\" must be string or list of strings")
-
-            # set self.<obj_type> attribute with the verified and formatted obj_list
-            self.service = obj_list
-
-        else:
-            self.service = None
 
     def set_schedule(self, schedule):
         """ Set self.schedule to 'schedule' if 'schedule' name provided meets requirements
@@ -314,19 +225,20 @@ class FgFwPolicy(FgObject):
         Returns:
             None
         """
-        if schedule:
+        if schedule is None:
+            self.schedule = None
+
+        else:
             if isinstance(schedule, str):
                 if not len(schedule) <= 36:
-                    raise Exception("\"schedule\", when set, must be less 35 chars or less")
+                    raise Exception("'schedule, when set, must be less 35 chars or less")
 
                 if schedule.isspace():
-                    raise Exception("\"schedule\", when set, cannot be an empty string")
+                    raise Exception("'schedule', when set, cannot be an empty string")
             else:
-                raise Exception("\"schedule\", when set, must be type str")
+                raise Exception("'schedule', when set, must be type str")
 
             self.schedule = schedule
-        else:
-            self.schedule = 'always'
 
     def set_action(self, action):
         """ Set self.action to 'action' if action meets requirements
@@ -337,15 +249,16 @@ class FgFwPolicy(FgObject):
         Returns:
             None
         """
-        if action:
+        if action is None:
+            self.action = None
+
+        else:
             if action.lower() == 'accept' or action.lower() == 'allow':
                 self.action = 'accept'
             elif action.lower() == 'deny' or action.lower() == 'drop':
                 self.action = 'deny'
             else:
-                raise ValueError("\"action\", when set, must be either 'accept' or 'deny'")
-        else:
-            self.action = None
+                raise ValueError("'action', when set, must be either 'accept' or 'deny'")
 
     def set_logtraffic(self, logtraffic):
         """ Set self.logtraffic to 'logtraffic' if logtraffic is valid
@@ -356,23 +269,18 @@ class FgFwPolicy(FgObject):
         Returns:
             None
         """
-        if logtraffic:
-            if logtraffic.lower() == 'utm':
+        if logtraffic is None:
+            self.logtraffic = None
 
-                # can't log utm if policy action is not accept
-                if self.action == 'accept':
-                    self.logtraffic = 'utm'
-                else:
-                    raise Exception("Cannot set \"logtraffic\" to utm when policy action is deny (deny "
-                                    "is default policy action")
+        else:
+            if logtraffic.lower() == 'utm':
+                self.logtraffic = 'utm'
 
             elif logtraffic.lower() == 'all':
                 self.logtraffic = 'all'
 
             elif logtraffic.lower() == 'disabled' or logtraffic.lower() == 'disable':
                 self.logtraffic = 'disabled'
-        else:
-            self.logtraffic = None
 
     def set_nat(self, nat):
         """ Set self.nat to 'nat' if valid.  True=enable, False=disable
@@ -383,11 +291,13 @@ class FgFwPolicy(FgObject):
         Returns:
             None
         """
-        if nat:
-            if isinstance(nat, bool):
-                self.nat = True
+        if nat is None:
+            self.nat = None
+
         else:
-            self.nat = False
+            if isinstance(nat, bool):
+                self.nat = 'enable' if nat == True else 'disable'
+
 
     def set_comment(self, comment):
         """ Set self.comment to 'comment' if comment string within requirements
@@ -398,16 +308,38 @@ class FgFwPolicy(FgObject):
         Returns:
             None
         """
-        if comment:
+        if comment is None:
+            self.comment = None
+
+        else:
             if isinstance(comment, str):
                 if 1 <= len(comment) <= 1023:
                     self.comment = comment
                 else:
-                    raise Exception("\"description\", when set, must be type str between 1 and 1,023 chars")
+                    raise Exception("'comment', when set, must be type str between 1 and 1023 chars")
             else:
-                raise Exception("\"description\", when set, must be type str")
+                raise Exception("'comment', when set, must be type str")
+
+    def set_name(self, name):
+        """ Set self.comment to 'comment' if comment string within requirements
+
+        Args:
+            name (str):  Optional Name for this policy object
+
+        Returns:
+            None
+        """
+        if name is None:
+            self.name = None
+
         else:
-            self.comment = None
+            if isinstance(name, str):
+                if 1 <= len(name) <= 35:
+                    self.name = name
+                else:
+                    raise Exception("'name', when set, must be type str between 1 and 1,023 chars")
+            else:
+                raise Exception("'name', when set, must be type str")
 
     def set_srcaddr_negate(self, negate):
         """ Set the self.srcaddr_negate attribute representing negate type in policy
@@ -418,13 +350,14 @@ class FgFwPolicy(FgObject):
         Returns:
             None
         """
-        if not negate is None:
+        if negate is None:
+            self.srcaddr_negate = None
+
+        else:
             if isinstance(negate, bool):
                 self.srcaddr_negate = 'enable' if negate == True else 'disable'
             else:
-                raise ValueError("\"srcaddr_negate\", when set, must be type bool")
-        else:
-            self.srcaddr_negate = None
+                raise ValueError("'srcaddr_negate', when set, must be type bool")
 
     def set_dstaddr_negate(self, negate):
         """ Set the self.dstaddr_negate attribute representing negate type in policy
@@ -435,13 +368,14 @@ class FgFwPolicy(FgObject):
         Returns:
             None
         """
-        if not negate is None:
+        if negate is None:
+            self.dstaddr_negate = None
+
+        else:
             if isinstance(negate, bool):
                 self.dstaddr_negate = 'enable' if negate == True else 'disable'
             else:
-                raise ValueError("\"dstaddr_negate\", when set, must be type bool")
-        else:
-            self.dstaddr_negate = None
+                raise ValueError("'dstaddr_negate', when set, must be type bool")
 
     def set_service_negate(self, negate):
         """ Set the self.service attribute representing negate type in policy
@@ -452,10 +386,11 @@ class FgFwPolicy(FgObject):
         Returns:
             None
         """
-        if not negate is None:
+        if negate is None:
+            self.service_negate = None
+
+        else:
             if isinstance(negate, bool):
                 self.service_negate = 'enable' if negate == True else 'disable'
             else:
-                raise ValueError("\"service_negate\", when set, must be type bool")
-        else:
-            self.service_negate = None
+                raise ValueError("'service_negate', when set, must be type bool")

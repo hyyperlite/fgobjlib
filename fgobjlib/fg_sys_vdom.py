@@ -33,8 +33,10 @@ class FgVdom(FgObject):
 
         # Set instance attributes
         self.set_name(name)
+        self.obj_to_str += f', name={self.name}'
 
 
+    # Instance Methods
     def set_name(self, name):
         """ Set self.name to name if name is valid
 
