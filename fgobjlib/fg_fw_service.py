@@ -20,7 +20,7 @@ class FgFwService(FgObject):
             sctp_portrange (list): SCTP port range.  May be string or list of strings. ex. ['80', '1024-65553']
             protocol_number (int):  IP protocol Number
             comment (str): Comment for this object
-            visibility (bool): Visibility of this object in GUI.  True=visible, False=hidden
+            visibility (str): Visibility of this object in GUI.  ('enable', 'disable', or None=inherit)
             session_ttl (int):  Session TTL for TCP sessions
             udp_idle_timer (int): Idle timer setting for UDP sessions
             category (str): Category to assign service object to in FG
@@ -30,7 +30,7 @@ class FgFwService(FgObject):
 
     def __init__(self, name: str = None, vdom: str = None, protocol: str = None, tcp_portrange: list = None,
                  udp_portrange: list = None, sctp_portrange: list = None, protocol_number: int = None,
-                 comment: str = None, visibility: bool = None, session_ttl: int = None, udp_idle_timer: int = None,
+                 comment: str = None, visibility: str = None, session_ttl: int = None, udp_idle_timer: int = None,
                  category: str = None, icmptype: int = None, icmpcode: int = None):
         """
         Args:
@@ -42,7 +42,7 @@ class FgFwService(FgObject):
             sctp_portrange (list): SCTP port range.  May be string or list of strings. ex. ['80', '1024-65553']
             protocol_number (int): IP Protocol Number. Use when self's protocol set to 'ip'.
             comment (str): Comment for this object
-            visibility (bool): Visibility of this object in GUI.  True=visible, False=hidden
+            visibility (str): Visibility of this object in GUI.  ('enable', 'disable', or None=inherit)
             session_ttl (int):  Session TTL for TCP sessions
             udp_idle_timer (int): Idle timer setting for UDP sessions
             category (str): Category to assign service object to in FG
@@ -229,10 +229,10 @@ class FgFwService(FgObject):
                 raise ValueError("'protocol_number', when set, must be type int")
 
     def set_visibility(self, visibility):
-        """ Set self.visibility to visibility if visibility is set and is type bool
+        """ Set self.visibility
 
         Args:
-            visibility (bool): Object visibility. True=visible, False=hidden, None=use default/existing setting
+            visibility (str): object visibility in GUI.  ('enable', 'disable', or None=inherit)
 
         Returns:
             None
@@ -241,10 +241,15 @@ class FgFwService(FgObject):
             self.visibility = None
 
         else:
-            if isinstance(visibility, bool):
-                self.visibility = 'enable' if visibility else 'disable'
+            if isinstance(visibility, str):
+                if visibility == 'enable':
+                    self.visibility = 'enable'
+                elif visibility == 'disable':
+                    self.visibility = 'disable'
+                else:
+                    raise ValueError("'visibility', when set, must be type str() with value 'enable' or 'disable'")
             else:
-                raise ValueError("'visibility', when set, must be type bool")
+                raise ValueError("'visibility', when set, must be type str()")
 
     def set_comment(self, comment):
         """ Set self.comment to 'comment' if comment string within requirements

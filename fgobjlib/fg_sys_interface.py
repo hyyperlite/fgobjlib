@@ -20,14 +20,14 @@ class FgInterfaceIpv4(FgObject):
         role (str):  Interface role type
         vlanid (str): Interface vlanid
         phys_intf (str): Interfaces physical intf attachment.  (if intf_type is vlan)
-        device_ident (bool): device-identification for interface enabled or disabled
+        device_ident (str): device-identification ('enable', 'disable', or None=inherit)
         alias (str): Interface alias
         description (str): Interface description
     """
 
     def __init__(self, name: str = None, ip: str = None, mode: str = None, intf_type: str = None, vdom: str = None,
                  vrf: int = None, allowaccess: str = None, role: str = None, vlanid: int = None, phys_intf: str = None,
-                 device_ident: bool = None, alias: str = None, description: str = None, is_global: bool = None):
+                 device_ident: str = None, alias: str = None, description: str = None, is_global: bool = None):
         """
         Args:
             name (str): Name of interface
@@ -40,7 +40,7 @@ class FgInterfaceIpv4(FgObject):
             role (str):  Interface role type
             vlanid (str): Interface vlanid
             phys_intf (str): Interfaces physical intf attachment.  (if intf_type is vlan)
-            device_ident (bool): device-identification for interface enabled or disabled
+            device_ident (str): device-identification  ('enable', 'disable', or None=inherit)
             alias (str): Interface alias
             description (str): Interface description
         """
@@ -100,7 +100,7 @@ class FgInterfaceIpv4(FgObject):
             vrf (int): VRF interface is configured for
             allowaccess (str):  Interface allowaccess policy.  i.e. "ping http, https snmp, etc"
             role (str):  Interface role type
-            device_ident (bool): device-identification for interface enabled or disabled
+            device_ident (str): device-identification  ('enable', 'disable', or None=inherit)
             alias (str): Interface alias
             description (str): Interface description
 
@@ -134,7 +134,7 @@ class FgInterfaceIpv4(FgObject):
             vrf (int): VRF interface is configured for
             allowaccess (str):  Interface allowaccess policy.  i.e. "ping http, https snmp, etc"
             role (str):  Interface role type
-            device_ident (bool): device-identification for interface enabled or disabled
+            device_ident (str): device-identification  ('enable', 'disable', or None=inherit)
             alias (str): Interface alias
             description (str): Interface description
 
@@ -366,7 +366,7 @@ class FgInterfaceIpv4(FgObject):
         """ Set self.device_idnent if device_ident valid
 
         Args:
-            device_ident (bool): Set device-identification for interface True=(enable), False=Disable, None=inherrit
+            device_ident (str): device-identification  ('enable', 'disable', or None=inherit)
 
         Returns:
             None
@@ -375,10 +375,15 @@ class FgInterfaceIpv4(FgObject):
             self.device_ident = False
 
         else:
-            if isinstance(device_ident, bool):
-                self.device_ident = "enable" if device_ident == True else 'disable'
+            if isinstance(device_ident, str):
+                if device_ident == 'enable':
+                    self.device_ident = 'enable'
+                elif device_ident == 'disable':
+                    self.device_ident = 'disable'
+                else:
+                    raise ValueError("'device_ident', when set, must be type str() with value 'enable' or 'disable'")
             else:
-                raise ValueError("'device_ident', when set, must be type bool")
+                raise ValueError("'device_ident', when set, must be type str()")
 
     def set_alias(self, alias):
         """ Set self.alias to alias if alias valid

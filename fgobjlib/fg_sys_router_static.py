@@ -15,14 +15,14 @@ class FgRouteIPv4(FgObject):
         priority (int): Route priority
         weight (int): Route weight
         comment (str): Route comment
-        blackhole (bool): Enable/Disable blackhole route
+        blackhole (str): Blackhole route ('enable', 'disable', or None=inherit)
         vrf (int): vrf ID for route
         vdom (str): vdom for this route
     """
 
     def __init__(self, routeid: int = None, dst: str = None, device: str = None, gateway: str = None,
                  distance: int = None, priority: int = None, weight: int = None, comment: str = None,
-                 blackhole: bool = None, vrf: int = None, vdom: str = None):
+                 blackhole: str = None, vrf: int = None, vdom: str = None):
         """
         Args:
             routeid (int): ID for route object.  If not set, defaults to 0.
@@ -33,7 +33,7 @@ class FgRouteIPv4(FgObject):
             priority (int): Priority for route.
             weight (int): Weight for route.
             comment (str): Comment for route
-            blackhole (bool): Enable or disable blackhole route.  True=enable, False=disable, None=inherrit
+            blackhole (str): Enable or disable blackhole route.   ('enable', 'disable', or None=inherit)
             vrf (int): VRF number to set for route
             vdom (str): VDOM, if applicable, for route
         """
@@ -282,6 +282,11 @@ class FgRouteIPv4(FgObject):
 
         else:
             if isinstance(blackhole, bool):
-                self.blackhole = 'enable' if blackhole else 'disable'
+                if blackhole == 'enable':
+                    self.blackhole = 'enable'
+                elif blackhole == 'disable':
+                    self.blackhole = 'diable'
+                else:
+                    raise ValueError("'blackhole', when set, must be type str() with value 'enable' or 'disable'")
             else:
-                raise ValueError("'blackhole', when set, must be type bool")
+                raise ValueError("'blackhole', when set, must be type str()")

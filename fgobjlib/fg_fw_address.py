@@ -17,12 +17,12 @@ class FgFwAddress(FgObject):
         fqdn (str): Fqdn for "fqdn" type object
         start_ip (str): start-ip for "iprange" type object
         end_ip (str): end-ip for "iprange: type object
-        visibility (bool): Object visibility set to True or False
+        visibility (str): Object visibility ('enable', 'disable', or None=inherit)
         comment (str): Object comment
     """
 
     def __init__(self, name: str = None, type: str = None, subnet: str = None, fqdn: str = None,
-                 start_ip: str = None, end_ip: str = None, visibility: bool = None, associated_interface: str = None,
+                 start_ip: str = None, end_ip: str = None, visibility: str = None, associated_interface: str = None,
                  vdom: str = None, comment: str = None):
         """
         Args:
@@ -149,7 +149,7 @@ class FgFwAddress(FgObject):
         """ Set self.visibility
 
         Args:
-            visibility (bool): Boolean to set visibility on FortiGate to enabled (True) or disabled (False)
+            visibility (str): object visibility in GUI.  ('enable', 'disable', or None=inherit)
 
         Returns:
             None
@@ -158,16 +158,21 @@ class FgFwAddress(FgObject):
             self.visibility = None
 
         else:
-            if isinstance(visibility, bool):
-                self.visibility = 'enable' if visibility else 'disable'
+            if isinstance(visibility, str):
+                if visibility == 'enable':
+                    self.visibility = 'enable'
+                elif visibility == 'disable':
+                    self.visibility = 'disable'
+                else:
+                    raise ValueError("'visibility', when set, must be type str() with value 'enable' or 'disable'")
             else:
-                raise ValueError("'visibility', when set, must be type bool")
+                raise ValueError("'visibility', when set, must be type str()")
 
     def set_associated_interface(self, intf):
         """ Set self.associated_interface if associated_interface provided meets requirements
 
         Args:
-            intf (str):
+            intf (str): Name of associated interface for GUI display.  (1-35 chars)
 
         Returns:
             None

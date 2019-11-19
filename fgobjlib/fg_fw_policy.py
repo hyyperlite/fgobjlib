@@ -16,15 +16,18 @@ class FgFwPolicy(FgObject):
         schedule (str): Policy schedule
         action (str):  Policy action, may be 'accept' or 'deny'
         logtraffic (str): Policy log action, may be 'utm', 'all' or 'disabled'
-        nat (bool):  Source NAT for policy, True or False
+        nat (str):  Source NAT for policy.  ('enable', 'disable', or None=inherit)
         comment (str): Object comment
         vdom (str):  VDOM policy configured in  (if any)
+        srcaddr_negate (str): Negate the source address in policy.  ('enable', 'disable', or None=inherit)
+        dstaddr_negate (str): Negate the destination address in policy.  ('enable', 'disable', or None=inherit)
+        service (str): Negate the service in policy.  ('enable', 'disable', or None=inherit)
     """
 
     def __init__(self, policyid: int = None, srcintf: list = None, dstintf: list = None, srcaddr: list = None,
                  dstaddr: list = None, service: list = None, schedule: str = None, action: str = None,
-                 logtraffic: str = None, nat: bool = None, vdom: str = None, srcaddr_negate: bool = None,
-                 dstaddr_negate: bool = None, name: str = None, comment: str = None, service_negate: bool = None):
+                 logtraffic: str = None, nat: str = None, vdom: str = None, srcaddr_negate: str = None,
+                 dstaddr_negate: str = None, name: str = None, comment: str = None, service_negate: str = None):
         """
         Args:
             policyid (int): optional - ID of object.  Defines ID used in configs when API or CLI for config methods (default: 0)
@@ -35,9 +38,12 @@ class FgFwPolicy(FgObject):
             schedule (str): optional - string referencing schedule to associated with policy (default: 'always')
             action (str): optional - string sets action to assign to policy; may be 'accept' or 'deny' (default: deny)
             logtraffic (str): optional - string set logtraffic action to assign; may be utm/all/disabled (default: disabled)
-            nat (bool): optional - string
+            nat (str): optional - set nat enabled or disable ('enable', 'disable', or None=inherit)
             comment (str): optional - Set a comment up to 255 characters (default: None)
             vdom (str): optional - Set vdom.  If unset object configs uses default fg context (default: None)
+            srcaddr_negate (str): Negate the source address in policy.  ('enable', 'disable', or None=inherit)
+            dstaddr_negate (str): Negate the destination address in policy.  ('enable', 'disable', or None=inherit)
+            service (str): Negate the service in policy.  ('enable', 'disable', or None=inherit)
         """
 
 
@@ -286,7 +292,7 @@ class FgFwPolicy(FgObject):
         """ Set self.nat to 'nat' if valid.  True=enable, False=disable
 
         Args:
-            nat (bool): Policy source NAT, true (enable) or false (disable)
+            nat (str): Policy source NAT. ('enable', 'disable', or None=inherit)
 
         Returns:
             None
@@ -295,9 +301,15 @@ class FgFwPolicy(FgObject):
             self.nat = None
 
         else:
-            if isinstance(nat, bool):
-                self.nat = 'enable' if nat == True else 'disable'
-
+            if isinstance(nat, str):
+                if nat == 'enable':
+                    self.nat = 'enable'
+                elif nat == 'disable':
+                    self.nat = 'disable'
+                else:
+                    raise ValueError("'nat', when set, must be type str() with value 'enable' or 'disable'")
+            else:
+                raise ValueError("'nat', when set, must be type str()")
 
     def set_comment(self, comment):
         """ Set self.comment to 'comment' if comment string within requirements
@@ -337,15 +349,15 @@ class FgFwPolicy(FgObject):
                 if 1 <= len(name) <= 35:
                     self.name = name
                 else:
-                    raise Exception("'name', when set, must be type str between 1 and 1,023 chars")
+                    raise Exception("'name', when set, must be type str() between 1 and 1,023 chars")
             else:
-                raise Exception("'name', when set, must be type str")
+                raise Exception("'name', when set, must be type str()")
 
     def set_srcaddr_negate(self, negate):
         """ Set the self.srcaddr_negate attribute representing negate type in policy
 
         Args:
-            negate (bool): True = (enable negating), False = (disable negating)
+            negate (str): ('enable', 'disable', or None=inherit)
 
         Returns:
             None
@@ -354,16 +366,21 @@ class FgFwPolicy(FgObject):
             self.srcaddr_negate = None
 
         else:
-            if isinstance(negate, bool):
-                self.srcaddr_negate = 'enable' if negate == True else 'disable'
+            if isinstance(negate, str):
+                if negate == 'enable':
+                    self.srcaddr_negate = 'enable'
+                elif negate == 'disable':
+                    self.srcaddr_negate = 'disable'
+                else:
+                    raise ValueError("'srcaddr_negate, when set, must be type str() with value 'enable' or 'disable")
             else:
-                raise ValueError("'srcaddr_negate', when set, must be type bool")
+                raise ValueError("'srcaddr_negate', when set, must be type str()")
 
     def set_dstaddr_negate(self, negate):
         """ Set the self.dstaddr_negate attribute representing negate type in policy
 
         Args:
-            negate (bool): True = (enable negating), False = (disable negating)
+            negate (str): ('enable', 'disable', or None=inherit)
 
         Returns:
             None
@@ -372,16 +389,22 @@ class FgFwPolicy(FgObject):
             self.dstaddr_negate = None
 
         else:
-            if isinstance(negate, bool):
-                self.dstaddr_negate = 'enable' if negate == True else 'disable'
+            if isinstance(negate, str):
+                if negate == 'enable':
+                    self.dstaddr_negate = 'enable'
+                elif negate == 'disable':
+                    self.dstaddr_negate = 'disable'
+                else:
+                    raise ValueError("'dstaddr_negate', when set, must be type str() with value 'enable' or 'disable'")
+
             else:
-                raise ValueError("'dstaddr_negate', when set, must be type bool")
+                raise ValueError("'dstaddr_negate', when set, must be type str()")
 
     def set_service_negate(self, negate):
         """ Set the self.service attribute representing negate type in policy
 
         Args:
-            negate (bool): True = (enable negating), False = (disable negating)
+            negate (str): ('enable', 'disable', or None=inherit)
 
         Returns:
             None
@@ -390,7 +413,12 @@ class FgFwPolicy(FgObject):
             self.service_negate = None
 
         else:
-            if isinstance(negate, bool):
-                self.service_negate = 'enable' if negate == True else 'disable'
+            if isinstance(negate, str):
+                if negate == 'enable':
+                    self.service_negate = 'enable'
+                elif negate == 'disable':
+                    self.service_negate = 'disable'
+                else:
+                    raise ValueError("'service_negate', when set, must be type str() with value 'enable' or 'disable'")
             else:
-                raise ValueError("'service_negate', when set, must be type bool")
+                raise ValueError("'service_negate', when set, must be type str()")
