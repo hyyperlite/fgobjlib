@@ -13,31 +13,31 @@ class FgIpsecP2Interface(FgObject):
         name (str): Name of phase2-interface
         phase1name (str): Name of phase1-interface to bind to
         proposal (str): phase2 proposal(s)
-        pfs (bool): perfect forward secrecy (True=enable, False=disable, None=inherit)
+        pfs (str): perfect forward secrecy,  should be either 'enable' or 'disable'
         dhgrp (str): phase2 dhgrp(s)
-        keepalive (int): keepalive in seconds
-        replay (bool): replay protection (True=enabled, False=disable, None=inherit)
+        keepalive (str): keepalive, should be either 'enable' or 'disable'
+        replay (str): replay protection
         comment (str): phase2 comment
-        auto_negotiate (bool): auto-negotiation (True=enabled, False=disabled, None=inherit)
+        auto_negotiate (str): auto-negotiation, should be either 'enable' or 'disable'
         vdom (str): associated VDOM
         src_subnet (str):  source selector, for selectors type subnet
         dst_subnet (str): destination selector, for selectors type subnet
     """
 
-    def __init__(self, name: str = None, phase1name: str = None, proposal: list = None, pfs: bool = None,
-                 dhgrp: list = None, keepalive: int = None, replay: bool = None, comment: str = None,
-                 auto_negotiate: bool = None, vdom: str = None, src_subnet: str = None, dst_subnet: str = None):
+    def __init__(self, name: str = None, phase1name: str = None, proposal: list = None, pfs: str = None,
+                 dhgrp: list = None, keepalive: str = None, replay: str = None, comment: str = None,
+                 auto_negotiate: str = None, vdom: str = None, src_subnet: str = None, dst_subnet: str = None):
         """
         Args:
             name (str): Name of phase2-interface
             phase1name (str): Name of phase1-interface to bind to
             proposal (str): phase2 proposal(s)
-            pfs (bool): perfect forward secrecy (True=enable, False=disable, None=inherit)
+            pfs (str): perfect forward secrecy.  Allowed values are 'enable' or 'disable'
             dhgrp (str): phase2 dhgrp(s)
-            keepalive (int): keepalive in seconds
-            replay (bool): replay protection (True=enabled, False=disable, None=inherit)
+            keepalive (str): keepalive.  Allowed values are 'enable' or 'disable'
+            replay (str): replay protection (True=enabled, False=disable, None=inherit)
             comment (str): phase2 comment
-            auto_negotiate (bool): auto-negotiation (True=enabled, False=disabled, None=inherit)
+            auto_negotiate (str): Auto-negotiation. Allowed values are 'enable' or 'disable'
             vdom (str): associated VDOM
             src_subnet (str):  source selector, for selectors type subnet
             dst_subnet (str): destination selector, for selectors type subnet
@@ -212,7 +212,7 @@ class FgIpsecP2Interface(FgObject):
                             raise ValueError(f"At least one 'dhgrp' provided: {dhgrp} is not a valid fortigate phase1 "
                                              "proposal option")
             else:
-                raise ValueError("dhgrp must be provided as type integer")
+                raise ValueError("dhgrp must be provided as type int() or list() of int()")
 
             self.dhgrp = dhgrp_items
 
@@ -233,15 +233,15 @@ class FgIpsecP2Interface(FgObject):
                 if 1 <= len(comment) <= 1023:
                     self.comment = comment
                 else:
-                    raise ValueError("'description', when set, must be type str between 1 and 1,023 chars")
+                    raise ValueError("'description', when set, must be type str() between 1 and 1,023 chars")
             else:
-                raise ValueError("'description', when set, must be type str")
+                raise ValueError("'description', when set, must be type str()")
 
     def set_keepalive(self, keepalive):
         """ Set self.keepalive to keepalive if keepalive valid
 
         Args:
-            keepalive (int):  phase2-interface keepalive
+            keepalive (str):  keepalive, allowed values: 'enable' or 'disable'
 
         Returns:
             None
@@ -250,19 +250,22 @@ class FgIpsecP2Interface(FgObject):
             self.keepalive = None
 
         else:
-            if isinstance(keepalive, int):
-                if 10 <= keepalive <= 900:
-                    self.keepalive = keepalive
+            if isinstance(keepalive, str):
+                if keepalive == 'enable':
+                    self.keepalive = 'enable'
+                elif keepalive == 'disable':
+                    self.keepalive = 'disable'
                 else:
-                    raise ValueError("'keepalive', when set, must be type int between 10 and 900")
+                    raise ValueError("'keepalive' allowed values are: 'enable' or 'disable'")
+
             else:
-                raise ValueError("'keepalive', when set, must be type int")
+                raise ValueError("'keepalive', when set, must be type str()")
 
     def set_pfs(self, pfs):
         """ set self.pfs to enable, disable or None based on pfs value
 
         Args:
-            pfs (bool): pfs  (True=enable, False=Disable, None=inherit)
+            pfs (str): pfs, allowed values: 'enable'  or 'disable'
 
         Returns:
             None
@@ -271,16 +274,21 @@ class FgIpsecP2Interface(FgObject):
             self.pfs = None
 
         else:
-            if isinstance(pfs, bool):
-                self.pfs = 'enable' if pfs else 'disable'
+            if isinstance(pfs, str):
+                if pfs == 'enable':
+                    self.pfs = 'enable'
+                elif pfs == 'disable':
+                    self.pfs = 'disable'
+                else:
+                    raise ValueError("'pfs' allowed values are: 'enable' or 'disable'")
             else:
-                raise ValueError("'pfs', when set, must type bool")
+                raise ValueError("'pfs', when set, must be type str()")
 
     def set_replay(self, replay):
         """ Set self.replay to enable, disable or None
 
         Args:
-            replay (bool): replay protection (True=enable, False=disable, None=inherit)
+            replay (str): replay protection, allowed values: 'enable' or 'disable'
 
         Returns:
             None
@@ -289,16 +297,21 @@ class FgIpsecP2Interface(FgObject):
             self.replay = None
 
         else:
-            if isinstance(replay, bool):
-                self.replay = 'enable' if replay else 'disable'
+            if isinstance(replay, str):
+                if replay == 'enable':
+                    self.replay = 'enable'
+                elif replay == 'disable':
+                    self.replay = 'disable'
+                else:
+                    raise ValueError("'replay', allowed values are: 'enable' or 'disable'")
             else:
-                raise ValueError("'pfs', when set, must type bool")
+                raise ValueError("'pfs', when set, must type str()")
 
     def set_auto_negotiate(self, auto_negotiate):
         """ Set self.auto_negotiate to enable, disable or None
 
         Args:
-            auto_negotiate (bool): auto-negotiation (True=enable, False=Disable, None=inherit)
+            auto_negotiate (str): auto-negotiation, allowed values: 'enable' or 'disable'
 
         Returns:
         None
@@ -307,8 +320,13 @@ class FgIpsecP2Interface(FgObject):
             self.auto_negotiate = None
 
         else:
-            if isinstance(auto_negotiate, bool):
-                self.auto_negotiate = 'enable' if auto_negotiate else 'disable'
+            if isinstance(auto_negotiate, str):
+                if auto_negotiate == 'enable':
+                    self.auto_negotiate = 'enable'
+                elif auto_negotiate == 'disable':
+                    self.auto_negotiate = 'disable'
+                else:
+                    raise ValueError("'auto_negotiate' allowed values: 'enable' or 'disable'")
             else:
                 raise ValueError("'pfs', when set, must type bool")
 
