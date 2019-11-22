@@ -11,12 +11,12 @@ class FgIpsecP1Interface(FgObject):
     Attributes:
         name (str): Name of ipsec phase1-interface object
         p1_type (str): Phase1-interface type
-        local_intf (str): Name of locally attached fortigate interface
+        interface (str): Name of locally attached fortigate interface
         proposal (list): Phase1-interface proposal(s)
         ike_version (int): ike version
         local_gw (str): Phase1-interface local-gw IP
-        psk (str): Pre-shared key
-        local_id (str): Local ID
+        psksecret (str): Pre-shared key
+        localid (str): Local ID
         remote_gw (str): Remote Gateway
         add_route (str):  add-route ('enable', 'disable', or None=inherit)
         add_gw_route (str): add-gw-route ('enable', 'disable', or None=inherit)
@@ -31,22 +31,22 @@ class FgIpsecP1Interface(FgObject):
         exchange_interface_ip (str): exchange-interface-ip ('enable', 'disable', or None=inherit)
     """
 
-    def __init__(self, name: str = None, p1_type: str = None, local_intf: str = None, proposal: list = None,
-                 ike_version: int = None, local_gw: str = None, psk: str = None, local_id: str = None,
+    def __init__(self, name: str = None, p1_type: str = None, interface: str = None, proposal: list = None,
+                 ike_version: int = None, local_gw: str = None, psksecret: str = None, localid: str = None,
                  remote_gw: str = None, add_route: str = None, add_gw_route: str = None, keepalive: int = None,
-                 net_device: str = None, comment: str = None, vdom: str = None,  tunnel_search: str = None,
+                 net_device: str = None, comment: str = None, vdom: str = None, tunnel_search: str = None,
                  dpd: str = None, dhgrp: list = None, nattraversal: str = None, exchange_interface_ip: str = None):
 
         """
         Args:
             name (str): Set name of ipsec phase1-interface object
             p1_type (str): Set phase1-interface type
-            local_intf (str): Set name of locally attached fortigate interface
+            interface (str): Set name of locally attached fortigate interface
             proposal (list): Set phase1-interface proposal(s)
             ike_version (int): Set ike version
             local_gw (str): Set phase1-interface local-gw IP
-            psk (str): Set pre-shared key
-            local_id (str): Set local ID
+            psksecret (str): Set pre-shared key
+            localid (str): Set local ID
             remote_gw (str): Set remote Gateway
             add_route (str):  Set add-route ('enable', 'disable', or None=inherit)
             add_gw_route (str): Set add-gw-route ('enable', 'disable', or None=inherit)
@@ -69,9 +69,9 @@ class FgIpsecP1Interface(FgObject):
         self.cli_path = "config vpn ipsec phase1-interface"
 
         # Map instance attribute names to fg attribute names
-        self.data_attrs = {'name': 'name', 'p1_type': 'type', 'local_intf': 'interface', 'proposal': 'proposal',
-                           'ike_version': 'ike-version', 'local_gw': 'local-gw', 'psk': 'psksecret',
-                           'local_id': 'localid', 'remote_gw': 'remote-gw', 'comment': 'comments',
+        self.data_attrs = {'name': 'name', 'p1_type': 'type', 'interface': 'interface', 'proposal': 'proposal',
+                           'ike_version': 'ike-version', 'local_gw': 'local-gw', 'psksecret': 'psksecret',
+                           'localid': 'localid', 'remote_gw': 'remote-gw', 'comment': 'comments',
                            'add_route': 'add-route', 'add_gw_route': 'add-gw-route', 'keepalive': 'keepalive',
                            'net_device': 'net-device', 'tunnel_search': 'tunnel-search', 'dpd': 'dpd', 'dhgrp': 'dhgrp',
                            'nattraversal': 'nattraversal', 'exchange_interface_ip': 'exchange-interface-ip'}
@@ -81,12 +81,12 @@ class FgIpsecP1Interface(FgObject):
         # Set instance attributes
         self.set_name(name)
         self.set_p1_type(p1_type)
-        self.set_local_intf(local_intf)
+        self.set_interface(interface)
         self.set_proposal(proposal)
         self.set_ike_version(ike_version)
         self.set_local_gw(local_gw)
-        self.set_psk(psk)
-        self.set_local_id(local_id)
+        self.set_psksecret(psksecret)
+        self.set_localid(localid)
         self.set_remote_gw(remote_gw)
         self.set_comment(comment)
         self.set_add_route(add_route)
@@ -99,9 +99,9 @@ class FgIpsecP1Interface(FgObject):
         self.set_nattraversal(nattraversal)
         self.set_exchange_interface_ip(exchange_interface_ip)
 
-        self.obj_to_str += f', name={name}, p1_type={p1_type}, local_intf={self.set_local_intf}, ' \
+        self.obj_to_str += f', name={name}, p1_type={p1_type}, interface={self.interface}, ' \
                           f'proposal={self.proposal}, ike_version={self.ike_version}, local_gw={self.local_gw}, ' \
-                          f'psk={self.psk}, local_id={self.local_id}, remote_gw={self.remote_gw}, ' \
+                          f'psksecret={self.psksecret}, localid={self.localid}, remote_gw={self.remote_gw}, ' \
                           f'comment={self.comment}, add_route={self.add_route}, add_gw_route={self.add_gw_route}, ' \
                           f'keepalive={self.keepalive}, net_device={self.net_device}, ' \
                           f'tunnel_search={self.tunnel_search}, dpd={self.dpd}, dhgrp={self.dhgrp},' \
@@ -248,26 +248,27 @@ class FgIpsecP1Interface(FgObject):
             else:
                 raise ValueError("'p1_type', when set, must be a str with value of 'dynamic' or 'static'")
 
-    def set_local_intf(self, intf):
+    def set_interface(self, interface):
         """ set self.local_intfs to intf if intfs is valid
 
         Args:
-            intf (str): Local interface for p1 attachment  (1 to 35 chars)
+            interface (str): Local interface for p1 attachment  (1 to 35 chars)
 
         Returns:
             None
         """
-        if intf is None:
-            self.intf = None
-            if intf.isspace(): raise ValueError("'local_intf', cannot be an empty string")
+        if interface is None:
+            self.interface = None
+
         else:
-            if isinstance(intf, str):
-                if len(intf) < 35:
-                    self.local_intf = intf
+            if interface.isspace(): raise ValueError("'interface', cannot be an empty string")
+            if isinstance(interface, str):
+                if len(interface) < 35:
+                    self.interface = interface
                 else:
-                    raise ValueError("'local_intf', must be less than 35 chars or less")
+                    raise ValueError("'interface', when set, must be less than 35 chars or less")
             else:
-                raise ValueError("'local_intf', must be a string")
+                raise ValueError("'interface', when set, must be a string")
 
     def set_ike_version(self, ike_version):
         """ Set self.ike_version to 1 or 2 if ike_version = 1 or 2.  Otherwise raise Exception
@@ -327,7 +328,7 @@ class FgIpsecP1Interface(FgObject):
                 raise ValueError("'remote_gw', when set, must be type str() with value containing a valid ipv4 address")
 
 
-    def set_psk(self, psk):
+    def set_psksecret(self, psk):
         """ Set self.psk to psk if psk valid
 
         Args:
@@ -337,35 +338,35 @@ class FgIpsecP1Interface(FgObject):
             None
         """
         if psk is None:
-            self.psk = None
+            self.psksecret = None
         else:
             if isinstance(psk, str):
                 if 6 <= len(psk) <= 30:
-                    self.psk = psk
+                    self.psksecret = psk
                 else:
-                    raise ValueError("'psk', must be type str() between 6 and 30 chars")
+                    raise ValueError("'psksecret', must be type str() between 6 and 30 chars")
             else:
-                raise ValueError("'psk', must be type str()")
+                raise ValueError("'psksecret', must be type str()")
 
-    def set_local_id(self, local_id):
+    def set_localid(self, localid):
         """ Set self.local_id to local_id if local_id is valid
 
         Args:
-            local_id (str): Phase1 local id.  (up to 68 chars)
+            localid (str): Phase1 local id.  (up to 68 chars)
 
        Returns:
             None
         """
-        if local_id is None:
-            self.local_id = None
+        if localid is None:
+            self.localid = None
         else:
-            if isinstance(local_id, str):
-                if 1 <= len(local_id) <= 63:
-                    self.local_id = local_id
+            if isinstance(localid, str):
+                if 1 <= len(localid) <= 63:
+                    self.localid = localid
                 else:
-                    raise ValueError("'local_id', when set, must be type str() between 1 and 63 chars")
+                    raise ValueError("'localid', when set, must be type str() between 1 and 63 chars")
             else:
-                raise ValueError("'local_id', when set, must be type str()")
+                raise ValueError("'localid', when set, must be type str()")
 
     def set_comment(self, comment):
         """ Set self.comment to comment if comment is valid
@@ -463,7 +464,7 @@ class FgIpsecP1Interface(FgObject):
         if net_device is None:
             self.net_device = None
         else:
-            if isinstance(net_device, bool):
+            if isinstance(net_device, str):
                 if net_device == 'enable':
                     self.net_device = 'enable'
                 elif net_device == 'disable':
@@ -495,7 +496,6 @@ class FgIpsecP1Interface(FgObject):
             else:
                 raise ValueError("'tunnel_search', when set, must be type str(0")
 
-
     def set_dpd(self, dpd):
         """ Set self.dpd
 
@@ -520,7 +520,6 @@ class FgIpsecP1Interface(FgObject):
                                     "'on-demmand")
             else:
                 raise ValueError("'dpd', when set, must be type str()")
-
 
     def set_nattraversal(self, nattraversal):
         """ Set self.nat_traversal
@@ -547,7 +546,6 @@ class FgIpsecP1Interface(FgObject):
             else:
                 raise ValueError("'nattraversal', when set, must be type str()")
 
-
     def set_exchange_interface_ip(self, exchange_interface_ip):
         """ Set self.exchange_interface_ip
 
@@ -570,5 +568,3 @@ class FgIpsecP1Interface(FgObject):
                                      "'disable")
             else:
                 raise ValueError("exchange_interface_ip, when set, must be type str()")
-
-
