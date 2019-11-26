@@ -46,7 +46,7 @@ class FgFwService(FgObject):
             sctp_portrange (list): SCTP port range.  May be string or list of strings. ex. [&#39;80&#39;, &#39;1024-65553&#39;]
             protocol_number (int):  IP protocol Number
             comment (str): Comment for this object
-            visibility (bool): Visibility of this object in GUI.  True=visible, False=hidden
+            visibility (str): Visibility of this object in GUI.  (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
             session_ttl (int):  Session TTL for TCP sessions
             udp_idle_timer (int): Idle timer setting for UDP sessions
             category (str): Category to assign service object to in FG
@@ -56,7 +56,7 @@ class FgFwService(FgObject):
 
     def __init__(self, name: str = None, vdom: str = None, protocol: str = None, tcp_portrange: list = None,
                  udp_portrange: list = None, sctp_portrange: list = None, protocol_number: int = None,
-                 comment: str = None, visibility: bool = None, session_ttl: int = None, udp_idle_timer: int = None,
+                 comment: str = None, visibility: str = None, session_ttl: int = None, udp_idle_timer: int = None,
                  category: str = None, icmptype: int = None, icmpcode: int = None):
         &#34;&#34;&#34;
         Args:
@@ -68,7 +68,7 @@ class FgFwService(FgObject):
             sctp_portrange (list): SCTP port range.  May be string or list of strings. ex. [&#39;80&#39;, &#39;1024-65553&#39;]
             protocol_number (int): IP Protocol Number. Use when self&#39;s protocol set to &#39;ip&#39;.
             comment (str): Comment for this object
-            visibility (bool): Visibility of this object in GUI.  True=visible, False=hidden
+            visibility (str): Visibility of this object in GUI.  (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
             session_ttl (int):  Session TTL for TCP sessions
             udp_idle_timer (int): Idle timer setting for UDP sessions
             category (str): Category to assign service object to in FG
@@ -94,9 +94,9 @@ class FgFwService(FgObject):
         # Set instance attributes
         self.set_name(name)
         self.set_protocol(protocol)
-        self.set_portrange(tcp_portrange, &#39;tcp_portrange&#39;)
-        self.set_portrange(udp_portrange, &#39;udp_portrange&#39;)
-        self.set_portrange(sctp_portrange, &#39;sctp_portrange&#39;)
+        self.set_tcp_portrange(tcp_portrange)
+        self.set_udp_portrange(udp_portrange)
+        self.set_sctp_portrange(sctp_portrange)
         self.set_protocol_number(protocol_number)
         self.set_comment(comment)
         self.set_visibility(visibility)
@@ -106,7 +106,51 @@ class FgFwService(FgObject):
         self.set_icmptype(icmptype)
         self.set_icmpcode(icmpcode)
 
+        # Update the parent defined obj_to_str attribute with this objects str representation
+        self.obj_to_str += f&#39;, name={self.name}, protocol={self.protocol}, tcp_portrange={self.tcp_portrange}&#39;
 
+
+
+    # Static Methods
+    @staticmethod
+    def _validate_and_get_portrange(range):
+        &#34;&#34;&#34; Return port range or list (as a string) of port ranges if port range is formatted as expected
+
+        Args:
+            range (list): Port range. May be string or list of strings.  ex. &#39;80&#39;  or &#39;100-300&#39; or [&#39;80&#39;, &#39;100-300&#39;]
+
+        Returns:
+            String
+        &#34;&#34;&#34;
+        if range is None:
+            return None
+        else:
+            # If range is provided as a single range in str format
+            if isinstance(range, str):
+                # check that string is only numbers or number dash number
+                if re.match(r&#39;(^[\d]+$)|(^[\d]+-[\d]+$)&#39;, range):
+                    return range
+                else:
+                    raise ValueError(f&#34;portrange specified {range} is not a valid.  Must be str of &lt;digits&gt; or &#34;
+                                     &#34;&lt;digits&gt;-&lt;digits&gt;&#34;)
+
+            # If a list of port ranges is provided in &#39;range&#39; var
+            elif isinstance(range, list):
+                range_list = &#39;&#39;
+                for item in range:
+                    if isinstance(item, str):
+                        # check that string is only numbers or number dash number
+                        if re.match(&#39;(^[\d]+$)|(^[\d]+-[\d]+$)&#39;, item):
+                            range_list += f&#39; {item}&#39;
+                        else:
+                            raise ValueError(
+                                f&#34;portrange specified: {item} is not a valid range.  Must be str of &lt;digits&gt; or &#34;
+                                &#34;&lt;digits&gt;-&lt;digits&gt;&#34;)
+
+                # Set self.&lt;obj_type&gt; with range_list values
+                return range_list.lstrip()
+
+    # Instance Methods
     def set_name(self, name):
         &#34;&#34;&#34; Set self.name to name if name meets requirements
 
@@ -116,17 +160,18 @@ class FgFwService(FgObject):
         Returns:
             None
         &#34;&#34;&#34;
-        if name:
-            if name.isspace(): raise Exception(&#34;\&#34;intf\&#34;, cannot be an empty string&#34;)
+        if name is None:
+            self.name = None
+            if name.isspace(): raise Exception(&#34;&#39;name&#39;, cannot be an empty string&#34;)
+
+        else:
             if isinstance(name, str):
                 if 1 &lt;= len(name) &lt;= 79:
                     self.name = name
                 else:
-                    raise Exception(&#34;\&#34;name\&#34;, must be less than or equal to 79 chars&#34;)
+                    raise Exception(&#34;&#39;name&#39;, must be less than or equal to 79 chars&#34;)
             else:
-                raise Exception(&#34;\&#34;name\&#34;, must be a string&#34;)
-        else:
-            raise Exception(&#34;Value \&#34;name\&#34; is required but was not provided&#34;)
+                raise Exception(&#34;&#39;name&#39;, must be a string&#34;)
 
     def set_protocol(self, protocol):
         &#34;&#34;&#34; Set self.protocol to &#39;protocol&#39; if valid &#39;protocol&#39; provided
@@ -137,7 +182,10 @@ class FgFwService(FgObject):
         Returns:
             None
         &#34;&#34;&#34;
-        if protocol:
+        if protocol is None:
+            self.protocol = None
+
+        else:
             if protocol.lower() in [&#39;tcp&#39;, &#39;udp&#39;, &#39;sctp&#39;, &#39;tcp/udp/sctp&#39;]:
                 self.protocol = &#39;TCP/UDP/SCTP&#39;
             elif protocol.lower() == &#39;icmp&#39;:
@@ -145,48 +193,42 @@ class FgFwService(FgObject):
             elif protocol.lower() == &#39;ip&#39;:
                 self.protocol = &#39;IP&#39;
             else:
-                raise ValueError(&#34;\&#34;protocol\&#34; specified is unsupported&#34;)
-        else:
-            self.protocol = &#39;TCP/UDP/SCTP&#39;
+                raise ValueError(&#34;&#39;protocol&#39; specified is unsupported&#34;)
 
-    def set_portrange(self, range, obj_type):
-        &#34;&#34;&#34; Set self.&lt;&#39;obj_type&#39;&gt; to &#39;range&#39; if range is valid
+
+
+    def set_tcp_portrange(self, range):
+        &#34;&#34;&#34; Set self.tcp_portrange to range returned from static method _validate_and_get_portrange()
 
         Args:
-            range (list): Port range. May be string or list of strings.  ex. &#39;80&#39;  or &#39;100-300&#39; or [&#39;80&#39;, &#39;100-300&#39;]
-            obj_type (str): Name of self attribute to set range for
+            range (list):  A Port range. May be string or list of strings.  ex. &#39;80&#39;  or &#39;100-300&#39; or [&#39;80&#39;, &#39;100-300&#39;]
+
         Returns:
             None
         &#34;&#34;&#34;
-        if range and obj_type:
+        self.tcp_portrange = self._validate_and_get_portrange(range)
 
-            # If range is provided as a single range in str format
-            if isinstance(range, str):
-                # check that string is only numbers or number dash number
-                if re.match(r&#39;(^[\d]+$)|(^[\d]+-[\d]+$)&#39;, range):
-                    setattr(self, obj_type, range)
-                else:
-                    raise ValueError(&#34;\&#34;{}\&#34; portrange specified {} is not a valid range.  Must be str of &lt;digits&gt; or &#34;
-                                     &#34;&lt;digits&gt;-&lt;digits&gt;&#34;.format(obj_type, range))
+    def set_udp_portrange(self, range):
+        &#34;&#34;&#34; Set self.udp_portrange to range returned from static method _validate_and_get_portrange()
 
-            # If a list of port ranges is provided in &#39;range&#39; var
-            elif isinstance(range, list):
-                range_list = &#39;&#39;
-                for item in range:
-                    if isinstance(item, str):
-                        # check that string is only numbers or number dash number
-                        if re.match(&#39;(^[\d]+$)|(^[\d]+-[\d]+$)&#39;, item):
-                            range_list += &#39; {}&#39;.format(item)
-                        else:
-                            raise ValueError(
-                                &#34;\&#34;{}\&#34; portrange specified: {} is not a valid range.  Must be str of &lt;digits&gt; or &#34;
-                                &#34;&lt;digits&gt;-&lt;digits&gt;&#34;.format(obj_type, item))
+        Args:
+            range (list):  A Port range. May be string or list of strings.  ex. &#39;80&#39;  or &#39;100-300&#39; or [&#39;80&#39;, &#39;100-300&#39;]
 
-                # Set self.&lt;obj_type&gt; with range_list values
-                setattr(self, obj_type, range_list.lstrip())
-        else:
-            # Set self.&lt;obj_type&gt; to None
-            setattr(self, obj_type, None)
+        Returns:
+            None
+        &#34;&#34;&#34;
+        self.udp_portrange = self._validate_and_get_portrange(range)
+
+    def set_sctp_portrange(self, range):
+        &#34;&#34;&#34; Set self.sctp_portrange to range returned from static method _validate_and_get_portrange()
+
+        Args:
+            range (list):  A Port range. May be string or list of strings.  ex. &#39;80&#39;  or &#39;100-300&#39; or [&#39;80&#39;, &#39;100-300&#39;]
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        self.sctp_portrange = self._validate_and_get_portrange(range)
 
 
     def set_protocol_number(self, protocol_number):
@@ -200,33 +242,40 @@ class FgFwService(FgObject):
         Returns:
             None
         &#34;&#34;&#34;
-        if protocol_number:
+        if protocol_number is None:
+            self.protocol_number = None
+
+        else:
             if isinstance(protocol_number, int):
                 if 0 &lt;= protocol_number &lt;= 254:
                     self.protocol_number = protocol_number
                 else:
-                    raise ValueError(&#34;\&#34;protocol_number\&#34;, when specified, must be type int between 1 and 254&#34;)
+                    raise ValueError(&#34;&#39;protocol_number&#39;, when set, must be type int between 1 and 254&#34;)
             else:
-                raise ValueError(&#34;\&#34;protocol_number\&#34;, when specified, must be type int&#34;)
-        else:
-            self.protocol_number = None
+                raise ValueError(&#34;&#39;protocol_number&#39;, when set, must be type int&#34;)
 
     def set_visibility(self, visibility):
-        &#34;&#34;&#34; Set self.visibility to visibility if visibility is set and is type bool
+        &#34;&#34;&#34; Set self.visibility
 
         Args:
-            visibility (bool): Object visibility. True=visible, False=hidden, None=use default/existing setting
+            visibility (str): object visibility in GUI.  (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
 
         Returns:
             None
         &#34;&#34;&#34;
-        if visibility:
-            if isinstance(visibility, bool):
-                self.visibility = &#39;enable&#39; if visibility else &#39;disable&#39;
-            else:
-                raise ValueError(&#34;\&#34;visibility\&#34;, when set, must be type bool&#34;)
-        else:
+        if visibility is None:
             self.visibility = None
+
+        else:
+            if isinstance(visibility, str):
+                if visibility == &#39;enable&#39;:
+                    self.visibility = &#39;enable&#39;
+                elif visibility == &#39;disable&#39;:
+                    self.visibility = &#39;disable&#39;
+                else:
+                    raise ValueError(&#34;&#39;visibility&#39;, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#39;&#34;)
+            else:
+                raise ValueError(&#34;&#39;visibility&#39;, when set, must be type str()&#34;)
 
     def set_comment(self, comment):
         &#34;&#34;&#34; Set self.comment to &#39;comment&#39; if comment string within requirements
@@ -237,16 +286,17 @@ class FgFwService(FgObject):
         Returns:
             None
         &#34;&#34;&#34;
-        if comment:
+        if comment is None:
+            self.comment = None
+
+        else:
             if isinstance(comment, str):
                 if 1 &lt;= len(comment) &lt;= 255:
                     self.comment = comment
                 else:
-                    raise Exception(&#34;\&#34;description\&#34;, when set, must be type str between 1 and 1,023 chars&#34;)
+                    raise Exception(&#34;&#39;description&#39;, when set, must be type str between 1 and 1,023 chars&#34;)
             else:
-                raise Exception(&#34;\&#34;description\&#34;, when set, must be type str&#34;)
-        else:
-            self.comment = None
+                raise Exception(&#34;&#39;description&#39;, when set, must be type str&#34;)
 
     def set_session_ttl(self, session_ttl):
         &#34;&#34;&#34; Set self.session_ttl to session_ttl if session_ttl provided is valid
@@ -257,16 +307,17 @@ class FgFwService(FgObject):
         Returns:
             None
         &#34;&#34;&#34;
-        if session_ttl:
+        if session_ttl is None:
+            self.session_ttl = None
+
+        else:
             if isinstance(session_ttl, int):
                 if 300 &lt;= session_ttl &lt;= 2764800:
                     self.session_ttl = session_ttl
                 else:
-                    raise ValueError(&#34;\&#34;session_ttl\&#34;, when set, must be type int between 300 and 2764800&#34;)
+                    raise ValueError(&#34;&#39;session_ttl&#39;, when set, must be type int between 300 and 2764800&#34;)
             else:
-                raise ValueError(&#34;\&#34;session_ttl\&#34;, when set, must be type int&#34;)
-        else:
-            self.session_ttl = None
+                raise ValueError(&#34;&#39;session_ttl&#39;, when set, must be type int&#34;)
 
     def set_udp_idle_timer(self, timer):
         &#34;&#34;&#34; set self.udp_idle_timer to timer if timer valid
@@ -277,16 +328,17 @@ class FgFwService(FgObject):
         Returns:
             None
         &#34;&#34;&#34;
-        if timer:
+        if timer is None:
+            self.udp_idle_timer = None
+
+        else:
             if isinstance(timer, int):
                 if 0 &lt;= timer &lt;= 864000:
                     self.udp_idle_timer = timer
                 else:
-                    raise ValueError(&#34;\&#34;udp_idle_timer\&#34;, when set, must be type int between 0 and 86400&#34;)
+                    raise ValueError(&#34;&#39;udp_idle_timer&#39;, when set, must be type int between 0 and 86400&#34;)
             else:
-                raise ValueError(&#34;\&#34;udp_idle_timer\&#34;, when set, must be type int&#34;)
-        else:
-            self.udp_idle_timer = None
+                raise ValueError(&#34;&#39;udp_idle_timer&#39;, when set, must be type int&#34;)
 
     def set_category(self, category):
         &#34;&#34;&#34; Set self.category if category provided is valid
@@ -297,16 +349,17 @@ class FgFwService(FgObject):
         Returns:
             None
         &#34;&#34;&#34;
-        if category:
+        if category is None:
+            self.category = None
+
+        else:
             if isinstance(category, str):
                 if 1 &lt;= len(category) &lt;= 63:
                     self.category = category
                 else:
-                    raise ValueError(&#34;\&#34;category\&#34;, when set, must be type str between 1 and 63 chars&#34;)
+                    raise ValueError(&#34;&#39;category&#39;, when set, must be type str between 1 and 63 chars&#34;)
             else:
-                raise ValueError(&#34;\&#34;category\&#34;, when set, must be type str&#34;)
-        else:
-            self.category = None
+                raise ValueError(&#34;&#39;category&#39;, when set, must be type str&#34;)
 
     def set_icmptype(self, icmptype):
         &#34;&#34;&#34; Set self.icmptype to icmp_type if icmptype valid
@@ -317,16 +370,17 @@ class FgFwService(FgObject):
         Returns:
             None
         &#34;&#34;&#34;
-        if icmptype:
+        if icmptype is None:
+            self.icmptype = None
+
+        else:
             if isinstance(icmptype, int):
                 if 0 &lt;= icmptype &lt;= 255:
                     self.icmptype = icmptype
                 else:
-                    raise ValueError(&#34;\&#34;icmptype\&#34;, when set, must be type int between 0 and 255&#34;)
+                    raise ValueError(&#34;&#39;icmptype&#39;, when set, must be type int between 0 and 255&#34;)
             else:
-                raise ValueError(&#34;\&#34;icmptype\&#34;, when set, must be type int&#34;)
-        else:
-            self.icmptype = None
+                raise ValueError(&#34;&#39;icmptype&#39;, when set, must be type int&#34;)
 
     def set_icmpcode(self, icmpcode):
         &#34;&#34;&#34; Set self.icmpcode to icmpcode if icmp_type valid
@@ -337,16 +391,17 @@ class FgFwService(FgObject):
         Returns:
             None
         &#34;&#34;&#34;
-        if icmpcode:
+        if icmpcode is None:
+            self.icmpcode = None
+
+        else:
             if isinstance(icmpcode, int):
                 if 0 &lt;= icmpcode &lt;= 255:
                     self.icmpcode = icmpcode
                 else:
-                    raise ValueError(&#34;\&#34;icmpcode\&#34;, when set, must be type int between 0 and 255&#34;)
+                    raise ValueError(&#34;&#39;icmpcode&#39;, when set, must be type int between 0 and 255&#34;)
             else:
-                raise ValueError(&#34;\&#34;icmpcode\&#34;, when set, must be type int&#34;)
-        else:
-            self.icmpcode = None</code></pre>
+                raise ValueError(&#34;&#39;icmpcode&#39;, when set, must be type int&#34;)</code></pre>
 </details>
 </section>
 <section>
@@ -390,9 +445,9 @@ May be string or list of strings. ex. ['80', '1024-65553']</dd>
 <dd>IP protocol Number</dd>
 <dt><strong><code>comment</code></strong> :&ensp;<code>str</code></dt>
 <dd>Comment for this object</dd>
-<dt><strong><code>visibility</code></strong> :&ensp;<code>bool</code></dt>
+<dt><strong><code>visibility</code></strong> :&ensp;<code>str</code></dt>
 <dd>Visibility of this object in GUI.
-True=visible, False=hidden</dd>
+('enable', 'disable', or None=inherit)</dd>
 <dt><strong><code>session_ttl</code></strong> :&ensp;<code>int</code></dt>
 <dd>Session TTL for TCP sessions</dd>
 <dt><strong><code>udp_idle_timer</code></strong> :&ensp;<code>int</code></dt>
@@ -428,9 +483,9 @@ May be string or list of strings. ex. ['80', '1024-65553']</dd>
 <dd>IP Protocol Number. Use when self's protocol set to 'ip'.</dd>
 <dt><strong><code>comment</code></strong> :&ensp;<code>str</code></dt>
 <dd>Comment for this object</dd>
-<dt><strong><code>visibility</code></strong> :&ensp;<code>bool</code></dt>
+<dt><strong><code>visibility</code></strong> :&ensp;<code>str</code></dt>
 <dd>Visibility of this object in GUI.
-True=visible, False=hidden</dd>
+('enable', 'disable', or None=inherit)</dd>
 <dt><strong><code>session_ttl</code></strong> :&ensp;<code>int</code></dt>
 <dd>Session TTL for TCP sessions</dd>
 <dt><strong><code>udp_idle_timer</code></strong> :&ensp;<code>int</code></dt>
@@ -467,7 +522,7 @@ Used when self's protocol is 'icmp'</dd>
             sctp_portrange (list): SCTP port range.  May be string or list of strings. ex. [&#39;80&#39;, &#39;1024-65553&#39;]
             protocol_number (int):  IP protocol Number
             comment (str): Comment for this object
-            visibility (bool): Visibility of this object in GUI.  True=visible, False=hidden
+            visibility (str): Visibility of this object in GUI.  (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
             session_ttl (int):  Session TTL for TCP sessions
             udp_idle_timer (int): Idle timer setting for UDP sessions
             category (str): Category to assign service object to in FG
@@ -477,7 +532,7 @@ Used when self's protocol is 'icmp'</dd>
 
     def __init__(self, name: str = None, vdom: str = None, protocol: str = None, tcp_portrange: list = None,
                  udp_portrange: list = None, sctp_portrange: list = None, protocol_number: int = None,
-                 comment: str = None, visibility: bool = None, session_ttl: int = None, udp_idle_timer: int = None,
+                 comment: str = None, visibility: str = None, session_ttl: int = None, udp_idle_timer: int = None,
                  category: str = None, icmptype: int = None, icmpcode: int = None):
         &#34;&#34;&#34;
         Args:
@@ -489,7 +544,7 @@ Used when self's protocol is 'icmp'</dd>
             sctp_portrange (list): SCTP port range.  May be string or list of strings. ex. [&#39;80&#39;, &#39;1024-65553&#39;]
             protocol_number (int): IP Protocol Number. Use when self&#39;s protocol set to &#39;ip&#39;.
             comment (str): Comment for this object
-            visibility (bool): Visibility of this object in GUI.  True=visible, False=hidden
+            visibility (str): Visibility of this object in GUI.  (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
             session_ttl (int):  Session TTL for TCP sessions
             udp_idle_timer (int): Idle timer setting for UDP sessions
             category (str): Category to assign service object to in FG
@@ -515,9 +570,9 @@ Used when self's protocol is 'icmp'</dd>
         # Set instance attributes
         self.set_name(name)
         self.set_protocol(protocol)
-        self.set_portrange(tcp_portrange, &#39;tcp_portrange&#39;)
-        self.set_portrange(udp_portrange, &#39;udp_portrange&#39;)
-        self.set_portrange(sctp_portrange, &#39;sctp_portrange&#39;)
+        self.set_tcp_portrange(tcp_portrange)
+        self.set_udp_portrange(udp_portrange)
+        self.set_sctp_portrange(sctp_portrange)
         self.set_protocol_number(protocol_number)
         self.set_comment(comment)
         self.set_visibility(visibility)
@@ -527,7 +582,51 @@ Used when self's protocol is 'icmp'</dd>
         self.set_icmptype(icmptype)
         self.set_icmpcode(icmpcode)
 
+        # Update the parent defined obj_to_str attribute with this objects str representation
+        self.obj_to_str += f&#39;, name={self.name}, protocol={self.protocol}, tcp_portrange={self.tcp_portrange}&#39;
 
+
+
+    # Static Methods
+    @staticmethod
+    def _validate_and_get_portrange(range):
+        &#34;&#34;&#34; Return port range or list (as a string) of port ranges if port range is formatted as expected
+
+        Args:
+            range (list): Port range. May be string or list of strings.  ex. &#39;80&#39;  or &#39;100-300&#39; or [&#39;80&#39;, &#39;100-300&#39;]
+
+        Returns:
+            String
+        &#34;&#34;&#34;
+        if range is None:
+            return None
+        else:
+            # If range is provided as a single range in str format
+            if isinstance(range, str):
+                # check that string is only numbers or number dash number
+                if re.match(r&#39;(^[\d]+$)|(^[\d]+-[\d]+$)&#39;, range):
+                    return range
+                else:
+                    raise ValueError(f&#34;portrange specified {range} is not a valid.  Must be str of &lt;digits&gt; or &#34;
+                                     &#34;&lt;digits&gt;-&lt;digits&gt;&#34;)
+
+            # If a list of port ranges is provided in &#39;range&#39; var
+            elif isinstance(range, list):
+                range_list = &#39;&#39;
+                for item in range:
+                    if isinstance(item, str):
+                        # check that string is only numbers or number dash number
+                        if re.match(&#39;(^[\d]+$)|(^[\d]+-[\d]+$)&#39;, item):
+                            range_list += f&#39; {item}&#39;
+                        else:
+                            raise ValueError(
+                                f&#34;portrange specified: {item} is not a valid range.  Must be str of &lt;digits&gt; or &#34;
+                                &#34;&lt;digits&gt;-&lt;digits&gt;&#34;)
+
+                # Set self.&lt;obj_type&gt; with range_list values
+                return range_list.lstrip()
+
+    # Instance Methods
     def set_name(self, name):
         &#34;&#34;&#34; Set self.name to name if name meets requirements
 
@@ -537,17 +636,18 @@ Used when self's protocol is 'icmp'</dd>
         Returns:
             None
         &#34;&#34;&#34;
-        if name:
-            if name.isspace(): raise Exception(&#34;\&#34;intf\&#34;, cannot be an empty string&#34;)
+        if name is None:
+            self.name = None
+            if name.isspace(): raise Exception(&#34;&#39;name&#39;, cannot be an empty string&#34;)
+
+        else:
             if isinstance(name, str):
                 if 1 &lt;= len(name) &lt;= 79:
                     self.name = name
                 else:
-                    raise Exception(&#34;\&#34;name\&#34;, must be less than or equal to 79 chars&#34;)
+                    raise Exception(&#34;&#39;name&#39;, must be less than or equal to 79 chars&#34;)
             else:
-                raise Exception(&#34;\&#34;name\&#34;, must be a string&#34;)
-        else:
-            raise Exception(&#34;Value \&#34;name\&#34; is required but was not provided&#34;)
+                raise Exception(&#34;&#39;name&#39;, must be a string&#34;)
 
     def set_protocol(self, protocol):
         &#34;&#34;&#34; Set self.protocol to &#39;protocol&#39; if valid &#39;protocol&#39; provided
@@ -558,7 +658,10 @@ Used when self's protocol is 'icmp'</dd>
         Returns:
             None
         &#34;&#34;&#34;
-        if protocol:
+        if protocol is None:
+            self.protocol = None
+
+        else:
             if protocol.lower() in [&#39;tcp&#39;, &#39;udp&#39;, &#39;sctp&#39;, &#39;tcp/udp/sctp&#39;]:
                 self.protocol = &#39;TCP/UDP/SCTP&#39;
             elif protocol.lower() == &#39;icmp&#39;:
@@ -566,48 +669,42 @@ Used when self's protocol is 'icmp'</dd>
             elif protocol.lower() == &#39;ip&#39;:
                 self.protocol = &#39;IP&#39;
             else:
-                raise ValueError(&#34;\&#34;protocol\&#34; specified is unsupported&#34;)
-        else:
-            self.protocol = &#39;TCP/UDP/SCTP&#39;
+                raise ValueError(&#34;&#39;protocol&#39; specified is unsupported&#34;)
 
-    def set_portrange(self, range, obj_type):
-        &#34;&#34;&#34; Set self.&lt;&#39;obj_type&#39;&gt; to &#39;range&#39; if range is valid
+
+
+    def set_tcp_portrange(self, range):
+        &#34;&#34;&#34; Set self.tcp_portrange to range returned from static method _validate_and_get_portrange()
 
         Args:
-            range (list): Port range. May be string or list of strings.  ex. &#39;80&#39;  or &#39;100-300&#39; or [&#39;80&#39;, &#39;100-300&#39;]
-            obj_type (str): Name of self attribute to set range for
+            range (list):  A Port range. May be string or list of strings.  ex. &#39;80&#39;  or &#39;100-300&#39; or [&#39;80&#39;, &#39;100-300&#39;]
+
         Returns:
             None
         &#34;&#34;&#34;
-        if range and obj_type:
+        self.tcp_portrange = self._validate_and_get_portrange(range)
 
-            # If range is provided as a single range in str format
-            if isinstance(range, str):
-                # check that string is only numbers or number dash number
-                if re.match(r&#39;(^[\d]+$)|(^[\d]+-[\d]+$)&#39;, range):
-                    setattr(self, obj_type, range)
-                else:
-                    raise ValueError(&#34;\&#34;{}\&#34; portrange specified {} is not a valid range.  Must be str of &lt;digits&gt; or &#34;
-                                     &#34;&lt;digits&gt;-&lt;digits&gt;&#34;.format(obj_type, range))
+    def set_udp_portrange(self, range):
+        &#34;&#34;&#34; Set self.udp_portrange to range returned from static method _validate_and_get_portrange()
 
-            # If a list of port ranges is provided in &#39;range&#39; var
-            elif isinstance(range, list):
-                range_list = &#39;&#39;
-                for item in range:
-                    if isinstance(item, str):
-                        # check that string is only numbers or number dash number
-                        if re.match(&#39;(^[\d]+$)|(^[\d]+-[\d]+$)&#39;, item):
-                            range_list += &#39; {}&#39;.format(item)
-                        else:
-                            raise ValueError(
-                                &#34;\&#34;{}\&#34; portrange specified: {} is not a valid range.  Must be str of &lt;digits&gt; or &#34;
-                                &#34;&lt;digits&gt;-&lt;digits&gt;&#34;.format(obj_type, item))
+        Args:
+            range (list):  A Port range. May be string or list of strings.  ex. &#39;80&#39;  or &#39;100-300&#39; or [&#39;80&#39;, &#39;100-300&#39;]
 
-                # Set self.&lt;obj_type&gt; with range_list values
-                setattr(self, obj_type, range_list.lstrip())
-        else:
-            # Set self.&lt;obj_type&gt; to None
-            setattr(self, obj_type, None)
+        Returns:
+            None
+        &#34;&#34;&#34;
+        self.udp_portrange = self._validate_and_get_portrange(range)
+
+    def set_sctp_portrange(self, range):
+        &#34;&#34;&#34; Set self.sctp_portrange to range returned from static method _validate_and_get_portrange()
+
+        Args:
+            range (list):  A Port range. May be string or list of strings.  ex. &#39;80&#39;  or &#39;100-300&#39; or [&#39;80&#39;, &#39;100-300&#39;]
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        self.sctp_portrange = self._validate_and_get_portrange(range)
 
 
     def set_protocol_number(self, protocol_number):
@@ -621,33 +718,40 @@ Used when self's protocol is 'icmp'</dd>
         Returns:
             None
         &#34;&#34;&#34;
-        if protocol_number:
+        if protocol_number is None:
+            self.protocol_number = None
+
+        else:
             if isinstance(protocol_number, int):
                 if 0 &lt;= protocol_number &lt;= 254:
                     self.protocol_number = protocol_number
                 else:
-                    raise ValueError(&#34;\&#34;protocol_number\&#34;, when specified, must be type int between 1 and 254&#34;)
+                    raise ValueError(&#34;&#39;protocol_number&#39;, when set, must be type int between 1 and 254&#34;)
             else:
-                raise ValueError(&#34;\&#34;protocol_number\&#34;, when specified, must be type int&#34;)
-        else:
-            self.protocol_number = None
+                raise ValueError(&#34;&#39;protocol_number&#39;, when set, must be type int&#34;)
 
     def set_visibility(self, visibility):
-        &#34;&#34;&#34; Set self.visibility to visibility if visibility is set and is type bool
+        &#34;&#34;&#34; Set self.visibility
 
         Args:
-            visibility (bool): Object visibility. True=visible, False=hidden, None=use default/existing setting
+            visibility (str): object visibility in GUI.  (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
 
         Returns:
             None
         &#34;&#34;&#34;
-        if visibility:
-            if isinstance(visibility, bool):
-                self.visibility = &#39;enable&#39; if visibility else &#39;disable&#39;
-            else:
-                raise ValueError(&#34;\&#34;visibility\&#34;, when set, must be type bool&#34;)
-        else:
+        if visibility is None:
             self.visibility = None
+
+        else:
+            if isinstance(visibility, str):
+                if visibility == &#39;enable&#39;:
+                    self.visibility = &#39;enable&#39;
+                elif visibility == &#39;disable&#39;:
+                    self.visibility = &#39;disable&#39;
+                else:
+                    raise ValueError(&#34;&#39;visibility&#39;, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#39;&#34;)
+            else:
+                raise ValueError(&#34;&#39;visibility&#39;, when set, must be type str()&#34;)
 
     def set_comment(self, comment):
         &#34;&#34;&#34; Set self.comment to &#39;comment&#39; if comment string within requirements
@@ -658,16 +762,17 @@ Used when self's protocol is 'icmp'</dd>
         Returns:
             None
         &#34;&#34;&#34;
-        if comment:
+        if comment is None:
+            self.comment = None
+
+        else:
             if isinstance(comment, str):
                 if 1 &lt;= len(comment) &lt;= 255:
                     self.comment = comment
                 else:
-                    raise Exception(&#34;\&#34;description\&#34;, when set, must be type str between 1 and 1,023 chars&#34;)
+                    raise Exception(&#34;&#39;description&#39;, when set, must be type str between 1 and 1,023 chars&#34;)
             else:
-                raise Exception(&#34;\&#34;description\&#34;, when set, must be type str&#34;)
-        else:
-            self.comment = None
+                raise Exception(&#34;&#39;description&#39;, when set, must be type str&#34;)
 
     def set_session_ttl(self, session_ttl):
         &#34;&#34;&#34; Set self.session_ttl to session_ttl if session_ttl provided is valid
@@ -678,16 +783,17 @@ Used when self's protocol is 'icmp'</dd>
         Returns:
             None
         &#34;&#34;&#34;
-        if session_ttl:
+        if session_ttl is None:
+            self.session_ttl = None
+
+        else:
             if isinstance(session_ttl, int):
                 if 300 &lt;= session_ttl &lt;= 2764800:
                     self.session_ttl = session_ttl
                 else:
-                    raise ValueError(&#34;\&#34;session_ttl\&#34;, when set, must be type int between 300 and 2764800&#34;)
+                    raise ValueError(&#34;&#39;session_ttl&#39;, when set, must be type int between 300 and 2764800&#34;)
             else:
-                raise ValueError(&#34;\&#34;session_ttl\&#34;, when set, must be type int&#34;)
-        else:
-            self.session_ttl = None
+                raise ValueError(&#34;&#39;session_ttl&#39;, when set, must be type int&#34;)
 
     def set_udp_idle_timer(self, timer):
         &#34;&#34;&#34; set self.udp_idle_timer to timer if timer valid
@@ -698,16 +804,17 @@ Used when self's protocol is 'icmp'</dd>
         Returns:
             None
         &#34;&#34;&#34;
-        if timer:
+        if timer is None:
+            self.udp_idle_timer = None
+
+        else:
             if isinstance(timer, int):
                 if 0 &lt;= timer &lt;= 864000:
                     self.udp_idle_timer = timer
                 else:
-                    raise ValueError(&#34;\&#34;udp_idle_timer\&#34;, when set, must be type int between 0 and 86400&#34;)
+                    raise ValueError(&#34;&#39;udp_idle_timer&#39;, when set, must be type int between 0 and 86400&#34;)
             else:
-                raise ValueError(&#34;\&#34;udp_idle_timer\&#34;, when set, must be type int&#34;)
-        else:
-            self.udp_idle_timer = None
+                raise ValueError(&#34;&#39;udp_idle_timer&#39;, when set, must be type int&#34;)
 
     def set_category(self, category):
         &#34;&#34;&#34; Set self.category if category provided is valid
@@ -718,16 +825,17 @@ Used when self's protocol is 'icmp'</dd>
         Returns:
             None
         &#34;&#34;&#34;
-        if category:
+        if category is None:
+            self.category = None
+
+        else:
             if isinstance(category, str):
                 if 1 &lt;= len(category) &lt;= 63:
                     self.category = category
                 else:
-                    raise ValueError(&#34;\&#34;category\&#34;, when set, must be type str between 1 and 63 chars&#34;)
+                    raise ValueError(&#34;&#39;category&#39;, when set, must be type str between 1 and 63 chars&#34;)
             else:
-                raise ValueError(&#34;\&#34;category\&#34;, when set, must be type str&#34;)
-        else:
-            self.category = None
+                raise ValueError(&#34;&#39;category&#39;, when set, must be type str&#34;)
 
     def set_icmptype(self, icmptype):
         &#34;&#34;&#34; Set self.icmptype to icmp_type if icmptype valid
@@ -738,16 +846,17 @@ Used when self's protocol is 'icmp'</dd>
         Returns:
             None
         &#34;&#34;&#34;
-        if icmptype:
+        if icmptype is None:
+            self.icmptype = None
+
+        else:
             if isinstance(icmptype, int):
                 if 0 &lt;= icmptype &lt;= 255:
                     self.icmptype = icmptype
                 else:
-                    raise ValueError(&#34;\&#34;icmptype\&#34;, when set, must be type int between 0 and 255&#34;)
+                    raise ValueError(&#34;&#39;icmptype&#39;, when set, must be type int between 0 and 255&#34;)
             else:
-                raise ValueError(&#34;\&#34;icmptype\&#34;, when set, must be type int&#34;)
-        else:
-            self.icmptype = None
+                raise ValueError(&#34;&#39;icmptype&#39;, when set, must be type int&#34;)
 
     def set_icmpcode(self, icmpcode):
         &#34;&#34;&#34; Set self.icmpcode to icmpcode if icmp_type valid
@@ -758,16 +867,17 @@ Used when self's protocol is 'icmp'</dd>
         Returns:
             None
         &#34;&#34;&#34;
-        if icmpcode:
+        if icmpcode is None:
+            self.icmpcode = None
+
+        else:
             if isinstance(icmpcode, int):
                 if 0 &lt;= icmpcode &lt;= 255:
                     self.icmpcode = icmpcode
                 else:
-                    raise ValueError(&#34;\&#34;icmpcode\&#34;, when set, must be type int between 0 and 255&#34;)
+                    raise ValueError(&#34;&#39;icmpcode&#39;, when set, must be type int between 0 and 255&#34;)
             else:
-                raise ValueError(&#34;\&#34;icmpcode\&#34;, when set, must be type int&#34;)
-        else:
-            self.icmpcode = None</code></pre>
+                raise ValueError(&#34;&#39;icmpcode&#39;, when set, must be type int&#34;)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -804,16 +914,17 @@ String between 1 and 63 chars.</dd>
     Returns:
         None
     &#34;&#34;&#34;
-    if category:
+    if category is None:
+        self.category = None
+
+    else:
         if isinstance(category, str):
             if 1 &lt;= len(category) &lt;= 63:
                 self.category = category
             else:
-                raise ValueError(&#34;\&#34;category\&#34;, when set, must be type str between 1 and 63 chars&#34;)
+                raise ValueError(&#34;&#39;category&#39;, when set, must be type str between 1 and 63 chars&#34;)
         else:
-            raise ValueError(&#34;\&#34;category\&#34;, when set, must be type str&#34;)
-    else:
-        self.category = None</code></pre>
+            raise ValueError(&#34;&#39;category&#39;, when set, must be type str&#34;)</code></pre>
 </details>
 </dd>
 <dt id="fgobjlib.fg_fw_service.FgFwService.set_comment"><code class="name flex">
@@ -844,16 +955,17 @@ String between 1 and 63 chars.</dd>
     Returns:
         None
     &#34;&#34;&#34;
-    if comment:
+    if comment is None:
+        self.comment = None
+
+    else:
         if isinstance(comment, str):
             if 1 &lt;= len(comment) &lt;= 255:
                 self.comment = comment
             else:
-                raise Exception(&#34;\&#34;description\&#34;, when set, must be type str between 1 and 1,023 chars&#34;)
+                raise Exception(&#34;&#39;description&#39;, when set, must be type str between 1 and 1,023 chars&#34;)
         else:
-            raise Exception(&#34;\&#34;description\&#34;, when set, must be type str&#34;)
-    else:
-        self.comment = None</code></pre>
+            raise Exception(&#34;&#39;description&#39;, when set, must be type str&#34;)</code></pre>
 </details>
 </dd>
 <dt id="fgobjlib.fg_fw_service.FgFwService.set_icmpcode"><code class="name flex">
@@ -885,16 +997,17 @@ Integer between 0 and 255.</dd>
     Returns:
         None
     &#34;&#34;&#34;
-    if icmpcode:
+    if icmpcode is None:
+        self.icmpcode = None
+
+    else:
         if isinstance(icmpcode, int):
             if 0 &lt;= icmpcode &lt;= 255:
                 self.icmpcode = icmpcode
             else:
-                raise ValueError(&#34;\&#34;icmpcode\&#34;, when set, must be type int between 0 and 255&#34;)
+                raise ValueError(&#34;&#39;icmpcode&#39;, when set, must be type int between 0 and 255&#34;)
         else:
-            raise ValueError(&#34;\&#34;icmpcode\&#34;, when set, must be type int&#34;)
-    else:
-        self.icmpcode = None</code></pre>
+            raise ValueError(&#34;&#39;icmpcode&#39;, when set, must be type int&#34;)</code></pre>
 </details>
 </dd>
 <dt id="fgobjlib.fg_fw_service.FgFwService.set_icmptype"><code class="name flex">
@@ -926,16 +1039,17 @@ Integer between 0 and 255.</dd>
     Returns:
         None
     &#34;&#34;&#34;
-    if icmptype:
+    if icmptype is None:
+        self.icmptype = None
+
+    else:
         if isinstance(icmptype, int):
             if 0 &lt;= icmptype &lt;= 255:
                 self.icmptype = icmptype
             else:
-                raise ValueError(&#34;\&#34;icmptype\&#34;, when set, must be type int between 0 and 255&#34;)
+                raise ValueError(&#34;&#39;icmptype&#39;, when set, must be type int between 0 and 255&#34;)
         else:
-            raise ValueError(&#34;\&#34;icmptype\&#34;, when set, must be type int&#34;)
-    else:
-        self.icmptype = None</code></pre>
+            raise ValueError(&#34;&#39;icmptype&#39;, when set, must be type int&#34;)</code></pre>
 </details>
 </dd>
 <dt id="fgobjlib.fg_fw_service.FgFwService.set_name"><code class="name flex">
@@ -966,80 +1080,18 @@ Integer between 0 and 255.</dd>
     Returns:
         None
     &#34;&#34;&#34;
-    if name:
-        if name.isspace(): raise Exception(&#34;\&#34;intf\&#34;, cannot be an empty string&#34;)
+    if name is None:
+        self.name = None
+        if name.isspace(): raise Exception(&#34;&#39;name&#39;, cannot be an empty string&#34;)
+
+    else:
         if isinstance(name, str):
             if 1 &lt;= len(name) &lt;= 79:
                 self.name = name
             else:
-                raise Exception(&#34;\&#34;name\&#34;, must be less than or equal to 79 chars&#34;)
+                raise Exception(&#34;&#39;name&#39;, must be less than or equal to 79 chars&#34;)
         else:
-            raise Exception(&#34;\&#34;name\&#34;, must be a string&#34;)
-    else:
-        raise Exception(&#34;Value \&#34;name\&#34; is required but was not provided&#34;)</code></pre>
-</details>
-</dd>
-<dt id="fgobjlib.fg_fw_service.FgFwService.set_portrange"><code class="name flex">
-<span>def <span class="ident">set_portrange</span></span>(<span>self, range, obj_type)</span>
-</code></dt>
-<dd>
-<section class="desc"><p>Set self.&lt;'obj_type'&gt; to 'range' if range is valid</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>range</code></strong> :&ensp;<code>list</code></dt>
-<dd>Port range. May be string or list of strings.
-ex. '80'
-or '100-300' or ['80', '100-300']</dd>
-<dt><strong><code>obj_type</code></strong> :&ensp;<code>str</code></dt>
-<dd>Name of self attribute to set range for</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def set_portrange(self, range, obj_type):
-    &#34;&#34;&#34; Set self.&lt;&#39;obj_type&#39;&gt; to &#39;range&#39; if range is valid
-
-    Args:
-        range (list): Port range. May be string or list of strings.  ex. &#39;80&#39;  or &#39;100-300&#39; or [&#39;80&#39;, &#39;100-300&#39;]
-        obj_type (str): Name of self attribute to set range for
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if range and obj_type:
-
-        # If range is provided as a single range in str format
-        if isinstance(range, str):
-            # check that string is only numbers or number dash number
-            if re.match(r&#39;(^[\d]+$)|(^[\d]+-[\d]+$)&#39;, range):
-                setattr(self, obj_type, range)
-            else:
-                raise ValueError(&#34;\&#34;{}\&#34; portrange specified {} is not a valid range.  Must be str of &lt;digits&gt; or &#34;
-                                 &#34;&lt;digits&gt;-&lt;digits&gt;&#34;.format(obj_type, range))
-
-        # If a list of port ranges is provided in &#39;range&#39; var
-        elif isinstance(range, list):
-            range_list = &#39;&#39;
-            for item in range:
-                if isinstance(item, str):
-                    # check that string is only numbers or number dash number
-                    if re.match(&#39;(^[\d]+$)|(^[\d]+-[\d]+$)&#39;, item):
-                        range_list += &#39; {}&#39;.format(item)
-                    else:
-                        raise ValueError(
-                            &#34;\&#34;{}\&#34; portrange specified: {} is not a valid range.  Must be str of &lt;digits&gt; or &#34;
-                            &#34;&lt;digits&gt;-&lt;digits&gt;&#34;.format(obj_type, item))
-
-            # Set self.&lt;obj_type&gt; with range_list values
-            setattr(self, obj_type, range_list.lstrip())
-    else:
-        # Set self.&lt;obj_type&gt; to None
-        setattr(self, obj_type, None)</code></pre>
+            raise Exception(&#34;&#39;name&#39;, must be a string&#34;)</code></pre>
 </details>
 </dd>
 <dt id="fgobjlib.fg_fw_service.FgFwService.set_protocol"><code class="name flex">
@@ -1071,7 +1123,10 @@ Options: 'tcp/udp/sctp', 'icmp', 'ip'</dd>
     Returns:
         None
     &#34;&#34;&#34;
-    if protocol:
+    if protocol is None:
+        self.protocol = None
+
+    else:
         if protocol.lower() in [&#39;tcp&#39;, &#39;udp&#39;, &#39;sctp&#39;, &#39;tcp/udp/sctp&#39;]:
             self.protocol = &#39;TCP/UDP/SCTP&#39;
         elif protocol.lower() == &#39;icmp&#39;:
@@ -1079,9 +1134,7 @@ Options: 'tcp/udp/sctp', 'icmp', 'ip'</dd>
         elif protocol.lower() == &#39;ip&#39;:
             self.protocol = &#39;IP&#39;
         else:
-            raise ValueError(&#34;\&#34;protocol\&#34; specified is unsupported&#34;)
-    else:
-        self.protocol = &#39;TCP/UDP/SCTP&#39;</code></pre>
+            raise ValueError(&#34;&#39;protocol&#39; specified is unsupported&#34;)</code></pre>
 </details>
 </dd>
 <dt id="fgobjlib.fg_fw_service.FgFwService.set_protocol_number"><code class="name flex">
@@ -1115,16 +1168,50 @@ Options: 'tcp/udp/sctp', 'icmp', 'ip'</dd>
     Returns:
         None
     &#34;&#34;&#34;
-    if protocol_number:
+    if protocol_number is None:
+        self.protocol_number = None
+
+    else:
         if isinstance(protocol_number, int):
             if 0 &lt;= protocol_number &lt;= 254:
                 self.protocol_number = protocol_number
             else:
-                raise ValueError(&#34;\&#34;protocol_number\&#34;, when specified, must be type int between 1 and 254&#34;)
+                raise ValueError(&#34;&#39;protocol_number&#39;, when set, must be type int between 1 and 254&#34;)
         else:
-            raise ValueError(&#34;\&#34;protocol_number\&#34;, when specified, must be type int&#34;)
-    else:
-        self.protocol_number = None</code></pre>
+            raise ValueError(&#34;&#39;protocol_number&#39;, when set, must be type int&#34;)</code></pre>
+</details>
+</dd>
+<dt id="fgobjlib.fg_fw_service.FgFwService.set_sctp_portrange"><code class="name flex">
+<span>def <span class="ident">set_sctp_portrange</span></span>(<span>self, range)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Set self.sctp_portrange to range returned from static method _validate_and_get_portrange()</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>range</code></strong> :&ensp;<code>list</code></dt>
+<dd>A Port range. May be string or list of strings.
+ex. '80'
+or '100-300' or ['80', '100-300']</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_sctp_portrange(self, range):
+    &#34;&#34;&#34; Set self.sctp_portrange to range returned from static method _validate_and_get_portrange()
+
+    Args:
+        range (list):  A Port range. May be string or list of strings.  ex. &#39;80&#39;  or &#39;100-300&#39; or [&#39;80&#39;, &#39;100-300&#39;]
+
+    Returns:
+        None
+    &#34;&#34;&#34;
+    self.sctp_portrange = self._validate_and_get_portrange(range)</code></pre>
 </details>
 </dd>
 <dt id="fgobjlib.fg_fw_service.FgFwService.set_session_ttl"><code class="name flex">
@@ -1156,16 +1243,50 @@ Acceptable range = 1-2764800</dd>
     Returns:
         None
     &#34;&#34;&#34;
-    if session_ttl:
+    if session_ttl is None:
+        self.session_ttl = None
+
+    else:
         if isinstance(session_ttl, int):
             if 300 &lt;= session_ttl &lt;= 2764800:
                 self.session_ttl = session_ttl
             else:
-                raise ValueError(&#34;\&#34;session_ttl\&#34;, when set, must be type int between 300 and 2764800&#34;)
+                raise ValueError(&#34;&#39;session_ttl&#39;, when set, must be type int between 300 and 2764800&#34;)
         else:
-            raise ValueError(&#34;\&#34;session_ttl\&#34;, when set, must be type int&#34;)
-    else:
-        self.session_ttl = None</code></pre>
+            raise ValueError(&#34;&#39;session_ttl&#39;, when set, must be type int&#34;)</code></pre>
+</details>
+</dd>
+<dt id="fgobjlib.fg_fw_service.FgFwService.set_tcp_portrange"><code class="name flex">
+<span>def <span class="ident">set_tcp_portrange</span></span>(<span>self, range)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Set self.tcp_portrange to range returned from static method _validate_and_get_portrange()</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>range</code></strong> :&ensp;<code>list</code></dt>
+<dd>A Port range. May be string or list of strings.
+ex. '80'
+or '100-300' or ['80', '100-300']</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_tcp_portrange(self, range):
+    &#34;&#34;&#34; Set self.tcp_portrange to range returned from static method _validate_and_get_portrange()
+
+    Args:
+        range (list):  A Port range. May be string or list of strings.  ex. &#39;80&#39;  or &#39;100-300&#39; or [&#39;80&#39;, &#39;100-300&#39;]
+
+    Returns:
+        None
+    &#34;&#34;&#34;
+    self.tcp_portrange = self._validate_and_get_portrange(range)</code></pre>
 </details>
 </dd>
 <dt id="fgobjlib.fg_fw_service.FgFwService.set_udp_idle_timer"><code class="name flex">
@@ -1197,27 +1318,62 @@ Acceptable range = 0-86400</dd>
     Returns:
         None
     &#34;&#34;&#34;
-    if timer:
+    if timer is None:
+        self.udp_idle_timer = None
+
+    else:
         if isinstance(timer, int):
             if 0 &lt;= timer &lt;= 864000:
                 self.udp_idle_timer = timer
             else:
-                raise ValueError(&#34;\&#34;udp_idle_timer\&#34;, when set, must be type int between 0 and 86400&#34;)
+                raise ValueError(&#34;&#39;udp_idle_timer&#39;, when set, must be type int between 0 and 86400&#34;)
         else:
-            raise ValueError(&#34;\&#34;udp_idle_timer\&#34;, when set, must be type int&#34;)
-    else:
-        self.udp_idle_timer = None</code></pre>
+            raise ValueError(&#34;&#39;udp_idle_timer&#39;, when set, must be type int&#34;)</code></pre>
+</details>
+</dd>
+<dt id="fgobjlib.fg_fw_service.FgFwService.set_udp_portrange"><code class="name flex">
+<span>def <span class="ident">set_udp_portrange</span></span>(<span>self, range)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Set self.udp_portrange to range returned from static method _validate_and_get_portrange()</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>range</code></strong> :&ensp;<code>list</code></dt>
+<dd>A Port range. May be string or list of strings.
+ex. '80'
+or '100-300' or ['80', '100-300']</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_udp_portrange(self, range):
+    &#34;&#34;&#34; Set self.udp_portrange to range returned from static method _validate_and_get_portrange()
+
+    Args:
+        range (list):  A Port range. May be string or list of strings.  ex. &#39;80&#39;  or &#39;100-300&#39; or [&#39;80&#39;, &#39;100-300&#39;]
+
+    Returns:
+        None
+    &#34;&#34;&#34;
+    self.udp_portrange = self._validate_and_get_portrange(range)</code></pre>
 </details>
 </dd>
 <dt id="fgobjlib.fg_fw_service.FgFwService.set_visibility"><code class="name flex">
 <span>def <span class="ident">set_visibility</span></span>(<span>self, visibility)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Set self.visibility to visibility if visibility is set and is type bool</p>
+<section class="desc"><p>Set self.visibility</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>visibility</code></strong> :&ensp;<code>bool</code></dt>
-<dd>Object visibility. True=visible, False=hidden, None=use default/existing setting</dd>
+<dt><strong><code>visibility</code></strong> :&ensp;<code>str</code></dt>
+<dd>object visibility in GUI.
+('enable', 'disable', or None=inherit)</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -1229,21 +1385,27 @@ Acceptable range = 0-86400</dd>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def set_visibility(self, visibility):
-    &#34;&#34;&#34; Set self.visibility to visibility if visibility is set and is type bool
+    &#34;&#34;&#34; Set self.visibility
 
     Args:
-        visibility (bool): Object visibility. True=visible, False=hidden, None=use default/existing setting
+        visibility (str): object visibility in GUI.  (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
 
     Returns:
         None
     &#34;&#34;&#34;
-    if visibility:
-        if isinstance(visibility, bool):
-            self.visibility = &#39;enable&#39; if visibility else &#39;disable&#39;
-        else:
-            raise ValueError(&#34;\&#34;visibility\&#34;, when set, must be type bool&#34;)
+    if visibility is None:
+        self.visibility = None
+
     else:
-        self.visibility = None</code></pre>
+        if isinstance(visibility, str):
+            if visibility == &#39;enable&#39;:
+                self.visibility = &#39;enable&#39;
+            elif visibility == &#39;disable&#39;:
+                self.visibility = &#39;disable&#39;
+            else:
+                raise ValueError(&#34;&#39;visibility&#39;, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#39;&#34;)
+        else:
+            raise ValueError(&#34;&#39;visibility&#39;, when set, must be type str()&#34;)</code></pre>
 </details>
 </dd>
 </dl>
@@ -1287,11 +1449,13 @@ Acceptable range = 0-86400</dd>
 <li><code><a title="fgobjlib.fg_fw_service.FgFwService.set_icmpcode" href="#fgobjlib.fg_fw_service.FgFwService.set_icmpcode">set_icmpcode</a></code></li>
 <li><code><a title="fgobjlib.fg_fw_service.FgFwService.set_icmptype" href="#fgobjlib.fg_fw_service.FgFwService.set_icmptype">set_icmptype</a></code></li>
 <li><code><a title="fgobjlib.fg_fw_service.FgFwService.set_name" href="#fgobjlib.fg_fw_service.FgFwService.set_name">set_name</a></code></li>
-<li><code><a title="fgobjlib.fg_fw_service.FgFwService.set_portrange" href="#fgobjlib.fg_fw_service.FgFwService.set_portrange">set_portrange</a></code></li>
 <li><code><a title="fgobjlib.fg_fw_service.FgFwService.set_protocol" href="#fgobjlib.fg_fw_service.FgFwService.set_protocol">set_protocol</a></code></li>
 <li><code><a title="fgobjlib.fg_fw_service.FgFwService.set_protocol_number" href="#fgobjlib.fg_fw_service.FgFwService.set_protocol_number">set_protocol_number</a></code></li>
+<li><code><a title="fgobjlib.fg_fw_service.FgFwService.set_sctp_portrange" href="#fgobjlib.fg_fw_service.FgFwService.set_sctp_portrange">set_sctp_portrange</a></code></li>
 <li><code><a title="fgobjlib.fg_fw_service.FgFwService.set_session_ttl" href="#fgobjlib.fg_fw_service.FgFwService.set_session_ttl">set_session_ttl</a></code></li>
+<li><code><a title="fgobjlib.fg_fw_service.FgFwService.set_tcp_portrange" href="#fgobjlib.fg_fw_service.FgFwService.set_tcp_portrange">set_tcp_portrange</a></code></li>
 <li><code><a title="fgobjlib.fg_fw_service.FgFwService.set_udp_idle_timer" href="#fgobjlib.fg_fw_service.FgFwService.set_udp_idle_timer">set_udp_idle_timer</a></code></li>
+<li><code><a title="fgobjlib.fg_fw_service.FgFwService.set_udp_portrange" href="#fgobjlib.fg_fw_service.FgFwService.set_udp_portrange">set_udp_portrange</a></code></li>
 <li><code><a title="fgobjlib.fg_fw_service.FgFwService.set_visibility" href="#fgobjlib.fg_fw_service.FgFwService.set_visibility">set_visibility</a></code></li>
 </ul>
 </li>

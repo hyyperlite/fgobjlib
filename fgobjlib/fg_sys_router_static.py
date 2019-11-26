@@ -45,11 +45,11 @@ class FgRouteIPv4(FgObject):
 
         ### Set parent class attributes ###
         # Map instance attribute names to fg attribute names
-        self.data_attrs = {'routeid': 'seq-num', 'dst': 'dst', 'device': 'device', 'gateway': 'gateway',
+        self._data_attrs = {'routeid': 'seq-num', 'dst': 'dst', 'device': 'device', 'gateway': 'gateway',
                            'distance': 'distance', 'priority': 'priority', 'weight': 'weight', 'comment': 'comments',
                            'blackhole': 'blackhole', 'vrf': 'vrf'}
 
-        self.cli_ignore_attrs = ['routeid']
+        self._cli_ignore_attrs = ['routeid']
 
         # Set instance attributes
         self.set_routeid(routeid)
@@ -64,7 +64,7 @@ class FgRouteIPv4(FgObject):
         self.set_vrf(vrf)
 
         # Update the parent defined obj_to_str attribute with this objects str representation
-        self.obj_to_str += f", routeid={self.routeid}, dst={self.dst}, device={self.device}, gateway={self.gateway}," \
+        self._obj_to_str += f", routeid={self.routeid}, dst={self.dst}, device={self.device}, gateway={self.gateway}," \
                           f"distance={self.distance}, priority={self.priority}, weight={self.weight}, " \
                           f"comment={self.comment}, blackhole={self.blackhole}, vrf={self.vrf}, vdom={self.vdom}"
 

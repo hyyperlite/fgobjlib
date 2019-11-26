@@ -43,12 +43,12 @@ class FgFwAddress(FgObject):
         fqdn (str): Fqdn for &#34;fqdn&#34; type object
         start_ip (str): start-ip for &#34;iprange&#34; type object
         end_ip (str): end-ip for &#34;iprange: type object
-        visibility (bool): Object visibility set to True or False
+        visibility (str): Object visibility (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
         comment (str): Object comment
     &#34;&#34;&#34;
 
     def __init__(self, name: str = None, type: str = None, subnet: str = None, fqdn: str = None,
-                 start_ip: str = None, end_ip: str = None, visibility: bool = None, associated_interface: str = None,
+                 start_ip: str = None, end_ip: str = None, visibility: str = None, associated_interface: str = None,
                  vdom: str = None, comment: str = None):
         &#34;&#34;&#34;
         Args:
@@ -86,7 +86,13 @@ class FgFwAddress(FgObject):
         self.set_comment(comment)
         self.set_range_ips(start_ip, end_ip)
 
+        # Update the parent defined obj_to_str attribute with this objects str representation
+        self.obj_to_str += f&#39;, name={self.name}, type={self.type}, subnet={self.subnet}, fqdn={self.fqdn}, &#39; \
+                          f&#39;start_ip={self.start_ip}, visibility={self.visibility}, &#39; \
+                          f&#39;associated_interface={self.associated_interface}, comment={self.comment}&#39;
 
+
+    # Instance methods
     def set_name(self, name):
         &#34;&#34;&#34;  Set self.name attribute to name if name provided is valid for FG object
 
@@ -97,17 +103,18 @@ class FgFwAddress(FgObject):
             None
         &#34;&#34;&#34;
 
-        if name:
-            if name.isspace(): raise Exception(&#34;\&#34;intf\&#34;, cannot be an empty string&#34;)
+        if name is None:
+            self.name = None
+
+        else:
+            if name.isspace(): raise Exception(&#34;&#39;name&#39;, cannot be an empty string&#34;)
             if isinstance(name, str):
                 if 1 &lt;= len(name) &lt;= 79:
                     self.name = name
                 else:
-                    raise Exception(&#34;\&#34;name\&#34;, must be less than or equal to 79 chars&#34;)
+                    raise Exception(&#34;&#39;name&#39;, must be less than or equal to 79 chars&#34;)
             else:
-                raise Exception(&#34;\&#34;name\&#34;, must be a string&#34;)
-        else:
-            raise Exception(&#34;Value \&#34;name\&#34; is required but was not provided&#34;)
+                raise Exception(&#34;&#39;name&#39;, must be a string&#34;)
 
     def set_type(self, type):
         &#34;&#34;&#34; Set self.type attribute to type if type provided is valid for FG object
@@ -118,13 +125,14 @@ class FgFwAddress(FgObject):
         Returns:
             None
         &#34;&#34;&#34;
-        if type:
+        if type is None:
+            self.type = None
+
+        else:
             if type in [&#39;ipmask&#39;, &#39;iprange&#39;, &#39;fqdn&#39;]:
                 self.type = type
             else:
-                raise ValueError(&#34;\&#34;type\&#34; specified is unsupported&#34;)
-        else:
-            self.type = None
+                raise ValueError(&#34;Interface &#39;type&#39; specified is unsupported&#34;)
 
     def set_subnet(self, subnet):
         &#34;&#34;&#34; Set self.subnet to subnet if subnet is valid ipv4 network/mask
@@ -135,14 +143,15 @@ class FgFwAddress(FgObject):
         Returns:
             None
         &#34;&#34;&#34;
-        if subnet:
+        if subnet is None:
+            self.subnet = None
+
+        else:
             if isinstance(subnet, str):
                 try:
                     self.subnet = str(ipaddress.ip_network(subnet))
                 except ValueError:
-                    raise ValueError(&#34;\&#34;subnet\&#34;, when specified must be a valid ipv4 address&#34;)
-        else:
-            self.subnet = None
+                    raise ValueError(&#34;&#39;subnet&#39;, when specified must be a valid ipv4 address&#34;)
 
     def set_fqdn(self, fqdn):
         &#34;&#34;&#34; Set self.fqdn to fqdn if fqdn provided meets FortiGate requirements for this parameter
@@ -153,52 +162,59 @@ class FgFwAddress(FgObject):
         Returns:
             None
         &#34;&#34;&#34;
-        if fqdn:
+        if fqdn is None:
+            self.fqdn = None
+
+        else:
             if 1 &lt;= len(fqdn) &lt;= 255:
                 self.fqdn = fqdn
             else:
-                raise ValueError(&#34;\&#34;fqdn\&#34;, when set, must be type str between 1 and 255 chars&#34;)
-        else:
-            self.fqdn = None
+                raise ValueError(&#34;&#39;fqdn&#39;, when set, must be type str between 1 and 255 chars&#34;)
 
     def set_visibility(self, visibility):
         &#34;&#34;&#34; Set self.visibility
 
         Args:
-            visibility (bool): Boolean to set visibility on FortiGate to enabled (True) or disabled (False)
+            visibility (str): object visibility in GUI.  (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
 
         Returns:
             None
         &#34;&#34;&#34;
-        if visibility:
-            if isinstance(visibility, bool):
-                self.visibility = &#39;enable&#39; if visibility else &#39;disable&#39;
-            else:
-                raise ValueError(&#34;\&#34;visibility\&#34;, when set, must be type bool&#34;)
-        else:
+        if visibility is None:
             self.visibility = None
+
+        else:
+            if isinstance(visibility, str):
+                if visibility == &#39;enable&#39;:
+                    self.visibility = &#39;enable&#39;
+                elif visibility == &#39;disable&#39;:
+                    self.visibility = &#39;disable&#39;
+                else:
+                    raise ValueError(&#34;&#39;visibility&#39;, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#39;&#34;)
+            else:
+                raise ValueError(&#34;&#39;visibility&#39;, when set, must be type str()&#34;)
 
     def set_associated_interface(self, intf):
         &#34;&#34;&#34; Set self.associated_interface if associated_interface provided meets requirements
 
         Args:
-            intf (str):
+            intf (str): Name of associated interface for GUI display.  (1-35 chars)
 
         Returns:
             None
         &#34;&#34;&#34;
-        if intf:
-            if intf.isspace(): raise Exception(&#34;\&#34;associated_interface\&#34;, cannot be an empty string&#34;)
+        if intf is None:
+            self.associated_interface = None
+
+        else:
+            if intf.isspace(): raise Exception(&#34;&#39;associated_interface&#39;, cannot be an empty string&#34;)
             if isinstance(intf, str):
                 if 1 &lt;= len(intf) &lt;= 35:
                     self.associated_interface = intf
                 else:
-                    raise Exception(&#34;\&#34;associated_interface\&#34;, when set, must be between 1 and 35 chars&#34;)
+                    raise Exception(&#34;&#39;associated_interface&#39;, when set, must be between 1 and 35 chars&#34;)
             else:
-                raise Exception(&#34;\&#34;name\&#34;, must be a string&#34;)
-
-        else:
-            self.associated_interface = None
+                raise Exception(&#34;&#39;name&#39;, must be a string&#34;)
 
     def set_comment(self, comment):
         &#34;&#34;&#34; Set self.comment if comment provided meets requirements
@@ -209,16 +225,17 @@ class FgFwAddress(FgObject):
         Returns:
             None
         &#34;&#34;&#34;
-        if comment:
+        if comment is None:
+            self.comment = None
+
+        else:
             if isinstance(comment, str):
                 if 1 &lt;= len(comment) &lt;= 255:
                     self.comment = comment
                 else:
-                    raise Exception(&#34;\&#34;description\&#34;, when set, must be type str between 1 and 1,023 chars&#34;)
+                    raise Exception(&#34;&#39;description&#39;, when set, must be type str between 1 and 1,023 chars&#34;)
             else:
-                raise Exception(&#34;\&#34;description\&#34;, when set, must be type str&#34;)
-        else:
-            self.comment = None
+                raise Exception(&#34;&#39;description&#39;, when set, must be type str&#34;)
 
     def set_range_ips(self, start_ip, end_ip):
         &#34;&#34;&#34; Set self.start_ip and self.end_ip if valid
@@ -237,18 +254,18 @@ class FgFwAddress(FgObject):
             try:
                 self.start_ip = str(ipaddress.ip_address(start_ip))
             except ValueError:
-                raise ValueError(&#34;\&#34;start_ip\&#34;, when set must be a valid ipv4 or ipv6 address&#34;)
+                raise ValueError(&#34;&#39;start_ip&#39;, when set must be a valid ipv4 or ipv6 address&#34;)
             try:
                 self.end_ip = str(ipaddress.ip_address(end_ip))
             except ValueError:
-                raise ValueError(&#34;\&#34;end_ip\&#34;, when set, must be a valid ipv4 or ipv6 address&#34;)
+                raise ValueError(&#34;&#39;end_ip&#39;, when set, must be a valid ipv4 or ipv6 address&#34;)
 
             if ipaddress.ip_address(start_ip) &lt; ipaddress.ip_address(end_ip):
                 pass
             else:
-                raise ValueError(&#34;\&#34;end_ip\&#34; must be higher IP address than \&#34;start_ip\&#34;&#34;)
+                raise ValueError(&#34;&#39;end_ip&#39; must be higher IP address than &#39;start_ip&#39;&#34;)
         elif start_ip or end_ip:
-            raise ValueError(&#34;When setting iprange parameters both \&#34;start_ip\&#34; and \&#34;end_ip\&#34; must be set with valid &#34;
+            raise ValueError(&#34;When setting iprange parameters both &#39;start_ip&#39; and &#39;end_ip&#39; must be set with valid &#34;
                              &#34;ip addresses&#34;)
         else:
             self.start_ip = None
@@ -291,8 +308,8 @@ and generating both cli and api configuration data for use in external configura
 <dd>start-ip for "iprange" type object</dd>
 <dt><strong><code>end_ip</code></strong> :&ensp;<code>str</code></dt>
 <dd>end-ip for "iprange: type object</dd>
-<dt><strong><code>visibility</code></strong> :&ensp;<code>bool</code></dt>
-<dd>Object visibility set to True or False</dd>
+<dt><strong><code>visibility</code></strong> :&ensp;<code>str</code></dt>
+<dd>Object visibility ('enable', 'disable', or None=inherit)</dd>
 <dt><strong><code>comment</code></strong> :&ensp;<code>str</code></dt>
 <dd>Object comment</dd>
 </dl>
@@ -343,12 +360,12 @@ If unset object configs uses default fg context (default: None)</dd>
         fqdn (str): Fqdn for &#34;fqdn&#34; type object
         start_ip (str): start-ip for &#34;iprange&#34; type object
         end_ip (str): end-ip for &#34;iprange: type object
-        visibility (bool): Object visibility set to True or False
+        visibility (str): Object visibility (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
         comment (str): Object comment
     &#34;&#34;&#34;
 
     def __init__(self, name: str = None, type: str = None, subnet: str = None, fqdn: str = None,
-                 start_ip: str = None, end_ip: str = None, visibility: bool = None, associated_interface: str = None,
+                 start_ip: str = None, end_ip: str = None, visibility: str = None, associated_interface: str = None,
                  vdom: str = None, comment: str = None):
         &#34;&#34;&#34;
         Args:
@@ -386,7 +403,13 @@ If unset object configs uses default fg context (default: None)</dd>
         self.set_comment(comment)
         self.set_range_ips(start_ip, end_ip)
 
+        # Update the parent defined obj_to_str attribute with this objects str representation
+        self.obj_to_str += f&#39;, name={self.name}, type={self.type}, subnet={self.subnet}, fqdn={self.fqdn}, &#39; \
+                          f&#39;start_ip={self.start_ip}, visibility={self.visibility}, &#39; \
+                          f&#39;associated_interface={self.associated_interface}, comment={self.comment}&#39;
 
+
+    # Instance methods
     def set_name(self, name):
         &#34;&#34;&#34;  Set self.name attribute to name if name provided is valid for FG object
 
@@ -397,17 +420,18 @@ If unset object configs uses default fg context (default: None)</dd>
             None
         &#34;&#34;&#34;
 
-        if name:
-            if name.isspace(): raise Exception(&#34;\&#34;intf\&#34;, cannot be an empty string&#34;)
+        if name is None:
+            self.name = None
+
+        else:
+            if name.isspace(): raise Exception(&#34;&#39;name&#39;, cannot be an empty string&#34;)
             if isinstance(name, str):
                 if 1 &lt;= len(name) &lt;= 79:
                     self.name = name
                 else:
-                    raise Exception(&#34;\&#34;name\&#34;, must be less than or equal to 79 chars&#34;)
+                    raise Exception(&#34;&#39;name&#39;, must be less than or equal to 79 chars&#34;)
             else:
-                raise Exception(&#34;\&#34;name\&#34;, must be a string&#34;)
-        else:
-            raise Exception(&#34;Value \&#34;name\&#34; is required but was not provided&#34;)
+                raise Exception(&#34;&#39;name&#39;, must be a string&#34;)
 
     def set_type(self, type):
         &#34;&#34;&#34; Set self.type attribute to type if type provided is valid for FG object
@@ -418,13 +442,14 @@ If unset object configs uses default fg context (default: None)</dd>
         Returns:
             None
         &#34;&#34;&#34;
-        if type:
+        if type is None:
+            self.type = None
+
+        else:
             if type in [&#39;ipmask&#39;, &#39;iprange&#39;, &#39;fqdn&#39;]:
                 self.type = type
             else:
-                raise ValueError(&#34;\&#34;type\&#34; specified is unsupported&#34;)
-        else:
-            self.type = None
+                raise ValueError(&#34;Interface &#39;type&#39; specified is unsupported&#34;)
 
     def set_subnet(self, subnet):
         &#34;&#34;&#34; Set self.subnet to subnet if subnet is valid ipv4 network/mask
@@ -435,14 +460,15 @@ If unset object configs uses default fg context (default: None)</dd>
         Returns:
             None
         &#34;&#34;&#34;
-        if subnet:
+        if subnet is None:
+            self.subnet = None
+
+        else:
             if isinstance(subnet, str):
                 try:
                     self.subnet = str(ipaddress.ip_network(subnet))
                 except ValueError:
-                    raise ValueError(&#34;\&#34;subnet\&#34;, when specified must be a valid ipv4 address&#34;)
-        else:
-            self.subnet = None
+                    raise ValueError(&#34;&#39;subnet&#39;, when specified must be a valid ipv4 address&#34;)
 
     def set_fqdn(self, fqdn):
         &#34;&#34;&#34; Set self.fqdn to fqdn if fqdn provided meets FortiGate requirements for this parameter
@@ -453,52 +479,59 @@ If unset object configs uses default fg context (default: None)</dd>
         Returns:
             None
         &#34;&#34;&#34;
-        if fqdn:
+        if fqdn is None:
+            self.fqdn = None
+
+        else:
             if 1 &lt;= len(fqdn) &lt;= 255:
                 self.fqdn = fqdn
             else:
-                raise ValueError(&#34;\&#34;fqdn\&#34;, when set, must be type str between 1 and 255 chars&#34;)
-        else:
-            self.fqdn = None
+                raise ValueError(&#34;&#39;fqdn&#39;, when set, must be type str between 1 and 255 chars&#34;)
 
     def set_visibility(self, visibility):
         &#34;&#34;&#34; Set self.visibility
 
         Args:
-            visibility (bool): Boolean to set visibility on FortiGate to enabled (True) or disabled (False)
+            visibility (str): object visibility in GUI.  (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
 
         Returns:
             None
         &#34;&#34;&#34;
-        if visibility:
-            if isinstance(visibility, bool):
-                self.visibility = &#39;enable&#39; if visibility else &#39;disable&#39;
-            else:
-                raise ValueError(&#34;\&#34;visibility\&#34;, when set, must be type bool&#34;)
-        else:
+        if visibility is None:
             self.visibility = None
+
+        else:
+            if isinstance(visibility, str):
+                if visibility == &#39;enable&#39;:
+                    self.visibility = &#39;enable&#39;
+                elif visibility == &#39;disable&#39;:
+                    self.visibility = &#39;disable&#39;
+                else:
+                    raise ValueError(&#34;&#39;visibility&#39;, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#39;&#34;)
+            else:
+                raise ValueError(&#34;&#39;visibility&#39;, when set, must be type str()&#34;)
 
     def set_associated_interface(self, intf):
         &#34;&#34;&#34; Set self.associated_interface if associated_interface provided meets requirements
 
         Args:
-            intf (str):
+            intf (str): Name of associated interface for GUI display.  (1-35 chars)
 
         Returns:
             None
         &#34;&#34;&#34;
-        if intf:
-            if intf.isspace(): raise Exception(&#34;\&#34;associated_interface\&#34;, cannot be an empty string&#34;)
+        if intf is None:
+            self.associated_interface = None
+
+        else:
+            if intf.isspace(): raise Exception(&#34;&#39;associated_interface&#39;, cannot be an empty string&#34;)
             if isinstance(intf, str):
                 if 1 &lt;= len(intf) &lt;= 35:
                     self.associated_interface = intf
                 else:
-                    raise Exception(&#34;\&#34;associated_interface\&#34;, when set, must be between 1 and 35 chars&#34;)
+                    raise Exception(&#34;&#39;associated_interface&#39;, when set, must be between 1 and 35 chars&#34;)
             else:
-                raise Exception(&#34;\&#34;name\&#34;, must be a string&#34;)
-
-        else:
-            self.associated_interface = None
+                raise Exception(&#34;&#39;name&#39;, must be a string&#34;)
 
     def set_comment(self, comment):
         &#34;&#34;&#34; Set self.comment if comment provided meets requirements
@@ -509,16 +542,17 @@ If unset object configs uses default fg context (default: None)</dd>
         Returns:
             None
         &#34;&#34;&#34;
-        if comment:
+        if comment is None:
+            self.comment = None
+
+        else:
             if isinstance(comment, str):
                 if 1 &lt;= len(comment) &lt;= 255:
                     self.comment = comment
                 else:
-                    raise Exception(&#34;\&#34;description\&#34;, when set, must be type str between 1 and 1,023 chars&#34;)
+                    raise Exception(&#34;&#39;description&#39;, when set, must be type str between 1 and 1,023 chars&#34;)
             else:
-                raise Exception(&#34;\&#34;description\&#34;, when set, must be type str&#34;)
-        else:
-            self.comment = None
+                raise Exception(&#34;&#39;description&#39;, when set, must be type str&#34;)
 
     def set_range_ips(self, start_ip, end_ip):
         &#34;&#34;&#34; Set self.start_ip and self.end_ip if valid
@@ -537,18 +571,18 @@ If unset object configs uses default fg context (default: None)</dd>
             try:
                 self.start_ip = str(ipaddress.ip_address(start_ip))
             except ValueError:
-                raise ValueError(&#34;\&#34;start_ip\&#34;, when set must be a valid ipv4 or ipv6 address&#34;)
+                raise ValueError(&#34;&#39;start_ip&#39;, when set must be a valid ipv4 or ipv6 address&#34;)
             try:
                 self.end_ip = str(ipaddress.ip_address(end_ip))
             except ValueError:
-                raise ValueError(&#34;\&#34;end_ip\&#34;, when set, must be a valid ipv4 or ipv6 address&#34;)
+                raise ValueError(&#34;&#39;end_ip&#39;, when set, must be a valid ipv4 or ipv6 address&#34;)
 
             if ipaddress.ip_address(start_ip) &lt; ipaddress.ip_address(end_ip):
                 pass
             else:
-                raise ValueError(&#34;\&#34;end_ip\&#34; must be higher IP address than \&#34;start_ip\&#34;&#34;)
+                raise ValueError(&#34;&#39;end_ip&#39; must be higher IP address than &#39;start_ip&#39;&#34;)
         elif start_ip or end_ip:
-            raise ValueError(&#34;When setting iprange parameters both \&#34;start_ip\&#34; and \&#34;end_ip\&#34; must be set with valid &#34;
+            raise ValueError(&#34;When setting iprange parameters both &#39;start_ip&#39; and &#39;end_ip&#39; must be set with valid &#34;
                              &#34;ip addresses&#34;)
         else:
             self.start_ip = None
@@ -566,7 +600,11 @@ If unset object configs uses default fg context (default: None)</dd>
 <dd>
 <section class="desc"><p>Set self.associated_interface if associated_interface provided meets requirements</p>
 <h2 id="args">Args</h2>
-<p>intf (str):</p>
+<dl>
+<dt><strong><code>intf</code></strong> :&ensp;<code>str</code></dt>
+<dd>Name of associated interface for GUI display.
+(1-35 chars)</dd>
+</dl>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>None</code></dt>
@@ -580,23 +618,23 @@ If unset object configs uses default fg context (default: None)</dd>
     &#34;&#34;&#34; Set self.associated_interface if associated_interface provided meets requirements
 
     Args:
-        intf (str):
+        intf (str): Name of associated interface for GUI display.  (1-35 chars)
 
     Returns:
         None
     &#34;&#34;&#34;
-    if intf:
-        if intf.isspace(): raise Exception(&#34;\&#34;associated_interface\&#34;, cannot be an empty string&#34;)
+    if intf is None:
+        self.associated_interface = None
+
+    else:
+        if intf.isspace(): raise Exception(&#34;&#39;associated_interface&#39;, cannot be an empty string&#34;)
         if isinstance(intf, str):
             if 1 &lt;= len(intf) &lt;= 35:
                 self.associated_interface = intf
             else:
-                raise Exception(&#34;\&#34;associated_interface\&#34;, when set, must be between 1 and 35 chars&#34;)
+                raise Exception(&#34;&#39;associated_interface&#39;, when set, must be between 1 and 35 chars&#34;)
         else:
-            raise Exception(&#34;\&#34;name\&#34;, must be a string&#34;)
-
-    else:
-        self.associated_interface = None</code></pre>
+            raise Exception(&#34;&#39;name&#39;, must be a string&#34;)</code></pre>
 </details>
 </dd>
 <dt id="fgobjlib.fg_fw_address.FgFwAddress.set_comment"><code class="name flex">
@@ -627,16 +665,17 @@ If unset object configs uses default fg context (default: None)</dd>
     Returns:
         None
     &#34;&#34;&#34;
-    if comment:
+    if comment is None:
+        self.comment = None
+
+    else:
         if isinstance(comment, str):
             if 1 &lt;= len(comment) &lt;= 255:
                 self.comment = comment
             else:
-                raise Exception(&#34;\&#34;description\&#34;, when set, must be type str between 1 and 1,023 chars&#34;)
+                raise Exception(&#34;&#39;description&#39;, when set, must be type str between 1 and 1,023 chars&#34;)
         else:
-            raise Exception(&#34;\&#34;description\&#34;, when set, must be type str&#34;)
-    else:
-        self.comment = None</code></pre>
+            raise Exception(&#34;&#39;description&#39;, when set, must be type str&#34;)</code></pre>
 </details>
 </dd>
 <dt id="fgobjlib.fg_fw_address.FgFwAddress.set_fqdn"><code class="name flex">
@@ -667,13 +706,14 @@ If unset object configs uses default fg context (default: None)</dd>
     Returns:
         None
     &#34;&#34;&#34;
-    if fqdn:
+    if fqdn is None:
+        self.fqdn = None
+
+    else:
         if 1 &lt;= len(fqdn) &lt;= 255:
             self.fqdn = fqdn
         else:
-            raise ValueError(&#34;\&#34;fqdn\&#34;, when set, must be type str between 1 and 255 chars&#34;)
-    else:
-        self.fqdn = None</code></pre>
+            raise ValueError(&#34;&#39;fqdn&#39;, when set, must be type str between 1 and 255 chars&#34;)</code></pre>
 </details>
 </dd>
 <dt id="fgobjlib.fg_fw_address.FgFwAddress.set_name"><code class="name flex">
@@ -705,17 +745,18 @@ If unset object configs uses default fg context (default: None)</dd>
         None
     &#34;&#34;&#34;
 
-    if name:
-        if name.isspace(): raise Exception(&#34;\&#34;intf\&#34;, cannot be an empty string&#34;)
+    if name is None:
+        self.name = None
+
+    else:
+        if name.isspace(): raise Exception(&#34;&#39;name&#39;, cannot be an empty string&#34;)
         if isinstance(name, str):
             if 1 &lt;= len(name) &lt;= 79:
                 self.name = name
             else:
-                raise Exception(&#34;\&#34;name\&#34;, must be less than or equal to 79 chars&#34;)
+                raise Exception(&#34;&#39;name&#39;, must be less than or equal to 79 chars&#34;)
         else:
-            raise Exception(&#34;\&#34;name\&#34;, must be a string&#34;)
-    else:
-        raise Exception(&#34;Value \&#34;name\&#34; is required but was not provided&#34;)</code></pre>
+            raise Exception(&#34;&#39;name&#39;, must be a string&#34;)</code></pre>
 </details>
 </dd>
 <dt id="fgobjlib.fg_fw_address.FgFwAddress.set_range_ips"><code class="name flex">
@@ -758,18 +799,18 @@ If unset object configs uses default fg context (default: None)</dd>
         try:
             self.start_ip = str(ipaddress.ip_address(start_ip))
         except ValueError:
-            raise ValueError(&#34;\&#34;start_ip\&#34;, when set must be a valid ipv4 or ipv6 address&#34;)
+            raise ValueError(&#34;&#39;start_ip&#39;, when set must be a valid ipv4 or ipv6 address&#34;)
         try:
             self.end_ip = str(ipaddress.ip_address(end_ip))
         except ValueError:
-            raise ValueError(&#34;\&#34;end_ip\&#34;, when set, must be a valid ipv4 or ipv6 address&#34;)
+            raise ValueError(&#34;&#39;end_ip&#39;, when set, must be a valid ipv4 or ipv6 address&#34;)
 
         if ipaddress.ip_address(start_ip) &lt; ipaddress.ip_address(end_ip):
             pass
         else:
-            raise ValueError(&#34;\&#34;end_ip\&#34; must be higher IP address than \&#34;start_ip\&#34;&#34;)
+            raise ValueError(&#34;&#39;end_ip&#39; must be higher IP address than &#39;start_ip&#39;&#34;)
     elif start_ip or end_ip:
-        raise ValueError(&#34;When setting iprange parameters both \&#34;start_ip\&#34; and \&#34;end_ip\&#34; must be set with valid &#34;
+        raise ValueError(&#34;When setting iprange parameters both &#39;start_ip&#39; and &#39;end_ip&#39; must be set with valid &#34;
                          &#34;ip addresses&#34;)
     else:
         self.start_ip = None
@@ -804,14 +845,15 @@ If unset object configs uses default fg context (default: None)</dd>
     Returns:
         None
     &#34;&#34;&#34;
-    if subnet:
+    if subnet is None:
+        self.subnet = None
+
+    else:
         if isinstance(subnet, str):
             try:
                 self.subnet = str(ipaddress.ip_network(subnet))
             except ValueError:
-                raise ValueError(&#34;\&#34;subnet\&#34;, when specified must be a valid ipv4 address&#34;)
-    else:
-        self.subnet = None</code></pre>
+                raise ValueError(&#34;&#39;subnet&#39;, when specified must be a valid ipv4 address&#34;)</code></pre>
 </details>
 </dd>
 <dt id="fgobjlib.fg_fw_address.FgFwAddress.set_type"><code class="name flex">
@@ -842,13 +884,14 @@ If unset object configs uses default fg context (default: None)</dd>
     Returns:
         None
     &#34;&#34;&#34;
-    if type:
+    if type is None:
+        self.type = None
+
+    else:
         if type in [&#39;ipmask&#39;, &#39;iprange&#39;, &#39;fqdn&#39;]:
             self.type = type
         else:
-            raise ValueError(&#34;\&#34;type\&#34; specified is unsupported&#34;)
-    else:
-        self.type = None</code></pre>
+            raise ValueError(&#34;Interface &#39;type&#39; specified is unsupported&#34;)</code></pre>
 </details>
 </dd>
 <dt id="fgobjlib.fg_fw_address.FgFwAddress.set_visibility"><code class="name flex">
@@ -858,8 +901,9 @@ If unset object configs uses default fg context (default: None)</dd>
 <section class="desc"><p>Set self.visibility</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>visibility</code></strong> :&ensp;<code>bool</code></dt>
-<dd>Boolean to set visibility on FortiGate to enabled (True) or disabled (False)</dd>
+<dt><strong><code>visibility</code></strong> :&ensp;<code>str</code></dt>
+<dd>object visibility in GUI.
+('enable', 'disable', or None=inherit)</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -874,18 +918,24 @@ If unset object configs uses default fg context (default: None)</dd>
     &#34;&#34;&#34; Set self.visibility
 
     Args:
-        visibility (bool): Boolean to set visibility on FortiGate to enabled (True) or disabled (False)
+        visibility (str): object visibility in GUI.  (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
 
     Returns:
         None
     &#34;&#34;&#34;
-    if visibility:
-        if isinstance(visibility, bool):
-            self.visibility = &#39;enable&#39; if visibility else &#39;disable&#39;
-        else:
-            raise ValueError(&#34;\&#34;visibility\&#34;, when set, must be type bool&#34;)
+    if visibility is None:
+        self.visibility = None
+
     else:
-        self.visibility = None</code></pre>
+        if isinstance(visibility, str):
+            if visibility == &#39;enable&#39;:
+                self.visibility = &#39;enable&#39;
+            elif visibility == &#39;disable&#39;:
+                self.visibility = &#39;disable&#39;
+            else:
+                raise ValueError(&#34;&#39;visibility&#39;, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#39;&#34;)
+        else:
+            raise ValueError(&#34;&#39;visibility&#39;, when set, must be type str()&#34;)</code></pre>
 </details>
 </dd>
 </dl>

@@ -46,14 +46,14 @@ class FgInterfaceIpv4(FgObject):
         role (str):  Interface role type
         vlanid (str): Interface vlanid
         phys_intf (str): Interfaces physical intf attachment.  (if intf_type is vlan)
-        device_ident (bool): device-identification for interface enabled or disabled
+        device_ident (str): device-identification (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
         alias (str): Interface alias
         description (str): Interface description
     &#34;&#34;&#34;
 
     def __init__(self, name: str = None, ip: str = None, mode: str = None, intf_type: str = None, vdom: str = None,
                  vrf: int = None, allowaccess: str = None, role: str = None, vlanid: int = None, phys_intf: str = None,
-                 device_ident: bool = None, alias: str = None, description: str = None, is_global: bool = None):
+                 device_ident: str = None, alias: str = None, description: str = None, is_global: bool = None):
         &#34;&#34;&#34;
         Args:
             name (str): Name of interface
@@ -66,7 +66,7 @@ class FgInterfaceIpv4(FgObject):
             role (str):  Interface role type
             vlanid (str): Interface vlanid
             phys_intf (str): Interfaces physical intf attachment.  (if intf_type is vlan)
-            device_ident (bool): device-identification for interface enabled or disabled
+            device_ident (str): device-identification  (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
             alias (str): Interface alias
             description (str): Interface description
         &#34;&#34;&#34;
@@ -103,7 +103,15 @@ class FgInterfaceIpv4(FgObject):
         self.set_alias(alias)
         self.set_description(description)
 
+        # Update the parent defined obj_to_str attribute with this objects str representation
+        self.obj_to_str += f&#39;, name={self.name}, ip={self.ip}, mode={self.mode}, intf_type={self.intf_type}, &#39; \
+                          f&#39;vrf={self.vrf}, allowaccess={self.allowaccess}, role={self.role}, vlanid={self.vlanid}, &#39; \
+                          f&#39;phys_intf={self.phys_intf}.device_ident={self.device_ident}, alias={self.alias}, &#39; \
+                          f&#39;description={self.description}, vdom={self.vdom}&#39;
 
+
+
+    # Class Methods
     @classmethod
     def standard_intf(cls, name: str, ip: str = None, mode: str = None, vdom: str = None, vrf: int = None,
                       allowaccess: str = None, role: str = None, device_ident: bool = None, alias: str = None,
@@ -118,7 +126,7 @@ class FgInterfaceIpv4(FgObject):
             vrf (int): VRF interface is configured for
             allowaccess (str):  Interface allowaccess policy.  i.e. &#34;ping http, https snmp, etc&#34;
             role (str):  Interface role type
-            device_ident (bool): device-identification for interface enabled or disabled
+            device_ident (str): device-identification  (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
             alias (str): Interface alias
             description (str): Interface description
 
@@ -152,7 +160,7 @@ class FgInterfaceIpv4(FgObject):
             vrf (int): VRF interface is configured for
             allowaccess (str):  Interface allowaccess policy.  i.e. &#34;ping http, https snmp, etc&#34;
             role (str):  Interface role type
-            device_ident (bool): device-identification for interface enabled or disabled
+            device_ident (str): device-identification  (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
             alias (str): Interface alias
             description (str): Interface description
 
@@ -160,10 +168,10 @@ class FgInterfaceIpv4(FgObject):
             Class Instance
         &#34;&#34;&#34;
 
-        if not vlanid: raise Exception(&#34;\&#34;vlan_intf()\&#34;, requires to provide a \&#34;vlanid\&#34;. vlanid should be type: int, &#34;
+        if not vlanid: raise Exception(&#34;&#39;vlan_intf()&#39;, requires to provide a &#39;vlanid&#39;. vlanid should be type: int, &#34;
                                        &#34;between 1 and 4960&#34;)
 
-        if not phys_intf: raise Exception(&#34;\&#34;vlan_intf\&#34;, requires to provide \&#34;phys_intf\&#34;, phys_intf should be type: &#34;
+        if not phys_intf: raise Exception(&#34;&#39;vlan_intf&#39;, requires to provide &#39;phys_intf&#39;, phys_intf should be type: &#34;
                                           &#34;str between 1 and 15 chars&#34;)
 
         intf_type = &#39;vlan&#39;
@@ -174,6 +182,7 @@ class FgInterfaceIpv4(FgObject):
 
         return obj
 
+    # Instance Methods
     def set_name(self, name):
         &#34;&#34;&#34; Set self.name to name if name meets requirements
 
@@ -183,17 +192,19 @@ class FgInterfaceIpv4(FgObject):
         Returns:
             None
         &#34;&#34;&#34;
-        if name:
-            if name.isspace(): raise Exception(&#34;\&#34;name\&#34;, cannot be an empty string&#34;)
+        if name is None:
+            self.name = None
+
+        else:
             if isinstance(name, str):
+                if name.isspace(): raise Exception(&#34;&#39;name&#39;, cannot be an empty string&#34;)
+
                 if len(name) &lt; 15:
                     self.name = name
                 else:
-                    raise Exception(&#34;\&#34;name\&#34;, must be less than 15 chars&#34;)
+                    raise Exception(&#34;&#39;name&#39;, must be less than 15 chars&#34;)
             else:
-                raise Exception(&#34;\&#34;name\&#34;, must be a string&#34;)
-        else:
-            raise Exception(&#34;Value \&#34;name\&#34; is required but was not provided&#34;)
+                raise Exception(&#34;&#39;name&#39;, must be a string&#34;)
 
     def set_ip(self, ip):
         &#34;&#34;&#34; Set self.ip as IP address for interface if IP is valid ipv4 address.  Otherwise raise Exception.
@@ -204,13 +215,14 @@ class FgInterfaceIpv4(FgObject):
         Returns:
             None
         &#34;&#34;&#34;
-        if ip:
+        if ip is None:
+            self.ip = None
+
+        else:
             try:
                 self.ip = str(ipaddress.ip_interface(ip))
             except ValueError:
-                raise ValueError(&#34;\ip\&#34; must be valide ipv4 address&#34;)
-        else:
-            self.ip = None
+                raise ValueError(&#34;&#39;ip&#39; must be a valid ipv4 address&#34;)
 
     def set_intf_type(self, intf_type):
         &#34;&#34;&#34; Set self.intf_type if intf type matches allowed types
@@ -221,17 +233,21 @@ class FgInterfaceIpv4(FgObject):
         Returns:
             None
         &#34;&#34;&#34;
-        if intf_type:
-            if intf_type.lower() == &#39;vlan&#39;:
-                self. intf_type = &#39;vlan&#39;
-            elif intf_type.lower() == &#39;standard&#39;:
-                self.intf_type = None
-            elif intf_type.lower() == &#39;loopback&#39;:
-                self.intf_type = &#39;loopback&#39;
-            else:
-                raise Exception(&#34;Interface type provided is not recognized: {}&#34;.format(intf_type))
-        else:
+        if intf_type is None:
             self.intf_type = None
+
+        else:
+            if isinstance(intf_type, str):
+                if intf_type.lower() == &#39;vlan&#39;:
+                    self. intf_type = &#39;vlan&#39;
+                elif intf_type.lower() == &#39;standard&#39;:
+                    self.intf_type = None
+                elif intf_type.lower() == &#39;loopback&#39;:
+                    self.intf_type = &#39;loopback&#39;
+                else:
+                    raise ValueError(f&#34;Interface type provided is not recognized: {intf_type}&#34;)
+            else:
+                raise ValueError(&#34;&#39;intf_type&#39;, when set, must be type str&#34;)
 
     def set_role(self, role):
         &#34;&#34;&#34; Set self.role if role matches allowed role types.
@@ -242,17 +258,21 @@ class FgInterfaceIpv4(FgObject):
         Returns:
 
         &#34;&#34;&#34;
-        if role:
-            if role.lower() == &#39;wan&#39;:
-                self.role = &#39;wan&#39;
-            elif role.lower() == &#39;lan&#39;:
-                self.role = &#39;lan&#39;
-            elif role.lower() == &#39;dmz&#39;:
-                self.role = &#39;dmz&#39;
-            else:
-                self.role = &#39;undefined&#39;
-        else:
+        if role is None:
             self.role = None
+
+        else:
+            if isinstance(role, str):
+                if role.lower() == &#39;wan&#39;:
+                    self.role = &#39;wan&#39;
+                elif role.lower() == &#39;lan&#39;:
+                    self.role = &#39;lan&#39;
+                elif role.lower() == &#39;dmz&#39;:
+                    self.role = &#39;dmz&#39;
+                else:
+                    self.role = &#39;undefined&#39;
+            else:
+                raise ValueError(&#34;&#39;role&#39;, when set, must be type str&#34;)
 
     def set_mode(self, mode):
         &#34;&#34;&#34; Set self.mode to mode if mode set with valid argument
@@ -263,15 +283,19 @@ class FgInterfaceIpv4(FgObject):
         Returns:
             None
         &#34;&#34;&#34;
-        if mode:
-            if mode.lower() == &#39;dhcp&#39;:
-                self.mode = &#39;dhcp&#39;
-            elif mode.lower() == &#39;static&#39;:
-                self.mode = &#39;static&#39;
-            else:
-                raise Exception(&#34;If set, \&#34;mode\&#34;, must be set to either dhcp or static&#34;)
-        else:
+        if mode is None:
             self.mode = &#39;dhcp&#39;
+
+        else:
+            if isinstance(mode, str):
+                if mode.lower() == &#39;dhcp&#39;:
+                    self.mode = &#39;dhcp&#39;
+                elif mode.lower() == &#39;static&#39;:
+                    self.mode = &#39;static&#39;
+                else:
+                    raise ValueError(&#34;&#39;mode&#39;, when set,  must be set to either &#39;dhcp&#39; or &#39;static&#39;&#34;)
+            else:
+                raise ValueError(&#34;&#39;mode&#39;, when set, must be type str&#34;)
 
     def set_allowaccess(self, allowaccess):
         &#34;&#34;&#34; Set self.allowaccess  to allowaccess if allowaccess contains allowed params
@@ -282,16 +306,21 @@ class FgInterfaceIpv4(FgObject):
         Returns:
             None
         &#34;&#34;&#34;
-        if allowaccess:
-            for service in list(allowaccess.split(&#34; &#34;)):
-                if service.lower() in [&#39;ping&#39;, &#39;http&#39;, &#39;https&#39;, &#39;snmp&#39;, &#39;ssh&#39;, &#39;telnet&#39;, &#39;fgfm&#39;, &#39;radius=acct&#39;,
-                                       &#39;probe-response&#39;, &#39;capwap&#39;, &#39;ftm&#39;]:
-                    continue
-                else:
-                    raise Exception(&#34;\&#34;allowaccces\&#34; has unrecognized services defined: {}&#34;.format(service))
-            self.allowaccess = allowaccess
-        else:
+        if allowaccess is None:
             self.allowaccess = None
+
+        else:
+            if isinstance(allowaccess, str):
+                for service in list(allowaccess.split(&#34; &#34;)):
+                    if service.lower() in [&#39;ping&#39;, &#39;http&#39;, &#39;https&#39;, &#39;snmp&#39;, &#39;ssh&#39;, &#39;telnet&#39;, &#39;fgfm&#39;, &#39;radius=acct&#39;,
+                                           &#39;probe-response&#39;, &#39;capwap&#39;, &#39;ftm&#39;]:
+                        continue
+                    else:
+                        raise ValueError(f&#34;&#39;allowaccces&#39; has unrecognized services defined: {service}&#34;)
+            else:
+                raise ValueError(&#34;&#39;allowaccess&#39;, when set, must be type str&#34;)
+
+            self.allowaccess = allowaccess
 
     def set_vlanid(self, vlanid):
         &#34;&#34;&#34;  Set self.vlanid if vlanid is valid
@@ -302,16 +331,17 @@ class FgInterfaceIpv4(FgObject):
         Returns:
             None
         &#34;&#34;&#34;
-        if vlanid:
+        if vlanid is None:
+            self.vlanid = None
+
+        else:
             if isinstance(vlanid, int):
                 if 1 &lt;= vlanid &lt;= 4096:
                     self.vlanid = vlanid
                 else:
-                    raise Exception(&#34;vlanid must be integer between 1 and 4096&#34;)
+                    raise ValueError(&#34;&#39;vlanid&#39;, when set, must be integer between 1 and 4096&#34;)
             else:
-                raise Exception(&#34;vlanid, when set, must be an integer&#34;)
-        else:
-            self.vlanid = None
+                raise ValueError(&#34;vlanid, when set, must be an integer&#34;)
 
     def set_phys_intf(self, phys_intf):
         &#34;&#34;&#34; Set self.phys_intf to phys_intf if phys_intf valid
@@ -322,19 +352,20 @@ class FgInterfaceIpv4(FgObject):
         Returns:
             None
         &#34;&#34;&#34;
-        if phys_intf:
-            if phys_intf.isspace():
-                raise Exception(&#34;\&#34;phys_intf\&#34; cannot be an empty string&#34;)
+        if phys_intf is None:
+            self.phys_intf = None
 
+        else:
             if isinstance(phys_intf, str):
+                if phys_intf.isspace():
+                    raise ValueError(&#34;&#39;phys_intf&#39; cannot be an empty string&#34;)
+
                 if 1 &lt;= len(phys_intf) &lt;= 31:
                     self.phys_intf = phys_intf
                 else:
-                    raise Exception(&#34;\&#34;phys_intf\&#34;, when set, must be type str between 1 and 31 chars&#34;)
+                    raise ValueError(&#34;&#39;phys_intf&#39;, when set, must be type str between 1 and 31 chars&#34;)
             else:
-                raise Exception(&#34;\&#34;phys_intf\&#34;, when set, must be type str&#34;)
-        else:
-            self.phys_intf = None
+                raise ValueError(&#34;&#39;phys_intf&#39;, when set, must be type str&#34;)
 
     def set_vrf(self, vrf):
         &#34;&#34;&#34; Set self.vrf if vrf valid
@@ -345,31 +376,40 @@ class FgInterfaceIpv4(FgObject):
         Returns:
             None
         &#34;&#34;&#34;
-        if vrf:
+        if vrf is None:
+            self.vrf = None
+
+        else:
             if isinstance(vrf, int):
                 if 0 &lt;= vrf &lt;= 31:
                     self.vrf = vrf
                 else:
-                    raise Exception(&#34;\&#34;vrf\&#34;, when set, must be an integer between 0 and 31&#34;)
+                    raise Exception(&#34;&#39;vrf&#39;, when set, must be an integer between 0 and 31&#34;)
             else:
-                raise Exception(&#34;\&#34;vrf\&#34;, when set, must be an integer between 0 and 31&#34;)
-        else:
-            self.vrf = None
+                raise Exception(&#34;&#39;vrf&#39;, when set, must be an integer between 0 and 31&#34;)
 
     def set_device_ident(self, device_ident):
         &#34;&#34;&#34; Set self.device_idnent if device_ident valid
 
         Args:
-            device_ident (bool): Set device-identification for interface True=(enable), False=Disable, None=inherrit
+            device_ident (str): device-identification  (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
 
         Returns:
             None
         &#34;&#34;&#34;
-        if device_ident:
-            if isinstance(device_ident, bool):
-                self.device_ident = True
-        else:
+        if device_ident is None:
             self.device_ident = False
+
+        else:
+            if isinstance(device_ident, str):
+                if device_ident == &#39;enable&#39;:
+                    self.device_ident = &#39;enable&#39;
+                elif device_ident == &#39;disable&#39;:
+                    self.device_ident = &#39;disable&#39;
+                else:
+                    raise ValueError(&#34;&#39;device_ident&#39;, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#39;&#34;)
+            else:
+                raise ValueError(&#34;&#39;device_ident&#39;, when set, must be type str()&#34;)
 
     def set_alias(self, alias):
         &#34;&#34;&#34; Set self.alias to alias if alias valid
@@ -380,16 +420,17 @@ class FgInterfaceIpv4(FgObject):
         Returns:
 
         &#34;&#34;&#34;
-        if alias:
+        if alias is None:
+            self.alias = None
+
+        else:
             if isinstance(alias, str):
                 if 1 &lt;= len(alias) &lt;= 25:
                     self.alias = alias
                 else:
-                    raise Exception(&#34;\&#34;alias\&#34;, when set, must be type str between 1 and 25 chars&#34;)
+                    raise ValueError(&#34;&#39;alias&#39;, when set, must be type str between 1 and 25 chars&#34;)
             else:
-                raise Exception(&#34;\&#34;alias\&#34;, when set, must be type str&#34;)
-        else:
-            self.alias = None
+                raise ValueError(&#34;&#39;alias&#39;, when set, must be type str&#34;)
 
     def set_description(self, description):
         &#34;&#34;&#34; Set self.description to description if description is valid
@@ -400,16 +441,17 @@ class FgInterfaceIpv4(FgObject):
         Returns:
             None
         &#34;&#34;&#34;
-        if description:
+        if description is None:
+            self.description = None
+
+        else:
             if isinstance(description, str):
                 if 1 &lt;= len(description) &lt;= 255:
                     self.description = description
                 else:
-                    raise Exception(&#34;\&#34;description\&#34;, when set, must be type str between 1 and 255 chars&#34;)
+                    raise Exception(&#34;&#39;description&#39;, when set, must be type str between 1 and 255 chars&#34;)
             else:
-                raise Exception(&#34;\&#34;description\&#34;, when set, must be type str&#34;)
-        else:
-            self.description = None</code></pre>
+                raise Exception(&#34;&#39;description&#39;, when set, must be type str&#34;)</code></pre>
 </details>
 </section>
 <section>
@@ -453,8 +495,8 @@ i.e. "ping http, https snmp, etc"</dd>
 <dt><strong><code>phys_intf</code></strong> :&ensp;<code>str</code></dt>
 <dd>Interfaces physical intf attachment.
 (if intf_type is vlan)</dd>
-<dt><strong><code>device_ident</code></strong> :&ensp;<code>bool</code></dt>
-<dd>device-identification for interface enabled or disabled</dd>
+<dt><strong><code>device_ident</code></strong> :&ensp;<code>str</code></dt>
+<dd>device-identification ('enable', 'disable', or None=inherit)</dd>
 <dt><strong><code>alias</code></strong> :&ensp;<code>str</code></dt>
 <dd>Interface alias</dd>
 <dt><strong><code>description</code></strong> :&ensp;<code>str</code></dt>
@@ -484,8 +526,9 @@ i.e. "ping http, https snmp, etc"</dd>
 <dt><strong><code>phys_intf</code></strong> :&ensp;<code>str</code></dt>
 <dd>Interfaces physical intf attachment.
 (if intf_type is vlan)</dd>
-<dt><strong><code>device_ident</code></strong> :&ensp;<code>bool</code></dt>
-<dd>device-identification for interface enabled or disabled</dd>
+<dt><strong><code>device_ident</code></strong> :&ensp;<code>str</code></dt>
+<dd>device-identification
+('enable', 'disable', or None=inherit)</dd>
 <dt><strong><code>alias</code></strong> :&ensp;<code>str</code></dt>
 <dd>Interface alias</dd>
 <dt><strong><code>description</code></strong> :&ensp;<code>str</code></dt>
@@ -513,14 +556,14 @@ i.e. "ping http, https snmp, etc"</dd>
         role (str):  Interface role type
         vlanid (str): Interface vlanid
         phys_intf (str): Interfaces physical intf attachment.  (if intf_type is vlan)
-        device_ident (bool): device-identification for interface enabled or disabled
+        device_ident (str): device-identification (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
         alias (str): Interface alias
         description (str): Interface description
     &#34;&#34;&#34;
 
     def __init__(self, name: str = None, ip: str = None, mode: str = None, intf_type: str = None, vdom: str = None,
                  vrf: int = None, allowaccess: str = None, role: str = None, vlanid: int = None, phys_intf: str = None,
-                 device_ident: bool = None, alias: str = None, description: str = None, is_global: bool = None):
+                 device_ident: str = None, alias: str = None, description: str = None, is_global: bool = None):
         &#34;&#34;&#34;
         Args:
             name (str): Name of interface
@@ -533,7 +576,7 @@ i.e. "ping http, https snmp, etc"</dd>
             role (str):  Interface role type
             vlanid (str): Interface vlanid
             phys_intf (str): Interfaces physical intf attachment.  (if intf_type is vlan)
-            device_ident (bool): device-identification for interface enabled or disabled
+            device_ident (str): device-identification  (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
             alias (str): Interface alias
             description (str): Interface description
         &#34;&#34;&#34;
@@ -570,7 +613,15 @@ i.e. "ping http, https snmp, etc"</dd>
         self.set_alias(alias)
         self.set_description(description)
 
+        # Update the parent defined obj_to_str attribute with this objects str representation
+        self.obj_to_str += f&#39;, name={self.name}, ip={self.ip}, mode={self.mode}, intf_type={self.intf_type}, &#39; \
+                          f&#39;vrf={self.vrf}, allowaccess={self.allowaccess}, role={self.role}, vlanid={self.vlanid}, &#39; \
+                          f&#39;phys_intf={self.phys_intf}.device_ident={self.device_ident}, alias={self.alias}, &#39; \
+                          f&#39;description={self.description}, vdom={self.vdom}&#39;
 
+
+
+    # Class Methods
     @classmethod
     def standard_intf(cls, name: str, ip: str = None, mode: str = None, vdom: str = None, vrf: int = None,
                       allowaccess: str = None, role: str = None, device_ident: bool = None, alias: str = None,
@@ -585,7 +636,7 @@ i.e. "ping http, https snmp, etc"</dd>
             vrf (int): VRF interface is configured for
             allowaccess (str):  Interface allowaccess policy.  i.e. &#34;ping http, https snmp, etc&#34;
             role (str):  Interface role type
-            device_ident (bool): device-identification for interface enabled or disabled
+            device_ident (str): device-identification  (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
             alias (str): Interface alias
             description (str): Interface description
 
@@ -619,7 +670,7 @@ i.e. "ping http, https snmp, etc"</dd>
             vrf (int): VRF interface is configured for
             allowaccess (str):  Interface allowaccess policy.  i.e. &#34;ping http, https snmp, etc&#34;
             role (str):  Interface role type
-            device_ident (bool): device-identification for interface enabled or disabled
+            device_ident (str): device-identification  (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
             alias (str): Interface alias
             description (str): Interface description
 
@@ -627,10 +678,10 @@ i.e. "ping http, https snmp, etc"</dd>
             Class Instance
         &#34;&#34;&#34;
 
-        if not vlanid: raise Exception(&#34;\&#34;vlan_intf()\&#34;, requires to provide a \&#34;vlanid\&#34;. vlanid should be type: int, &#34;
+        if not vlanid: raise Exception(&#34;&#39;vlan_intf()&#39;, requires to provide a &#39;vlanid&#39;. vlanid should be type: int, &#34;
                                        &#34;between 1 and 4960&#34;)
 
-        if not phys_intf: raise Exception(&#34;\&#34;vlan_intf\&#34;, requires to provide \&#34;phys_intf\&#34;, phys_intf should be type: &#34;
+        if not phys_intf: raise Exception(&#34;&#39;vlan_intf&#39;, requires to provide &#39;phys_intf&#39;, phys_intf should be type: &#34;
                                           &#34;str between 1 and 15 chars&#34;)
 
         intf_type = &#39;vlan&#39;
@@ -641,6 +692,7 @@ i.e. "ping http, https snmp, etc"</dd>
 
         return obj
 
+    # Instance Methods
     def set_name(self, name):
         &#34;&#34;&#34; Set self.name to name if name meets requirements
 
@@ -650,17 +702,19 @@ i.e. "ping http, https snmp, etc"</dd>
         Returns:
             None
         &#34;&#34;&#34;
-        if name:
-            if name.isspace(): raise Exception(&#34;\&#34;name\&#34;, cannot be an empty string&#34;)
+        if name is None:
+            self.name = None
+
+        else:
             if isinstance(name, str):
+                if name.isspace(): raise Exception(&#34;&#39;name&#39;, cannot be an empty string&#34;)
+
                 if len(name) &lt; 15:
                     self.name = name
                 else:
-                    raise Exception(&#34;\&#34;name\&#34;, must be less than 15 chars&#34;)
+                    raise Exception(&#34;&#39;name&#39;, must be less than 15 chars&#34;)
             else:
-                raise Exception(&#34;\&#34;name\&#34;, must be a string&#34;)
-        else:
-            raise Exception(&#34;Value \&#34;name\&#34; is required but was not provided&#34;)
+                raise Exception(&#34;&#39;name&#39;, must be a string&#34;)
 
     def set_ip(self, ip):
         &#34;&#34;&#34; Set self.ip as IP address for interface if IP is valid ipv4 address.  Otherwise raise Exception.
@@ -671,13 +725,14 @@ i.e. "ping http, https snmp, etc"</dd>
         Returns:
             None
         &#34;&#34;&#34;
-        if ip:
+        if ip is None:
+            self.ip = None
+
+        else:
             try:
                 self.ip = str(ipaddress.ip_interface(ip))
             except ValueError:
-                raise ValueError(&#34;\ip\&#34; must be valide ipv4 address&#34;)
-        else:
-            self.ip = None
+                raise ValueError(&#34;&#39;ip&#39; must be a valid ipv4 address&#34;)
 
     def set_intf_type(self, intf_type):
         &#34;&#34;&#34; Set self.intf_type if intf type matches allowed types
@@ -688,17 +743,21 @@ i.e. "ping http, https snmp, etc"</dd>
         Returns:
             None
         &#34;&#34;&#34;
-        if intf_type:
-            if intf_type.lower() == &#39;vlan&#39;:
-                self. intf_type = &#39;vlan&#39;
-            elif intf_type.lower() == &#39;standard&#39;:
-                self.intf_type = None
-            elif intf_type.lower() == &#39;loopback&#39;:
-                self.intf_type = &#39;loopback&#39;
-            else:
-                raise Exception(&#34;Interface type provided is not recognized: {}&#34;.format(intf_type))
-        else:
+        if intf_type is None:
             self.intf_type = None
+
+        else:
+            if isinstance(intf_type, str):
+                if intf_type.lower() == &#39;vlan&#39;:
+                    self. intf_type = &#39;vlan&#39;
+                elif intf_type.lower() == &#39;standard&#39;:
+                    self.intf_type = None
+                elif intf_type.lower() == &#39;loopback&#39;:
+                    self.intf_type = &#39;loopback&#39;
+                else:
+                    raise ValueError(f&#34;Interface type provided is not recognized: {intf_type}&#34;)
+            else:
+                raise ValueError(&#34;&#39;intf_type&#39;, when set, must be type str&#34;)
 
     def set_role(self, role):
         &#34;&#34;&#34; Set self.role if role matches allowed role types.
@@ -709,17 +768,21 @@ i.e. "ping http, https snmp, etc"</dd>
         Returns:
 
         &#34;&#34;&#34;
-        if role:
-            if role.lower() == &#39;wan&#39;:
-                self.role = &#39;wan&#39;
-            elif role.lower() == &#39;lan&#39;:
-                self.role = &#39;lan&#39;
-            elif role.lower() == &#39;dmz&#39;:
-                self.role = &#39;dmz&#39;
-            else:
-                self.role = &#39;undefined&#39;
-        else:
+        if role is None:
             self.role = None
+
+        else:
+            if isinstance(role, str):
+                if role.lower() == &#39;wan&#39;:
+                    self.role = &#39;wan&#39;
+                elif role.lower() == &#39;lan&#39;:
+                    self.role = &#39;lan&#39;
+                elif role.lower() == &#39;dmz&#39;:
+                    self.role = &#39;dmz&#39;
+                else:
+                    self.role = &#39;undefined&#39;
+            else:
+                raise ValueError(&#34;&#39;role&#39;, when set, must be type str&#34;)
 
     def set_mode(self, mode):
         &#34;&#34;&#34; Set self.mode to mode if mode set with valid argument
@@ -730,15 +793,19 @@ i.e. "ping http, https snmp, etc"</dd>
         Returns:
             None
         &#34;&#34;&#34;
-        if mode:
-            if mode.lower() == &#39;dhcp&#39;:
-                self.mode = &#39;dhcp&#39;
-            elif mode.lower() == &#39;static&#39;:
-                self.mode = &#39;static&#39;
-            else:
-                raise Exception(&#34;If set, \&#34;mode\&#34;, must be set to either dhcp or static&#34;)
-        else:
+        if mode is None:
             self.mode = &#39;dhcp&#39;
+
+        else:
+            if isinstance(mode, str):
+                if mode.lower() == &#39;dhcp&#39;:
+                    self.mode = &#39;dhcp&#39;
+                elif mode.lower() == &#39;static&#39;:
+                    self.mode = &#39;static&#39;
+                else:
+                    raise ValueError(&#34;&#39;mode&#39;, when set,  must be set to either &#39;dhcp&#39; or &#39;static&#39;&#34;)
+            else:
+                raise ValueError(&#34;&#39;mode&#39;, when set, must be type str&#34;)
 
     def set_allowaccess(self, allowaccess):
         &#34;&#34;&#34; Set self.allowaccess  to allowaccess if allowaccess contains allowed params
@@ -749,16 +816,21 @@ i.e. "ping http, https snmp, etc"</dd>
         Returns:
             None
         &#34;&#34;&#34;
-        if allowaccess:
-            for service in list(allowaccess.split(&#34; &#34;)):
-                if service.lower() in [&#39;ping&#39;, &#39;http&#39;, &#39;https&#39;, &#39;snmp&#39;, &#39;ssh&#39;, &#39;telnet&#39;, &#39;fgfm&#39;, &#39;radius=acct&#39;,
-                                       &#39;probe-response&#39;, &#39;capwap&#39;, &#39;ftm&#39;]:
-                    continue
-                else:
-                    raise Exception(&#34;\&#34;allowaccces\&#34; has unrecognized services defined: {}&#34;.format(service))
-            self.allowaccess = allowaccess
-        else:
+        if allowaccess is None:
             self.allowaccess = None
+
+        else:
+            if isinstance(allowaccess, str):
+                for service in list(allowaccess.split(&#34; &#34;)):
+                    if service.lower() in [&#39;ping&#39;, &#39;http&#39;, &#39;https&#39;, &#39;snmp&#39;, &#39;ssh&#39;, &#39;telnet&#39;, &#39;fgfm&#39;, &#39;radius=acct&#39;,
+                                           &#39;probe-response&#39;, &#39;capwap&#39;, &#39;ftm&#39;]:
+                        continue
+                    else:
+                        raise ValueError(f&#34;&#39;allowaccces&#39; has unrecognized services defined: {service}&#34;)
+            else:
+                raise ValueError(&#34;&#39;allowaccess&#39;, when set, must be type str&#34;)
+
+            self.allowaccess = allowaccess
 
     def set_vlanid(self, vlanid):
         &#34;&#34;&#34;  Set self.vlanid if vlanid is valid
@@ -769,16 +841,17 @@ i.e. "ping http, https snmp, etc"</dd>
         Returns:
             None
         &#34;&#34;&#34;
-        if vlanid:
+        if vlanid is None:
+            self.vlanid = None
+
+        else:
             if isinstance(vlanid, int):
                 if 1 &lt;= vlanid &lt;= 4096:
                     self.vlanid = vlanid
                 else:
-                    raise Exception(&#34;vlanid must be integer between 1 and 4096&#34;)
+                    raise ValueError(&#34;&#39;vlanid&#39;, when set, must be integer between 1 and 4096&#34;)
             else:
-                raise Exception(&#34;vlanid, when set, must be an integer&#34;)
-        else:
-            self.vlanid = None
+                raise ValueError(&#34;vlanid, when set, must be an integer&#34;)
 
     def set_phys_intf(self, phys_intf):
         &#34;&#34;&#34; Set self.phys_intf to phys_intf if phys_intf valid
@@ -789,19 +862,20 @@ i.e. "ping http, https snmp, etc"</dd>
         Returns:
             None
         &#34;&#34;&#34;
-        if phys_intf:
-            if phys_intf.isspace():
-                raise Exception(&#34;\&#34;phys_intf\&#34; cannot be an empty string&#34;)
+        if phys_intf is None:
+            self.phys_intf = None
 
+        else:
             if isinstance(phys_intf, str):
+                if phys_intf.isspace():
+                    raise ValueError(&#34;&#39;phys_intf&#39; cannot be an empty string&#34;)
+
                 if 1 &lt;= len(phys_intf) &lt;= 31:
                     self.phys_intf = phys_intf
                 else:
-                    raise Exception(&#34;\&#34;phys_intf\&#34;, when set, must be type str between 1 and 31 chars&#34;)
+                    raise ValueError(&#34;&#39;phys_intf&#39;, when set, must be type str between 1 and 31 chars&#34;)
             else:
-                raise Exception(&#34;\&#34;phys_intf\&#34;, when set, must be type str&#34;)
-        else:
-            self.phys_intf = None
+                raise ValueError(&#34;&#39;phys_intf&#39;, when set, must be type str&#34;)
 
     def set_vrf(self, vrf):
         &#34;&#34;&#34; Set self.vrf if vrf valid
@@ -812,31 +886,40 @@ i.e. "ping http, https snmp, etc"</dd>
         Returns:
             None
         &#34;&#34;&#34;
-        if vrf:
+        if vrf is None:
+            self.vrf = None
+
+        else:
             if isinstance(vrf, int):
                 if 0 &lt;= vrf &lt;= 31:
                     self.vrf = vrf
                 else:
-                    raise Exception(&#34;\&#34;vrf\&#34;, when set, must be an integer between 0 and 31&#34;)
+                    raise Exception(&#34;&#39;vrf&#39;, when set, must be an integer between 0 and 31&#34;)
             else:
-                raise Exception(&#34;\&#34;vrf\&#34;, when set, must be an integer between 0 and 31&#34;)
-        else:
-            self.vrf = None
+                raise Exception(&#34;&#39;vrf&#39;, when set, must be an integer between 0 and 31&#34;)
 
     def set_device_ident(self, device_ident):
         &#34;&#34;&#34; Set self.device_idnent if device_ident valid
 
         Args:
-            device_ident (bool): Set device-identification for interface True=(enable), False=Disable, None=inherrit
+            device_ident (str): device-identification  (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
 
         Returns:
             None
         &#34;&#34;&#34;
-        if device_ident:
-            if isinstance(device_ident, bool):
-                self.device_ident = True
-        else:
+        if device_ident is None:
             self.device_ident = False
+
+        else:
+            if isinstance(device_ident, str):
+                if device_ident == &#39;enable&#39;:
+                    self.device_ident = &#39;enable&#39;
+                elif device_ident == &#39;disable&#39;:
+                    self.device_ident = &#39;disable&#39;
+                else:
+                    raise ValueError(&#34;&#39;device_ident&#39;, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#39;&#34;)
+            else:
+                raise ValueError(&#34;&#39;device_ident&#39;, when set, must be type str()&#34;)
 
     def set_alias(self, alias):
         &#34;&#34;&#34; Set self.alias to alias if alias valid
@@ -847,16 +930,17 @@ i.e. "ping http, https snmp, etc"</dd>
         Returns:
 
         &#34;&#34;&#34;
-        if alias:
+        if alias is None:
+            self.alias = None
+
+        else:
             if isinstance(alias, str):
                 if 1 &lt;= len(alias) &lt;= 25:
                     self.alias = alias
                 else:
-                    raise Exception(&#34;\&#34;alias\&#34;, when set, must be type str between 1 and 25 chars&#34;)
+                    raise ValueError(&#34;&#39;alias&#39;, when set, must be type str between 1 and 25 chars&#34;)
             else:
-                raise Exception(&#34;\&#34;alias\&#34;, when set, must be type str&#34;)
-        else:
-            self.alias = None
+                raise ValueError(&#34;&#39;alias&#39;, when set, must be type str&#34;)
 
     def set_description(self, description):
         &#34;&#34;&#34; Set self.description to description if description is valid
@@ -867,16 +951,17 @@ i.e. "ping http, https snmp, etc"</dd>
         Returns:
             None
         &#34;&#34;&#34;
-        if description:
+        if description is None:
+            self.description = None
+
+        else:
             if isinstance(description, str):
                 if 1 &lt;= len(description) &lt;= 255:
                     self.description = description
                 else:
-                    raise Exception(&#34;\&#34;description\&#34;, when set, must be type str between 1 and 255 chars&#34;)
+                    raise Exception(&#34;&#39;description&#39;, when set, must be type str between 1 and 255 chars&#34;)
             else:
-                raise Exception(&#34;\&#34;description\&#34;, when set, must be type str&#34;)
-        else:
-            self.description = None</code></pre>
+                raise Exception(&#34;&#39;description&#39;, when set, must be type str&#34;)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -906,8 +991,9 @@ i.e. "ping http, https snmp, etc"</dd>
 i.e. "ping http, https snmp, etc"</dd>
 <dt><strong><code>role</code></strong> :&ensp;<code>str</code></dt>
 <dd>Interface role type</dd>
-<dt><strong><code>device_ident</code></strong> :&ensp;<code>bool</code></dt>
-<dd>device-identification for interface enabled or disabled</dd>
+<dt><strong><code>device_ident</code></strong> :&ensp;<code>str</code></dt>
+<dd>device-identification
+('enable', 'disable', or None=inherit)</dd>
 <dt><strong><code>alias</code></strong> :&ensp;<code>str</code></dt>
 <dd>Interface alias</dd>
 <dt><strong><code>description</code></strong> :&ensp;<code>str</code></dt>
@@ -936,7 +1022,7 @@ def standard_intf(cls, name: str, ip: str = None, mode: str = None, vdom: str = 
         vrf (int): VRF interface is configured for
         allowaccess (str):  Interface allowaccess policy.  i.e. &#34;ping http, https snmp, etc&#34;
         role (str):  Interface role type
-        device_ident (bool): device-identification for interface enabled or disabled
+        device_ident (str): device-identification  (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
         alias (str): Interface alias
         description (str): Interface description
 
@@ -981,8 +1067,9 @@ def standard_intf(cls, name: str, ip: str = None, mode: str = None, vdom: str = 
 i.e. "ping http, https snmp, etc"</dd>
 <dt><strong><code>role</code></strong> :&ensp;<code>str</code></dt>
 <dd>Interface role type</dd>
-<dt><strong><code>device_ident</code></strong> :&ensp;<code>bool</code></dt>
-<dd>device-identification for interface enabled or disabled</dd>
+<dt><strong><code>device_ident</code></strong> :&ensp;<code>str</code></dt>
+<dd>device-identification
+('enable', 'disable', or None=inherit)</dd>
 <dt><strong><code>alias</code></strong> :&ensp;<code>str</code></dt>
 <dd>Interface alias</dd>
 <dt><strong><code>description</code></strong> :&ensp;<code>str</code></dt>
@@ -1013,7 +1100,7 @@ def vlan_intf(cls, name: str, vlanid: int, phys_intf: str, ip: str = None, mode:
         vrf (int): VRF interface is configured for
         allowaccess (str):  Interface allowaccess policy.  i.e. &#34;ping http, https snmp, etc&#34;
         role (str):  Interface role type
-        device_ident (bool): device-identification for interface enabled or disabled
+        device_ident (str): device-identification  (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
         alias (str): Interface alias
         description (str): Interface description
 
@@ -1021,10 +1108,10 @@ def vlan_intf(cls, name: str, vlanid: int, phys_intf: str, ip: str = None, mode:
         Class Instance
     &#34;&#34;&#34;
 
-    if not vlanid: raise Exception(&#34;\&#34;vlan_intf()\&#34;, requires to provide a \&#34;vlanid\&#34;. vlanid should be type: int, &#34;
+    if not vlanid: raise Exception(&#34;&#39;vlan_intf()&#39;, requires to provide a &#39;vlanid&#39;. vlanid should be type: int, &#34;
                                    &#34;between 1 and 4960&#34;)
 
-    if not phys_intf: raise Exception(&#34;\&#34;vlan_intf\&#34;, requires to provide \&#34;phys_intf\&#34;, phys_intf should be type: &#34;
+    if not phys_intf: raise Exception(&#34;&#39;vlan_intf&#39;, requires to provide &#39;phys_intf&#39;, phys_intf should be type: &#34;
                                       &#34;str between 1 and 15 chars&#34;)
 
     intf_type = &#39;vlan&#39;
@@ -1063,16 +1150,17 @@ def vlan_intf(cls, name: str, vlanid: int, phys_intf: str, ip: str = None, mode:
     Returns:
 
     &#34;&#34;&#34;
-    if alias:
+    if alias is None:
+        self.alias = None
+
+    else:
         if isinstance(alias, str):
             if 1 &lt;= len(alias) &lt;= 25:
                 self.alias = alias
             else:
-                raise Exception(&#34;\&#34;alias\&#34;, when set, must be type str between 1 and 25 chars&#34;)
+                raise ValueError(&#34;&#39;alias&#39;, when set, must be type str between 1 and 25 chars&#34;)
         else:
-            raise Exception(&#34;\&#34;alias\&#34;, when set, must be type str&#34;)
-    else:
-        self.alias = None</code></pre>
+            raise ValueError(&#34;&#39;alias&#39;, when set, must be type str&#34;)</code></pre>
 </details>
 </dd>
 <dt id="fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_allowaccess"><code class="name flex">
@@ -1104,16 +1192,21 @@ to allowaccess if allowaccess contains allowed params</p>
     Returns:
         None
     &#34;&#34;&#34;
-    if allowaccess:
-        for service in list(allowaccess.split(&#34; &#34;)):
-            if service.lower() in [&#39;ping&#39;, &#39;http&#39;, &#39;https&#39;, &#39;snmp&#39;, &#39;ssh&#39;, &#39;telnet&#39;, &#39;fgfm&#39;, &#39;radius=acct&#39;,
-                                   &#39;probe-response&#39;, &#39;capwap&#39;, &#39;ftm&#39;]:
-                continue
-            else:
-                raise Exception(&#34;\&#34;allowaccces\&#34; has unrecognized services defined: {}&#34;.format(service))
-        self.allowaccess = allowaccess
+    if allowaccess is None:
+        self.allowaccess = None
+
     else:
-        self.allowaccess = None</code></pre>
+        if isinstance(allowaccess, str):
+            for service in list(allowaccess.split(&#34; &#34;)):
+                if service.lower() in [&#39;ping&#39;, &#39;http&#39;, &#39;https&#39;, &#39;snmp&#39;, &#39;ssh&#39;, &#39;telnet&#39;, &#39;fgfm&#39;, &#39;radius=acct&#39;,
+                                       &#39;probe-response&#39;, &#39;capwap&#39;, &#39;ftm&#39;]:
+                    continue
+                else:
+                    raise ValueError(f&#34;&#39;allowaccces&#39; has unrecognized services defined: {service}&#34;)
+        else:
+            raise ValueError(&#34;&#39;allowaccess&#39;, when set, must be type str&#34;)
+
+        self.allowaccess = allowaccess</code></pre>
 </details>
 </dd>
 <dt id="fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_description"><code class="name flex">
@@ -1144,16 +1237,17 @@ to allowaccess if allowaccess contains allowed params</p>
     Returns:
         None
     &#34;&#34;&#34;
-    if description:
+    if description is None:
+        self.description = None
+
+    else:
         if isinstance(description, str):
             if 1 &lt;= len(description) &lt;= 255:
                 self.description = description
             else:
-                raise Exception(&#34;\&#34;description\&#34;, when set, must be type str between 1 and 255 chars&#34;)
+                raise Exception(&#34;&#39;description&#39;, when set, must be type str between 1 and 255 chars&#34;)
         else:
-            raise Exception(&#34;\&#34;description\&#34;, when set, must be type str&#34;)
-    else:
-        self.description = None</code></pre>
+            raise Exception(&#34;&#39;description&#39;, when set, must be type str&#34;)</code></pre>
 </details>
 </dd>
 <dt id="fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_device_ident"><code class="name flex">
@@ -1163,8 +1257,9 @@ to allowaccess if allowaccess contains allowed params</p>
 <section class="desc"><p>Set self.device_idnent if device_ident valid</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>device_ident</code></strong> :&ensp;<code>bool</code></dt>
-<dd>Set device-identification for interface True=(enable), False=Disable, None=inherrit</dd>
+<dt><strong><code>device_ident</code></strong> :&ensp;<code>str</code></dt>
+<dd>device-identification
+('enable', 'disable', or None=inherit)</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -1179,16 +1274,24 @@ to allowaccess if allowaccess contains allowed params</p>
     &#34;&#34;&#34; Set self.device_idnent if device_ident valid
 
     Args:
-        device_ident (bool): Set device-identification for interface True=(enable), False=Disable, None=inherrit
+        device_ident (str): device-identification  (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
 
     Returns:
         None
     &#34;&#34;&#34;
-    if device_ident:
-        if isinstance(device_ident, bool):
-            self.device_ident = True
+    if device_ident is None:
+        self.device_ident = False
+
     else:
-        self.device_ident = False</code></pre>
+        if isinstance(device_ident, str):
+            if device_ident == &#39;enable&#39;:
+                self.device_ident = &#39;enable&#39;
+            elif device_ident == &#39;disable&#39;:
+                self.device_ident = &#39;disable&#39;
+            else:
+                raise ValueError(&#34;&#39;device_ident&#39;, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#39;&#34;)
+        else:
+            raise ValueError(&#34;&#39;device_ident&#39;, when set, must be type str()&#34;)</code></pre>
 </details>
 </dd>
 <dt id="fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_intf_type"><code class="name flex">
@@ -1220,17 +1323,21 @@ May be: 'vlan', 'standard', 'loopback', None (default standard or existing setti
     Returns:
         None
     &#34;&#34;&#34;
-    if intf_type:
-        if intf_type.lower() == &#39;vlan&#39;:
-            self. intf_type = &#39;vlan&#39;
-        elif intf_type.lower() == &#39;standard&#39;:
-            self.intf_type = None
-        elif intf_type.lower() == &#39;loopback&#39;:
-            self.intf_type = &#39;loopback&#39;
-        else:
-            raise Exception(&#34;Interface type provided is not recognized: {}&#34;.format(intf_type))
+    if intf_type is None:
+        self.intf_type = None
+
     else:
-        self.intf_type = None</code></pre>
+        if isinstance(intf_type, str):
+            if intf_type.lower() == &#39;vlan&#39;:
+                self. intf_type = &#39;vlan&#39;
+            elif intf_type.lower() == &#39;standard&#39;:
+                self.intf_type = None
+            elif intf_type.lower() == &#39;loopback&#39;:
+                self.intf_type = &#39;loopback&#39;
+            else:
+                raise ValueError(f&#34;Interface type provided is not recognized: {intf_type}&#34;)
+        else:
+            raise ValueError(&#34;&#39;intf_type&#39;, when set, must be type str&#34;)</code></pre>
 </details>
 </dd>
 <dt id="fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_ip"><code class="name flex">
@@ -1264,13 +1371,14 @@ IP without netmask = /32</dd>
     Returns:
         None
     &#34;&#34;&#34;
-    if ip:
+    if ip is None:
+        self.ip = None
+
+    else:
         try:
             self.ip = str(ipaddress.ip_interface(ip))
         except ValueError:
-            raise ValueError(&#34;\ip\&#34; must be valide ipv4 address&#34;)
-    else:
-        self.ip = None</code></pre>
+            raise ValueError(&#34;&#39;ip&#39; must be a valid ipv4 address&#34;)</code></pre>
 </details>
 </dd>
 <dt id="fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_mode"><code class="name flex">
@@ -1302,15 +1410,19 @@ May be: 'dhcp', 'static', None (None uses existing intf setting)</dd>
     Returns:
         None
     &#34;&#34;&#34;
-    if mode:
-        if mode.lower() == &#39;dhcp&#39;:
-            self.mode = &#39;dhcp&#39;
-        elif mode.lower() == &#39;static&#39;:
-            self.mode = &#39;static&#39;
-        else:
-            raise Exception(&#34;If set, \&#34;mode\&#34;, must be set to either dhcp or static&#34;)
+    if mode is None:
+        self.mode = &#39;dhcp&#39;
+
     else:
-        self.mode = &#39;dhcp&#39;</code></pre>
+        if isinstance(mode, str):
+            if mode.lower() == &#39;dhcp&#39;:
+                self.mode = &#39;dhcp&#39;
+            elif mode.lower() == &#39;static&#39;:
+                self.mode = &#39;static&#39;
+            else:
+                raise ValueError(&#34;&#39;mode&#39;, when set,  must be set to either &#39;dhcp&#39; or &#39;static&#39;&#34;)
+        else:
+            raise ValueError(&#34;&#39;mode&#39;, when set, must be type str&#34;)</code></pre>
 </details>
 </dd>
 <dt id="fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_name"><code class="name flex">
@@ -1341,17 +1453,19 @@ May be: 'dhcp', 'static', None (None uses existing intf setting)</dd>
     Returns:
         None
     &#34;&#34;&#34;
-    if name:
-        if name.isspace(): raise Exception(&#34;\&#34;name\&#34;, cannot be an empty string&#34;)
+    if name is None:
+        self.name = None
+
+    else:
         if isinstance(name, str):
+            if name.isspace(): raise Exception(&#34;&#39;name&#39;, cannot be an empty string&#34;)
+
             if len(name) &lt; 15:
                 self.name = name
             else:
-                raise Exception(&#34;\&#34;name\&#34;, must be less than 15 chars&#34;)
+                raise Exception(&#34;&#39;name&#39;, must be less than 15 chars&#34;)
         else:
-            raise Exception(&#34;\&#34;name\&#34;, must be a string&#34;)
-    else:
-        raise Exception(&#34;Value \&#34;name\&#34; is required but was not provided&#34;)</code></pre>
+            raise Exception(&#34;&#39;name&#39;, must be a string&#34;)</code></pre>
 </details>
 </dd>
 <dt id="fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_phys_intf"><code class="name flex">
@@ -1382,19 +1496,20 @@ May be: 'dhcp', 'static', None (None uses existing intf setting)</dd>
     Returns:
         None
     &#34;&#34;&#34;
-    if phys_intf:
-        if phys_intf.isspace():
-            raise Exception(&#34;\&#34;phys_intf\&#34; cannot be an empty string&#34;)
+    if phys_intf is None:
+        self.phys_intf = None
 
+    else:
         if isinstance(phys_intf, str):
+            if phys_intf.isspace():
+                raise ValueError(&#34;&#39;phys_intf&#39; cannot be an empty string&#34;)
+
             if 1 &lt;= len(phys_intf) &lt;= 31:
                 self.phys_intf = phys_intf
             else:
-                raise Exception(&#34;\&#34;phys_intf\&#34;, when set, must be type str between 1 and 31 chars&#34;)
+                raise ValueError(&#34;&#39;phys_intf&#39;, when set, must be type str between 1 and 31 chars&#34;)
         else:
-            raise Exception(&#34;\&#34;phys_intf\&#34;, when set, must be type str&#34;)
-    else:
-        self.phys_intf = None</code></pre>
+            raise ValueError(&#34;&#39;phys_intf&#39;, when set, must be type str&#34;)</code></pre>
 </details>
 </dd>
 <dt id="fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_role"><code class="name flex">
@@ -1423,17 +1538,21 @@ Allowed types:
     Returns:
 
     &#34;&#34;&#34;
-    if role:
-        if role.lower() == &#39;wan&#39;:
-            self.role = &#39;wan&#39;
-        elif role.lower() == &#39;lan&#39;:
-            self.role = &#39;lan&#39;
-        elif role.lower() == &#39;dmz&#39;:
-            self.role = &#39;dmz&#39;
-        else:
-            self.role = &#39;undefined&#39;
+    if role is None:
+        self.role = None
+
     else:
-        self.role = None</code></pre>
+        if isinstance(role, str):
+            if role.lower() == &#39;wan&#39;:
+                self.role = &#39;wan&#39;
+            elif role.lower() == &#39;lan&#39;:
+                self.role = &#39;lan&#39;
+            elif role.lower() == &#39;dmz&#39;:
+                self.role = &#39;dmz&#39;
+            else:
+                self.role = &#39;undefined&#39;
+        else:
+            raise ValueError(&#34;&#39;role&#39;, when set, must be type str&#34;)</code></pre>
 </details>
 </dd>
 <dt id="fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_vlanid"><code class="name flex">
@@ -1465,16 +1584,17 @@ Must be between 1 and 4096</dd>
     Returns:
         None
     &#34;&#34;&#34;
-    if vlanid:
+    if vlanid is None:
+        self.vlanid = None
+
+    else:
         if isinstance(vlanid, int):
             if 1 &lt;= vlanid &lt;= 4096:
                 self.vlanid = vlanid
             else:
-                raise Exception(&#34;vlanid must be integer between 1 and 4096&#34;)
+                raise ValueError(&#34;&#39;vlanid&#39;, when set, must be integer between 1 and 4096&#34;)
         else:
-            raise Exception(&#34;vlanid, when set, must be an integer&#34;)
-    else:
-        self.vlanid = None</code></pre>
+            raise ValueError(&#34;vlanid, when set, must be an integer&#34;)</code></pre>
 </details>
 </dd>
 <dt id="fgobjlib.fg_sys_interface.FgInterfaceIpv4.set_vrf"><code class="name flex">
@@ -1505,16 +1625,17 @@ Must be between 1 and 4096</dd>
     Returns:
         None
     &#34;&#34;&#34;
-    if vrf:
+    if vrf is None:
+        self.vrf = None
+
+    else:
         if isinstance(vrf, int):
             if 0 &lt;= vrf &lt;= 31:
                 self.vrf = vrf
             else:
-                raise Exception(&#34;\&#34;vrf\&#34;, when set, must be an integer between 0 and 31&#34;)
+                raise Exception(&#34;&#39;vrf&#39;, when set, must be an integer between 0 and 31&#34;)
         else:
-            raise Exception(&#34;\&#34;vrf\&#34;, when set, must be an integer between 0 and 31&#34;)
-    else:
-        self.vrf = None</code></pre>
+            raise Exception(&#34;&#39;vrf&#39;, when set, must be an integer between 0 and 31&#34;)</code></pre>
 </details>
 </dd>
 </dl>

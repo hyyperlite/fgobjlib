@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name='fgobjectslib',
-    version='',
+    version='1.0',
     packages=setuptools.find_packages(),
     url='https://github.com/hyyperlite/fgobjlib',
     author='Nick Petersen',

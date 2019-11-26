@@ -83,6 +83,17 @@
         self.data_attrs = {}
         self.cli_ignore_attrs = {}
 
+        # For use in string output of object such as dunder methods __str__ and __repr__
+        self.obj_to_str = f&#39;obj_id={self.obj_id}, vdom={self.vdom}&#39;
+
+    # Instance to string dunder methods
+    def __str__(self):
+        return self.obj_to_str
+
+    def __repr__(self):
+        return self.obj_to_str
+
+    # Public methods
     def set_vdom(self, vdom):
         &#34;&#34;&#34; Validate the vdom argument for FortiGate consumption, if acceptable set to self.vdom
 
@@ -95,22 +106,23 @@
         Returns:
             None
         &#34;&#34;&#34;
-        if vdom:
+        if vdom is None:
+            self.vdom = None
+
+        else:
             if isinstance(vdom, str):
                 # vdom names cannot have spaces so check for spaces and throw error if there are
                 for char in vdom:
                     if str.isspace(char):
-                        raise ValueError(&#34;\&#34;vdom\&#34;, when set, must be str with no whitespace&#34;)
+                        raise ValueError(&#34;&#39;vdom&#39;, when set, must be str with no whitespace&#34;)
 
                 # Check vdom name string length meets FG requirements
                 if 1 &lt;= len(vdom) &lt;= 31:
                     self.vdom = vdom
                 else:
-                    raise ValueError(&#34;\&#34;vdom\&#34;, when set, must be a str between 1 and 31 chars&#34;)
+                    raise ValueError(&#34;&#39;vdom&#39;, when set, must be a str between 1 and 31 chars&#34;)
             else:
-                raise ValueError(&#34;\&#34;vdom\&#34;, when set, must be a str between 1 and 31&#34;)
-        else:
-            self.vdom = None
+                raise ValueError(&#34;&#39;vdom&#39;, when set, must be a str between 1 and 31&#34;)
 
     ##########################
     #   API Config Methods   #
@@ -270,13 +282,13 @@
         &#34;&#34;&#34; Get FortiGate CLI configuration for adding self to FortiGate via CLI
 
             Based on currently set instance attributes this method will build and return a FortiGate CLI configuration
-            snipet for the current instance object.
+            snippet for the current instance object.
 
             Args:
                 self: the current instance object
 
             Returns:
-                A FortiGate CLI configuration snipet representing self to be use for configuring new FG object.
+                A FortiGate CLI configuration snippet representing self to be use for configuring new FG object.
             &#34;&#34;&#34;
 
         conf = &#39;&#39;
@@ -287,13 +299,13 @@
                 conf += &#34;config global\n&#34;
             else:
                 conf += &#34;config vdom\n&#34;
-                conf += &#34; edit {} \n&#34;.format(self.vdom)
+                conf += f&#34; edit {self.vdom} \n&#34;
 
         # Config object&#39;s cli path
-        conf += &#34;{}\n&#34;.format(self.CLI_PATH)
+        conf += f&#34;{self.CLI_PATH}\n&#34;
 
         # Edit obj_id
-        conf += &#34;  edit \&#34;{}\&#34; \n&#34;.format(self.obj_id)
+        conf += f&#34;  edit \&#34;{self.obj_id}\&#34; \n&#34;
 
         # For every attr defined in the data_attrs dictionary, if the dictionary value is true then add it to the
         # configuration.  Otherwise skip it.
@@ -314,13 +326,13 @@
                 for item in config_attr:
                     if isinstance(item, dict):
                         if item[&#39;name&#39;]:
-                            str_items += &#34;{} &#34;.format(str(item.get(&#39;name&#39;)))
+                            str_items += f&#34;{item.get(&#39;name&#39;)} &#34;
                         else:
-                            raise Exception(&#34;unrecognized key name for dictionary list: {}&#34;.format(item.keys()))
+                            raise Exception(f&#34;unrecognized key name for dictionary list: {item.keys()}&#34;)
 
-                conf += &#34;    set {} \&#34;{}\&#34;\n&#34;.format(fg_attr, str_items)
+                conf += f&#34;    set {fg_attr} \&#34;{str_items}\&#34;\n&#34;
             else:
-                if getattr(self, inst_attr): conf += &#34;    set {} \&#34;{}\&#34;\n&#34;.format(fg_attr, config_attr)
+                if getattr(self, inst_attr): conf += &#34;    set {fg_attr} \&#34;{config_attr}\&#34;\n&#34;
 
         # End obj_id config
         conf += &#34;  end\nend\n&#34;
@@ -341,13 +353,13 @@
         &#34;&#34;&#34; Get FortiGate CLI configuration for updating self to FortiGate via CLI
 
         Based on currently set instance attributes this method will build and return a FortiGate CLI configuration
-        snipet for the current instance object.
+        snippet for the current instance object.
 
         Args:
             self: the current instance object
 
         Returns:
-            A FortiGate CLI configuration snipet representing self to be use for updating existing FG object
+            A FortiGate CLI configuration snippet representing self to be use for updating existing FG object
         &#34;&#34;&#34;
         conf = self.get_cli_config_add()
         return conf
@@ -356,13 +368,13 @@
         &#34;&#34;&#34; Get FortiGate CLI configuration for deleting self from FortiGate via CLI
 
             Based on currently set instance attributes this method will build and return a FortiGate CLI configuration
-            snipet for the current instance object.
+            snippet for the current instance object.
 
             Args:
                 self: the current instance object
 
             Returns:
-                A FortiGate CLI configuration snipet representing self to be use for configuring new FG object
+                A FortiGate CLI configuration snippet representing self to be use for configuring new FG object
             &#34;&#34;&#34;
         conf = &#39;&#39;
         if self.obj_id:
@@ -373,10 +385,10 @@
                     conf += &#34;config global\n&#34;
                 else:
                     conf += &#34;config vdom\n&#34;
-                    conf += &#34; edit {} \n&#34;.format(self.vdom)
+                    conf += f&#34; edit {self.vdom} \n&#34;
 
-            conf += &#34;{}\n&#34;.format(self.CLI_PATH)
-            conf += &#34;  delete {}\n&#34;.format(self.obj_id)
+            conf += f&#34;{self.CLI_PATH}\n&#34;
+            conf += f&#34;  delete {self.obj_id}\n&#34;
             conf += &#34;end\n&#34;
 
             # End vdom or global config
@@ -390,7 +402,7 @@
 
             return conf
         else:
-            raise Exception(&#34;\&#34;obj_id\&#34; must be set in order to configure it for delete&#34;)</code></pre>
+            raise Exception(&#34;&#39;obj_id&#39; must be set in order to configure it for delete&#34;)</code></pre>
 </details>
 </section>
 <section>
@@ -522,6 +534,17 @@ is extended by the specific FortiGate object child classes such as FgFwPolicy.</
         self.data_attrs = {}
         self.cli_ignore_attrs = {}
 
+        # For use in string output of object such as dunder methods __str__ and __repr__
+        self.obj_to_str = f&#39;obj_id={self.obj_id}, vdom={self.vdom}&#39;
+
+    # Instance to string dunder methods
+    def __str__(self):
+        return self.obj_to_str
+
+    def __repr__(self):
+        return self.obj_to_str
+
+    # Public methods
     def set_vdom(self, vdom):
         &#34;&#34;&#34; Validate the vdom argument for FortiGate consumption, if acceptable set to self.vdom
 
@@ -534,22 +557,23 @@ is extended by the specific FortiGate object child classes such as FgFwPolicy.</
         Returns:
             None
         &#34;&#34;&#34;
-        if vdom:
+        if vdom is None:
+            self.vdom = None
+
+        else:
             if isinstance(vdom, str):
                 # vdom names cannot have spaces so check for spaces and throw error if there are
                 for char in vdom:
                     if str.isspace(char):
-                        raise ValueError(&#34;\&#34;vdom\&#34;, when set, must be str with no whitespace&#34;)
+                        raise ValueError(&#34;&#39;vdom&#39;, when set, must be str with no whitespace&#34;)
 
                 # Check vdom name string length meets FG requirements
                 if 1 &lt;= len(vdom) &lt;= 31:
                     self.vdom = vdom
                 else:
-                    raise ValueError(&#34;\&#34;vdom\&#34;, when set, must be a str between 1 and 31 chars&#34;)
+                    raise ValueError(&#34;&#39;vdom&#39;, when set, must be a str between 1 and 31 chars&#34;)
             else:
-                raise ValueError(&#34;\&#34;vdom\&#34;, when set, must be a str between 1 and 31&#34;)
-        else:
-            self.vdom = None
+                raise ValueError(&#34;&#39;vdom&#39;, when set, must be a str between 1 and 31&#34;)
 
     ##########################
     #   API Config Methods   #
@@ -709,13 +733,13 @@ is extended by the specific FortiGate object child classes such as FgFwPolicy.</
         &#34;&#34;&#34; Get FortiGate CLI configuration for adding self to FortiGate via CLI
 
             Based on currently set instance attributes this method will build and return a FortiGate CLI configuration
-            snipet for the current instance object.
+            snippet for the current instance object.
 
             Args:
                 self: the current instance object
 
             Returns:
-                A FortiGate CLI configuration snipet representing self to be use for configuring new FG object.
+                A FortiGate CLI configuration snippet representing self to be use for configuring new FG object.
             &#34;&#34;&#34;
 
         conf = &#39;&#39;
@@ -726,13 +750,13 @@ is extended by the specific FortiGate object child classes such as FgFwPolicy.</
                 conf += &#34;config global\n&#34;
             else:
                 conf += &#34;config vdom\n&#34;
-                conf += &#34; edit {} \n&#34;.format(self.vdom)
+                conf += f&#34; edit {self.vdom} \n&#34;
 
         # Config object&#39;s cli path
-        conf += &#34;{}\n&#34;.format(self.CLI_PATH)
+        conf += f&#34;{self.CLI_PATH}\n&#34;
 
         # Edit obj_id
-        conf += &#34;  edit \&#34;{}\&#34; \n&#34;.format(self.obj_id)
+        conf += f&#34;  edit \&#34;{self.obj_id}\&#34; \n&#34;
 
         # For every attr defined in the data_attrs dictionary, if the dictionary value is true then add it to the
         # configuration.  Otherwise skip it.
@@ -753,13 +777,13 @@ is extended by the specific FortiGate object child classes such as FgFwPolicy.</
                 for item in config_attr:
                     if isinstance(item, dict):
                         if item[&#39;name&#39;]:
-                            str_items += &#34;{} &#34;.format(str(item.get(&#39;name&#39;)))
+                            str_items += f&#34;{item.get(&#39;name&#39;)} &#34;
                         else:
-                            raise Exception(&#34;unrecognized key name for dictionary list: {}&#34;.format(item.keys()))
+                            raise Exception(f&#34;unrecognized key name for dictionary list: {item.keys()}&#34;)
 
-                conf += &#34;    set {} \&#34;{}\&#34;\n&#34;.format(fg_attr, str_items)
+                conf += f&#34;    set {fg_attr} \&#34;{str_items}\&#34;\n&#34;
             else:
-                if getattr(self, inst_attr): conf += &#34;    set {} \&#34;{}\&#34;\n&#34;.format(fg_attr, config_attr)
+                if getattr(self, inst_attr): conf += &#34;    set {fg_attr} \&#34;{config_attr}\&#34;\n&#34;
 
         # End obj_id config
         conf += &#34;  end\nend\n&#34;
@@ -780,13 +804,13 @@ is extended by the specific FortiGate object child classes such as FgFwPolicy.</
         &#34;&#34;&#34; Get FortiGate CLI configuration for updating self to FortiGate via CLI
 
         Based on currently set instance attributes this method will build and return a FortiGate CLI configuration
-        snipet for the current instance object.
+        snippet for the current instance object.
 
         Args:
             self: the current instance object
 
         Returns:
-            A FortiGate CLI configuration snipet representing self to be use for updating existing FG object
+            A FortiGate CLI configuration snippet representing self to be use for updating existing FG object
         &#34;&#34;&#34;
         conf = self.get_cli_config_add()
         return conf
@@ -795,13 +819,13 @@ is extended by the specific FortiGate object child classes such as FgFwPolicy.</
         &#34;&#34;&#34; Get FortiGate CLI configuration for deleting self from FortiGate via CLI
 
             Based on currently set instance attributes this method will build and return a FortiGate CLI configuration
-            snipet for the current instance object.
+            snippet for the current instance object.
 
             Args:
                 self: the current instance object
 
             Returns:
-                A FortiGate CLI configuration snipet representing self to be use for configuring new FG object
+                A FortiGate CLI configuration snippet representing self to be use for configuring new FG object
             &#34;&#34;&#34;
         conf = &#39;&#39;
         if self.obj_id:
@@ -812,10 +836,10 @@ is extended by the specific FortiGate object child classes such as FgFwPolicy.</
                     conf += &#34;config global\n&#34;
                 else:
                     conf += &#34;config vdom\n&#34;
-                    conf += &#34; edit {} \n&#34;.format(self.vdom)
+                    conf += f&#34; edit {self.vdom} \n&#34;
 
-            conf += &#34;{}\n&#34;.format(self.CLI_PATH)
-            conf += &#34;  delete {}\n&#34;.format(self.obj_id)
+            conf += f&#34;{self.CLI_PATH}\n&#34;
+            conf += f&#34;  delete {self.obj_id}\n&#34;
             conf += &#34;end\n&#34;
 
             # End vdom or global config
@@ -829,7 +853,7 @@ is extended by the specific FortiGate object child classes such as FgFwPolicy.</
 
             return conf
         else:
-            raise Exception(&#34;\&#34;obj_id\&#34; must be set in order to configure it for delete&#34;)</code></pre>
+            raise Exception(&#34;&#39;obj_id&#39; must be set in order to configure it for delete&#34;)</code></pre>
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -1131,14 +1155,14 @@ for ftntlib REST API methods.</p>
 <dd>
 <section class="desc"><p>Get FortiGate CLI configuration for adding self to FortiGate via CLI</p>
 <p>Based on currently set instance attributes this method will build and return a FortiGate CLI configuration
-snipet for the current instance object.</p>
+snippet for the current instance object.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>self</code></strong></dt>
 <dd>the current instance object</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<p>A FortiGate CLI configuration snipet representing self to be use for configuring new FG object.</p></section>
+<p>A FortiGate CLI configuration snippet representing self to be use for configuring new FG object.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1147,13 +1171,13 @@ snipet for the current instance object.</p>
     &#34;&#34;&#34; Get FortiGate CLI configuration for adding self to FortiGate via CLI
 
         Based on currently set instance attributes this method will build and return a FortiGate CLI configuration
-        snipet for the current instance object.
+        snippet for the current instance object.
 
         Args:
             self: the current instance object
 
         Returns:
-            A FortiGate CLI configuration snipet representing self to be use for configuring new FG object.
+            A FortiGate CLI configuration snippet representing self to be use for configuring new FG object.
         &#34;&#34;&#34;
 
     conf = &#39;&#39;
@@ -1164,13 +1188,13 @@ snipet for the current instance object.</p>
             conf += &#34;config global\n&#34;
         else:
             conf += &#34;config vdom\n&#34;
-            conf += &#34; edit {} \n&#34;.format(self.vdom)
+            conf += f&#34; edit {self.vdom} \n&#34;
 
     # Config object&#39;s cli path
-    conf += &#34;{}\n&#34;.format(self.CLI_PATH)
+    conf += f&#34;{self.CLI_PATH}\n&#34;
 
     # Edit obj_id
-    conf += &#34;  edit \&#34;{}\&#34; \n&#34;.format(self.obj_id)
+    conf += f&#34;  edit \&#34;{self.obj_id}\&#34; \n&#34;
 
     # For every attr defined in the data_attrs dictionary, if the dictionary value is true then add it to the
     # configuration.  Otherwise skip it.
@@ -1191,13 +1215,13 @@ snipet for the current instance object.</p>
             for item in config_attr:
                 if isinstance(item, dict):
                     if item[&#39;name&#39;]:
-                        str_items += &#34;{} &#34;.format(str(item.get(&#39;name&#39;)))
+                        str_items += f&#34;{item.get(&#39;name&#39;)} &#34;
                     else:
-                        raise Exception(&#34;unrecognized key name for dictionary list: {}&#34;.format(item.keys()))
+                        raise Exception(f&#34;unrecognized key name for dictionary list: {item.keys()}&#34;)
 
-            conf += &#34;    set {} \&#34;{}\&#34;\n&#34;.format(fg_attr, str_items)
+            conf += f&#34;    set {fg_attr} \&#34;{str_items}\&#34;\n&#34;
         else:
-            if getattr(self, inst_attr): conf += &#34;    set {} \&#34;{}\&#34;\n&#34;.format(fg_attr, config_attr)
+            if getattr(self, inst_attr): conf += &#34;    set {fg_attr} \&#34;{config_attr}\&#34;\n&#34;
 
     # End obj_id config
     conf += &#34;  end\nend\n&#34;
@@ -1221,7 +1245,7 @@ snipet for the current instance object.</p>
 <dd>
 <section class="desc"><p>Get FortiGate CLI configuration for deleting self from FortiGate via CLI</p>
 <p>Based on currently set instance attributes this method will build and return a FortiGate CLI configuration
-snipet for the current instance object.</p>
+snippet for the current instance object.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>self</code></strong></dt>
@@ -1229,7 +1253,7 @@ snipet for the current instance object.</p>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>A</code> <code>FortiGate</code> <code>CLI</code> <code>configuration</code> <code>snipet</code> <code>representing</code> <code>self</code> <code>to</code> <code>be</code> <code>use</code> <code>for</code> <code>configuring</code> <code>new</code> <code>FG</code> <code>object</code></dt>
+<dt><code>A</code> <code>FortiGate</code> <code>CLI</code> <code>configuration</code> <code>snippet</code> <code>representing</code> <code>self</code> <code>to</code> <code>be</code> <code>use</code> <code>for</code> <code>configuring</code> <code>new</code> <code>FG</code> <code>object</code></dt>
 <dd>&nbsp;</dd>
 </dl></section>
 <details class="source">
@@ -1240,13 +1264,13 @@ snipet for the current instance object.</p>
     &#34;&#34;&#34; Get FortiGate CLI configuration for deleting self from FortiGate via CLI
 
         Based on currently set instance attributes this method will build and return a FortiGate CLI configuration
-        snipet for the current instance object.
+        snippet for the current instance object.
 
         Args:
             self: the current instance object
 
         Returns:
-            A FortiGate CLI configuration snipet representing self to be use for configuring new FG object
+            A FortiGate CLI configuration snippet representing self to be use for configuring new FG object
         &#34;&#34;&#34;
     conf = &#39;&#39;
     if self.obj_id:
@@ -1257,10 +1281,10 @@ snipet for the current instance object.</p>
                 conf += &#34;config global\n&#34;
             else:
                 conf += &#34;config vdom\n&#34;
-                conf += &#34; edit {} \n&#34;.format(self.vdom)
+                conf += f&#34; edit {self.vdom} \n&#34;
 
-        conf += &#34;{}\n&#34;.format(self.CLI_PATH)
-        conf += &#34;  delete {}\n&#34;.format(self.obj_id)
+        conf += f&#34;{self.CLI_PATH}\n&#34;
+        conf += f&#34;  delete {self.obj_id}\n&#34;
         conf += &#34;end\n&#34;
 
         # End vdom or global config
@@ -1274,7 +1298,7 @@ snipet for the current instance object.</p>
 
         return conf
     else:
-        raise Exception(&#34;\&#34;obj_id\&#34; must be set in order to configure it for delete&#34;)</code></pre>
+        raise Exception(&#34;&#39;obj_id&#39; must be set in order to configure it for delete&#34;)</code></pre>
 </details>
 </dd>
 <dt id="fgobjlib.fg_object.FgObject.get_cli_config_update"><code class="name flex">
@@ -1283,7 +1307,7 @@ snipet for the current instance object.</p>
 <dd>
 <section class="desc"><p>Get FortiGate CLI configuration for updating self to FortiGate via CLI</p>
 <p>Based on currently set instance attributes this method will build and return a FortiGate CLI configuration
-snipet for the current instance object.</p>
+snippet for the current instance object.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>self</code></strong></dt>
@@ -1291,7 +1315,7 @@ snipet for the current instance object.</p>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>A</code> <code>FortiGate</code> <code>CLI</code> <code>configuration</code> <code>snipet</code> <code>representing</code> <code>self</code> <code>to</code> <code>be</code> <code>use</code> <code>for</code> <code>updating</code> <code>existing</code> <code>FG</code> <code>object</code></dt>
+<dt><code>A</code> <code>FortiGate</code> <code>CLI</code> <code>configuration</code> <code>snippet</code> <code>representing</code> <code>self</code> <code>to</code> <code>be</code> <code>use</code> <code>for</code> <code>updating</code> <code>existing</code> <code>FG</code> <code>object</code></dt>
 <dd>&nbsp;</dd>
 </dl></section>
 <details class="source">
@@ -1302,13 +1326,13 @@ snipet for the current instance object.</p>
     &#34;&#34;&#34; Get FortiGate CLI configuration for updating self to FortiGate via CLI
 
     Based on currently set instance attributes this method will build and return a FortiGate CLI configuration
-    snipet for the current instance object.
+    snippet for the current instance object.
 
     Args:
         self: the current instance object
 
     Returns:
-        A FortiGate CLI configuration snipet representing self to be use for updating existing FG object
+        A FortiGate CLI configuration snippet representing self to be use for updating existing FG object
     &#34;&#34;&#34;
     conf = self.get_cli_config_add()
     return conf</code></pre>
@@ -1348,22 +1372,23 @@ self.vdom = vdom</p>
     Returns:
         None
     &#34;&#34;&#34;
-    if vdom:
+    if vdom is None:
+        self.vdom = None
+
+    else:
         if isinstance(vdom, str):
             # vdom names cannot have spaces so check for spaces and throw error if there are
             for char in vdom:
                 if str.isspace(char):
-                    raise ValueError(&#34;\&#34;vdom\&#34;, when set, must be str with no whitespace&#34;)
+                    raise ValueError(&#34;&#39;vdom&#39;, when set, must be str with no whitespace&#34;)
 
             # Check vdom name string length meets FG requirements
             if 1 &lt;= len(vdom) &lt;= 31:
                 self.vdom = vdom
             else:
-                raise ValueError(&#34;\&#34;vdom\&#34;, when set, must be a str between 1 and 31 chars&#34;)
+                raise ValueError(&#34;&#39;vdom&#39;, when set, must be a str between 1 and 31 chars&#34;)
         else:
-            raise ValueError(&#34;\&#34;vdom\&#34;, when set, must be a str between 1 and 31&#34;)
-    else:
-        self.vdom = None</code></pre>
+            raise ValueError(&#34;&#39;vdom&#39;, when set, must be a str between 1 and 31&#34;)</code></pre>
 </details>
 </dd>
 </dl>

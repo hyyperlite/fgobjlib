@@ -65,18 +65,15 @@ class FgIpsecP1Interface(FgObject):
                          cli_path="config vpn ipsec phase1-interface", obj_id=name, vdom=vdom)
 
         ### Set parent class attributes ###
-        # CLI config path for this object type
-        self.cli_path = "config vpn ipsec phase1-interface"
-
         # Map instance attribute names to fg attribute names
-        self.data_attrs = {'name': 'name', 'p1_type': 'type', 'interface': 'interface', 'proposal': 'proposal',
+        self._data_attrs = {'name': 'name', 'p1_type': 'type', 'interface': 'interface', 'proposal': 'proposal',
                            'ike_version': 'ike-version', 'local_gw': 'local-gw', 'psksecret': 'psksecret',
                            'localid': 'localid', 'remote_gw': 'remote-gw', 'comment': 'comments',
                            'add_route': 'add-route', 'add_gw_route': 'add-gw-route', 'keepalive': 'keepalive',
                            'net_device': 'net-device', 'tunnel_search': 'tunnel-search', 'dpd': 'dpd', 'dhgrp': 'dhgrp',
                            'nattraversal': 'nattraversal', 'exchange_interface_ip': 'exchange-interface-ip'}
 
-        self.cli_ignore_attrs = ['name']
+        self._cli_ignore_attrs = ['name']
 
         # Set instance attributes
         self.set_name(name)
@@ -99,7 +96,7 @@ class FgIpsecP1Interface(FgObject):
         self.set_nattraversal(nattraversal)
         self.set_exchange_interface_ip(exchange_interface_ip)
 
-        self.obj_to_str += f', name={name}, p1_type={p1_type}, interface={self.interface}, ' \
+        self._obj_to_str += f', name={name}, p1_type={p1_type}, interface={self.interface}, ' \
                           f'proposal={self.proposal}, ike_version={self.ike_version}, local_gw={self.local_gw}, ' \
                           f'psksecret={self.psksecret}, localid={self.localid}, remote_gw={self.remote_gw}, ' \
                           f'comment={self.comment}, add_route={self.add_route}, add_gw_route={self.add_gw_route}, ' \

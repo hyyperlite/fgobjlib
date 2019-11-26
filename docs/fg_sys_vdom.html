@@ -59,8 +59,10 @@ class FgVdom(FgObject):
 
         # Set instance attributes
         self.set_name(name)
+        self.obj_to_str += f&#39;, name={self.name}&#39;
 
 
+    # Instance Methods
     def set_name(self, name):
         &#34;&#34;&#34; Set self.name to name if name is valid
 
@@ -153,8 +155,10 @@ Set to True if VDOMs enabled False if not.</dd>
 
         # Set instance attributes
         self.set_name(name)
+        self.obj_to_str += f&#39;, name={self.name}&#39;
 
 
+    # Instance Methods
     def set_name(self, name):
         &#34;&#34;&#34; Set self.name to name if name is valid
 

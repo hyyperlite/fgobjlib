@@ -25,15 +25,15 @@ class FgVdom(FgObject):
 
         ### Set parent class attributes ###
         # Map instance attribute names to fg attribute names
-        self.data_attrs = {'name': 'name'}
-        self.cli_ignore_attrs = ['name']
+        self._data_attrs = {'name': 'name'}
+        self._cli_ignore_attrs = ['name']
 
         # Enable global config instead of per VDOM
         self.is_global = True
 
         # Set instance attributes
         self.set_name(name)
-        self.obj_to_str += f', name={self.name}'
+        self._obj_to_str += f', name={self.name}'
 
 
     # Instance Methods

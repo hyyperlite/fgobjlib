@@ -56,14 +56,14 @@ class FgFwService(FgObject):
 
         ##### Set parent class attributes #####
         # Map instance attribute names to fg attribute names
-        self.data_attrs = {'name': 'name',  'protocol': 'protocol', 'tcp_portrange': 'tcp-portrange',
+        self._data_attrs = {'name': 'name',  'protocol': 'protocol', 'tcp_portrange': 'tcp-portrange',
                            'udp_portrange': 'udp-portrange', 'sctp_portrange': 'sctp-portrange',
                            'icmptype': 'icmptype', 'comment': 'comments', 'visibility': 'visibility',
                            'session_ttl': 'session-ttl', 'udp_idle_timer': 'udp-idle-timer', 'category': 'category',
                            'protocol_number': 'protocol-number', 'icmpcode': 'icmpcode'}
 
         # Set attributes to ignore on CLI based configuration
-        self.cli_ignore_attrs = []
+        self._cli_ignore_attrs = []
 
         # Set instance attributes
         self.set_name(name)
@@ -81,7 +81,7 @@ class FgFwService(FgObject):
         self.set_icmpcode(icmpcode)
 
         # Update the parent defined obj_to_str attribute with this objects str representation
-        self.obj_to_str += f', name={self.name}, protocol={self.protocol}, tcp_portrange={self.tcp_portrange}'
+        self._obj_to_str += f', name={self.name}, protocol={self.protocol}, tcp_portrange={self.tcp_portrange}'
 
 
 

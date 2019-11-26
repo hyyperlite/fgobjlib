@@ -49,12 +49,12 @@ class FgIpsecP2Interface(FgObject):
 
         # Set parent class attributes #
         # Map instance attribute names to fg attribute names
-        self.data_attrs = {'name': 'name', 'phase1name': 'phase1name', 'proposal': 'proposal',
+        self._data_attrs = {'name': 'name', 'phase1name': 'phase1name', 'proposal': 'proposal',
                            'comment': 'comments', 'keepalive': 'keepalive', 'dhgrp': 'dhgrp', 'pfs': 'pfs',
                            'replay': 'replay', 'auto_negotiate': 'auto-negotiate', 'src_subnet': 'src-subnet',
                            'dst_subnet': 'dst-subnet'}
 
-        self.cli_ignore_attrs = ['name']
+        self._cli_ignore_attrs = ['name']
 
         # Set instance attributes #
         self.set_name(name)
@@ -70,7 +70,7 @@ class FgIpsecP2Interface(FgObject):
         self.set_dst_subnet(dst_subnet)
 
         # Update the parent defined obj_to_str attribute with this objects str representation
-        self.obj_to_str += f', name={self.name}, phase1name={self.phase1name}, proposal={self.proposal}, ' \
+        self._obj_to_str += f', name={self.name}, phase1name={self.phase1name}, proposal={self.proposal}, ' \
                            f'comment={self.comment}, keepalive={self.keepalive}, dhgrp={self.dhgrp}, pfs={self.pfs}, ' \
                            f'replay={self.replay}, auto_negotiate={self.auto_negotiate}, ' \
                            f'src_subnet={self.src_subnet}, dst_subnet={self.dst_subnet}'
@@ -142,7 +142,7 @@ class FgIpsecP2Interface(FgObject):
                            'aria128-null', 'seed-null']
 
         if proposal is None:
-            self.propsoal = None
+            self.proposal = None
 
         else:
             proposal_items = ''

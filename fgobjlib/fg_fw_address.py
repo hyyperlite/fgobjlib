@@ -9,8 +9,6 @@ class FgFwAddress(FgObject):
     Currently supports address types subnet (default), iprange and fqdn
 
     Attributes:
-        data_attrs (dict): Dictionary to define relevant config attributes and map instance attr names to fg attr names
-        cli_ignore_attrs (list): List of attributes to ignore when generating CLI configurations
         name (str): Name of instance object
         type (str): Type of address object
         subnet (str): Subnet for "ipmask" type object
@@ -44,30 +42,36 @@ class FgFwAddress(FgObject):
 
         ### Set parent class attributes ###
         # Map instance attribute names to fg attribute names
-        self.data_attrs = {'name': 'name', 'type': 'type', 'subnet': 'subnet', 'fqdn': 'fqdn',
+        self._data_attrs = {'name': 'name', 'type': 'type', 'subnet': 'subnet', 'fqdn': 'fqdn',
                            'associated_interface': 'associated-interface', 'visibility': 'visibility',
                            'comment': 'comments', 'start_ip': 'start-ip', 'end_ip': 'end-ip'}
 
-        self.cli_ignore_attrs = []
+        self._cli_ignore_attrs = []
 
         # Set instance attributes
-        self.set_name(name)
-        self.set_type(type)
-        self.set_subnet(subnet)
-        self.set_fqdn(fqdn)
-        self.set_visibility(visibility)
-        self.set_associated_interface(associated_interface)
-        self.set_comment(comment)
-        self.set_range_ips(start_ip, end_ip)
+        self.name = name
+        self.type = type
+        self.subnet = subnet
+        self.fqdn = fqdn
+        self.visibility = visibility
+        self.associated_interface = associated_interface
+        self.comment = comment
+        self.start_ip = start_ip
+        self.end_ip = end_ip
 
         # Update the parent defined obj_to_str attribute with this objects str representation
-        self.obj_to_str += f', name={self.name}, type={self.type}, subnet={self.subnet}, fqdn={self.fqdn}, ' \
+        self._obj_to_str += f', name={self.name}, type={self.type}, subnet={self.subnet}, fqdn={self.fqdn}, ' \
                           f'start_ip={self.start_ip}, visibility={self.visibility}, ' \
                           f'associated_interface={self.associated_interface}, comment={self.comment}'
 
 
-    # Instance methods
-    def set_name(self, name):
+    # Instance Properties and Setters
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, name):
         """  Set self.name attribute to name if name provided is valid for FG object
 
         Args:
@@ -78,19 +82,24 @@ class FgFwAddress(FgObject):
         """
 
         if name is None:
-            self.name = None
+            self._name = None
 
         else:
-            if name.isspace(): raise Exception("'name', cannot be an empty string")
             if isinstance(name, str):
+                if name.isspace(): raise ValueError("'name', cannot be an empty string")
                 if 1 <= len(name) <= 79:
-                    self.name = name
+                    self._name = name
                 else:
-                    raise Exception("'name', must be less than or equal to 79 chars")
+                    raise ValueError("'name', must be type str() 79 chars or less")
             else:
-                raise Exception("'name', must be a string")
+                raise ValueError("'name', must be type str()")
 
-    def set_type(self, type):
+    @property
+    def type(self):
+        return self._type
+
+    @type.setter
+    def type(self, type):
         """ Set self.type attribute to type if type provided is valid for FG object
 
         Args:
@@ -100,15 +109,24 @@ class FgFwAddress(FgObject):
             None
         """
         if type is None:
-            self.type = None
+            self._type = None
 
         else:
-            if type in ['ipmask', 'iprange', 'fqdn']:
-                self.type = type
+            if isinstance(type, str):
+                if type in ['ipmask', 'iprange', 'fqdn']:
+                    self._type = type
+                else:
+                    raise ValueError("'type', when set, must be type str() with values 'ipmask', 'iprange "
+                                     "or 'fqdn'")
             else:
-                raise ValueError("Interface 'type' specified is unsupported")
+                raise ValueError("'type', when set, must be type str()")
 
-    def set_subnet(self, subnet):
+    @property
+    def subnet(self):
+        return self._subnet
+
+    @subnet.setter
+    def subnet(self, subnet):
         """ Set self.subnet to subnet if subnet is valid ipv4 network/mask
 
         Args:
@@ -118,16 +136,22 @@ class FgFwAddress(FgObject):
             None
         """
         if subnet is None:
-            self.subnet = None
-
+            self._subnet = None
         else:
             if isinstance(subnet, str):
                 try:
-                    self.subnet = str(ipaddress.ip_network(subnet))
+                    self._subnet = str(ipaddress.ip_network(subnet))
                 except ValueError:
-                    raise ValueError("'subnet', when specified must be a valid ipv4 address")
+                    raise ValueError("'subnet', when specified must be type str with value of a valid ipv4 address")
+            else:
+                raise ValueError("'subnet', when set, must be type str() with value of a valid ipv4 address")
 
-    def set_fqdn(self, fqdn):
+    @property
+    def fqdn(self):
+        return self._fqdn
+
+    @fqdn.setter
+    def fqdn(self, fqdn):
         """ Set self.fqdn to fqdn if fqdn provided meets FortiGate requirements for this parameter
 
         Args:
@@ -137,15 +161,22 @@ class FgFwAddress(FgObject):
             None
         """
         if fqdn is None:
-            self.fqdn = None
+            self._fqdn = None
 
-        else:
+        elif isinstance(fqdn, str):
             if 1 <= len(fqdn) <= 255:
-                self.fqdn = fqdn
+                self._fqdn = fqdn
             else:
-                raise ValueError("'fqdn', when set, must be type str between 1 and 255 chars")
+                raise ValueError("'fqdn', when set, must be type str() between 1 and 255 chars")
+        else:
+            raise ValueError("'fqdn', when set, must be type str()")
 
-    def set_visibility(self, visibility):
+    @property
+    def visibility(self):
+        return self._visibility
+
+    @visibility.setter
+    def visibility(self, visibility):
         """ Set self.visibility
 
         Args:
@@ -155,20 +186,24 @@ class FgFwAddress(FgObject):
             None
         """
         if visibility is None:
-            self.visibility = None
-
+            self._visibility = None
         else:
             if isinstance(visibility, str):
                 if visibility == 'enable':
-                    self.visibility = 'enable'
+                    self._visibility = 'enable'
                 elif visibility == 'disable':
-                    self.visibility = 'disable'
+                    self._visibility = 'disable'
                 else:
                     raise ValueError("'visibility', when set, must be type str() with value 'enable' or 'disable'")
             else:
                 raise ValueError("'visibility', when set, must be type str()")
 
-    def set_associated_interface(self, intf):
+    @property
+    def associated_interface(self):
+        return self._associated_interface
+
+    @associated_interface.setter
+    def associated_interface(self, intf):
         """ Set self.associated_interface if associated_interface provided meets requirements
 
         Args:
@@ -178,19 +213,24 @@ class FgFwAddress(FgObject):
             None
         """
         if intf is None:
-            self.associated_interface = None
+            self._associated_interface = None
 
         else:
-            if intf.isspace(): raise Exception("'associated_interface', cannot be an empty string")
+            if intf.isspace(): raise ValueError("'associated_interface', when set, cannot be an empty string")
             if isinstance(intf, str):
                 if 1 <= len(intf) <= 35:
-                    self.associated_interface = intf
+                    self._associated_interface = intf
                 else:
-                    raise Exception("'associated_interface', when set, must be between 1 and 35 chars")
+                    raise ValueError("'associated_interface', when set, must be type str() between 1 and 35 chars")
             else:
-                raise Exception("'name', must be a string")
+                raise ValueError("'associated_interface', when set, must be type str()")
 
-    def set_comment(self, comment):
+    @property
+    def comment(self):
+        return self._comment
+
+    @comment.setter
+    def comment(self, comment):
         """ Set self.comment if comment provided meets requirements
 
         Args:
@@ -200,47 +240,65 @@ class FgFwAddress(FgObject):
             None
         """
         if comment is None:
-            self.comment = None
+            self._comment = None
 
         else:
             if isinstance(comment, str):
                 if 1 <= len(comment) <= 255:
-                    self.comment = comment
+                    self._comment = comment
                 else:
-                    raise Exception("'description', when set, must be type str between 1 and 1,023 chars")
+                    raise ValueError("'comment', when set, must be type str() between 1 and 1,023 chars")
             else:
-                raise Exception("'description', when set, must be type str")
+                raise ValueError("'comment', when set, must be type str()")
 
-    def set_range_ips(self, start_ip, end_ip):
-        """ Set self.start_ip and self.end_ip if valid
+    @property
+    def start_ip(self):
+        return self._start_ip
 
-        Validates start and end IPs to verify valid IPv4 address and that start_ip is sequentially less than end_ip
-        (Range IPs should generally only be invoked when self.type is set to 'iprange')
+    @start_ip.setter
+    def start_ip(self, start_ip):
+        """ Set self.start_ip
+
+       Validates that start_ip, if set is a valid ipv4 address
 
         Args:
-            start_ip (str):  Valid IPv4 address for start-ip
-            end_ip (str):  Valid IPv4 address for end-ip
+            start_ip (str):  Valid IPv4 address for FortiOS start-ip
 
         Returns:
             None
         """
-        if start_ip and end_ip:
-            try:
-                self.start_ip = str(ipaddress.ip_address(start_ip))
-            except ValueError:
-                raise ValueError("'start_ip', when set must be a valid ipv4 or ipv6 address")
-            try:
-                self.end_ip = str(ipaddress.ip_address(end_ip))
-            except ValueError:
-                raise ValueError("'end_ip', when set, must be a valid ipv4 or ipv6 address")
-
-            if ipaddress.ip_address(start_ip) < ipaddress.ip_address(end_ip):
-                pass
-            else:
-                raise ValueError("'end_ip' must be higher IP address than 'start_ip'")
-        elif start_ip or end_ip:
-            raise ValueError("When setting iprange parameters both 'start_ip' and 'end_ip' must be set with valid "
-                             "ip addresses")
+        if start_ip is None:
+            self._start_ip = None
         else:
-            self.start_ip = None
-            self.end_ip = None
+            if isinstance(start_ip, str):
+                try:
+                    self._start_ip = str(ipaddress.ip_address(start_ip))
+                except ValueError:
+                    raise ValueError("'start_ip', when set must be type str() with value as valid ipv4 address")
+            else:
+                raise ValueError("'start_ip', when set must be type str() with value a valid ipv4 address")
+
+    @property
+    def end_ip(self):
+        return self._end_ip
+
+    @end_ip.setter
+    def end_ip(self, end_ip):
+        """ Set self.end_ip if end_ip is a valid ipv4 address or None
+
+        Args:
+            end_ip (str):  Valid IPv4 address for FortiOS end-ip
+
+        Returns:
+            None
+        """
+        if end_ip is None:
+            self._end_ip = None
+        else:
+            if isinstance(end_ip, str):
+                try:
+                    self._end_ip = str(ipaddress.ip_address(end_ip))
+                except ValueError:
+                    raise ValueError("'end_ip', when set must be type str() with value as valid ipv4 address")
+            else:
+                raise ValueError("'end_ip', when set must be type str() with value a valid ipv4 address")

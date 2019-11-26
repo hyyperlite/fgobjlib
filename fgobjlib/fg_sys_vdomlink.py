@@ -22,8 +22,8 @@ class FgVdomLink(FgObject):
 
         ### Set parent class attributes ###
         # Map instance attribute names to fg attribute names
-        self.data_attrs = {'name': 'name', 'vlink_type': 'type'}
-        self.cli_ignore_attrs = []
+        self._data_attrs = {'name': 'name', 'vlink_type': 'type'}
+        self._cli_ignore_attrs = []
 
         if vdom_enabled == True: self.vdom_enabled = True
 
@@ -32,7 +32,7 @@ class FgVdomLink(FgObject):
         self.set_vlink_type(vlink_type)
 
         # Update the parent defined obj_to_str attribute with this objects str representation
-        self.obj_to_str += f', name={self.name}, vlink_type={self.vlink_type}'
+        self._obj_to_str += f', name={self.name}, vlink_type={self.vlink_type}'
 
 
     # Instance Methods

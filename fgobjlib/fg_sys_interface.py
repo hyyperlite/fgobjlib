@@ -51,13 +51,13 @@ class FgInterfaceIpv4(FgObject):
 
         ### Set parent class attributes ###
         # Map instance attribute names to fg attribute names
-        self.data_attrs = {'name': 'name', 'ip': 'ip', 'vdom': 'vdom', 'intf_type': 'type', 'vrf': 'vrf',
+        self._data_attrs = {'name': 'name', 'ip': 'ip', 'vdom': 'vdom', 'intf_type': 'type', 'vrf': 'vrf',
                            'allowaccess': 'allowaccess', 'role': 'role', 'vlanid': 'vlanid',
                            'phys_intf': 'interface', 'device_ident': 'device-identification',
                            'alias': 'alias', 'description': 'description'}
 
         # Attributes to ignore for cli config
-        self.cli_ignore_attrs = ['name']
+        self._cli_ignore_attrs = ['name']
 
         # For objects types that can be configured from global or vdom context,
         # set is_global = True if need to config from global context instead of vdom
@@ -78,7 +78,7 @@ class FgInterfaceIpv4(FgObject):
         self.set_description(description)
 
         # Update the parent defined obj_to_str attribute with this objects str representation
-        self.obj_to_str += f', name={self.name}, ip={self.ip}, mode={self.mode}, intf_type={self.intf_type}, ' \
+        self._obj_to_str += f', name={self.name}, ip={self.ip}, mode={self.mode}, intf_type={self.intf_type}, ' \
                           f'vrf={self.vrf}, allowaccess={self.allowaccess}, role={self.role}, vlanid={self.vlanid}, ' \
                           f'phys_intf={self.phys_intf}.device_ident={self.device_ident}, alias={self.alias}, ' \
                           f'description={self.description}, vdom={self.vdom}'
