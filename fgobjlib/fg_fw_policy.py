@@ -1,5 +1,6 @@
 from fgobjlib import FgObject
 
+
 class FgFwPolicy(FgObject):
     """
     FgFwPolicy class represents FortiGate Firewall policy object and provides methods for validating parameters
@@ -28,34 +29,33 @@ class FgFwPolicy(FgObject):
                  dstaddr_negate: str = None, name: str = None, comment: str = None, service_negate: str = None):
         """
         Args:
-            policyid (int): optional - ID of object.  Defines ID used in configs when API or CLI for config methods (default: 0)
-            srcintf (list): required - string or list of strings referencing src interface(s) of policy
-            dstintf (list): required - string or list of strings referencing dst interface(s) of policy
-            srcaddr (list): required - string or list of strings referencing src address(s) of policy
-            dstaddr (list): required - string or list of strings referencing dst address(s) of policy
-            schedule (str): optional - string referencing schedule to associated with policy (default: 'always')
-            action (str): optional - string sets action to assign to policy; may be 'accept' or 'deny' (default: deny)
-            logtraffic (str): optional - string set logtraffic action to assign; may be utm/all/disabled (default: disabled)
-            nat (str): optional - set nat enabled or disable ('enable', 'disable', or None=inherit)
-            comment (str): optional - Set a comment up to 255 characters (default: None)
-            vdom (str): optional - Set vdom.  If unset object configs uses default fg context (default: None)
+            policyid (int): ID of object.  Defines ID used in configs when API or CLI for config methods (default: 0)
+            srcintf (list): string or list of strings referencing src interface(s) of policy
+            dstintf (list): string or list of strings referencing dst interface(s) of policy
+            srcaddr (list): string or list of strings referencing src address(s) of policy
+            dstaddr (list): string or list of strings referencing dst address(s) of policy
+            schedule (str): string referencing schedule to associated with policy (default: 'always')
+            action (str): string sets action to assign to policy; may be 'accept' or 'deny' (default: deny)
+            logtraffic (str): string set logtraffic action to assign; may be utm/all/disabled (default: disabled)
+            nat (str): set nat enabled or disable ('enable', 'disable', or None=inherit)
+            comment (str): set a comment up to 255 characters (default: None)
+            vdom (str): opt - set vdom.  If unset object configs uses default fg context (default: None)
             srcaddr_negate (str): Negate the source address in policy.  ('enable', 'disable', or None=inherit)
             dstaddr_negate (str): Negate the destination address in policy.  ('enable', 'disable', or None=inherit)
             service (str): Negate the service in policy.  ('enable', 'disable', or None=inherit)
         """
-
 
         # Initialize the parent class - we do set this here, because the subclass will first verify obj_id
         # is acceptable for this class type in the above attribute set functions
         super().__init__(api='cmdb', api_path='firewall', api_name='policy', cli_path="config firewall policy",
                          obj_id=policyid, vdom=vdom)
 
-        ### Set parent class attributes ###
+        # Set parent class attributes
         # Map instance attribute names to fg attribute names
         self._data_attrs = {'policyid': 'policyid', 'srcintf': 'srcintf', 'dstintf': 'dstintf', 'srcaddr': 'srcaddr',
-                           'service': 'service', 'schedule': 'schedule', 'action': 'action', 'logtraffic': 'logtraffic',
-                           'nat': 'nat', 'srcaddr_negate': 'srcaddr-negate', 'dstaddr_negate': 'dstaddr-negate',
-                           'service_negate': 'service-negate', 'name': 'name'}
+                            'service': 'service', 'schedule': 'schedule', 'action': 'action',
+                            'logtraffic': 'logtraffic', 'nat': 'nat', 'srcaddr_negate': 'srcaddr-negate',
+                            'dstaddr_negate': 'dstaddr-negate', 'service_negate': 'service-negate', 'name': 'name'}
 
         self._cli_ignore_attrs = ['policyid']
 
@@ -73,17 +73,16 @@ class FgFwPolicy(FgObject):
         self.srcaddr_negate = srcaddr_negate
         self.dstaddr_negate = dstaddr_negate
         self.service_negate = service_negate
-        self.comment= comment
+        self.comment = comment
         self.name = name
 
         # Update the parent defined obj_to_str attribute with this objects str representation
         self._obj_to_str += f', policyid={self.policyid}, srcintf={self.srcintf}, dstintf={self.dstintf}, ' \
-                          f'srcaddr={self.srcaddr}, dstaddr={self.dstaddr}, service={self.service}, ' \
-                          f'schedule={self.schedule}, action={self.action}, logtraffic={self.logtraffic}, ' \
-                          f'nat={self.nat}, srcaddr_negate={self.srcaddr_negate}, ' \
-                          f'dstaddr_negate={self.dstaddr_negate}, service_negate={self.service_negate}, ' \
-                          f'comment={self.comment}, vdom={self.vdom}'
-
+                            f'srcaddr={self.srcaddr}, dstaddr={self.dstaddr}, service={self.service}, ' \
+                            f'schedule={self.schedule}, action={self.action}, logtraffic={self.logtraffic}, ' \
+                            f'nat={self.nat}, srcaddr_negate={self.srcaddr_negate}, ' \
+                            f'dstaddr_negate={self.dstaddr_negate}, service_negate={self.service_negate}, ' \
+                            f'comment={self.comment}, vdom={self.vdom}'
 
     # Static Methods
     @staticmethod
@@ -120,7 +119,8 @@ class FgFwPolicy(FgObject):
             # Make sure each interface passed in is not all whitespace and it is less than 80 chars
             for item in obj_list:
                 if isinstance(item['name'], str):
-                    if item['name'].isspace(): raise Exception(f"{item} cannot be an empty string")
+                    if item['name'].isspace():
+                        raise Exception(f"{item} cannot be an empty string")
 
                     if not len(item['name']) < 80:
                         raise Exception("'policy_object(s)', must be 79 chars or less")
@@ -300,7 +300,6 @@ class FgFwPolicy(FgObject):
                 raise ValueError("'action', when set, must be type str() with value 'accept' or 'deny'")
         else:
             raise ValueError("'action', when set, must be type str() with value 'accept' or 'deny'")
-
 
     @property
     def logtraffic(self):

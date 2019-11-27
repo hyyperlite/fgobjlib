@@ -1,6 +1,7 @@
 from fgobjlib import FgObject
 import ipaddress
 
+
 class FgFwAddress(FgObject):
     """
     FgFwAddress  represents FortiGate firewall address object and provides methods for validating parameters
@@ -40,11 +41,11 @@ class FgFwAddress(FgObject):
         super().__init__(api='cmdb', api_path='firewall', api_name='address',  cli_path="config firewall address",
                          obj_id=name, vdom=vdom)
 
-        ### Set parent class attributes ###
+        # Set parent class attributes #
         # Map instance attribute names to fg attribute names
         self._data_attrs = {'name': 'name', 'type': 'type', 'subnet': 'subnet', 'fqdn': 'fqdn',
-                           'associated_interface': 'associated-interface', 'visibility': 'visibility',
-                           'comment': 'comments', 'start_ip': 'start-ip', 'end_ip': 'end-ip'}
+                            'associated_interface': 'associated-interface', 'visibility': 'visibility',
+                            'comment': 'comments', 'start_ip': 'start-ip', 'end_ip': 'end-ip'}
 
         self._cli_ignore_attrs = []
 
@@ -61,9 +62,8 @@ class FgFwAddress(FgObject):
 
         # Update the parent defined obj_to_str attribute with this objects str representation
         self._obj_to_str += f', name={self.name}, type={self.type}, subnet={self.subnet}, fqdn={self.fqdn}, ' \
-                          f'start_ip={self.start_ip}, visibility={self.visibility}, ' \
-                          f'associated_interface={self.associated_interface}, comment={self.comment}'
-
+                            f'start_ip={self.start_ip}, visibility={self.visibility}, ' \
+                            f'associated_interface={self.associated_interface}, comment={self.comment}'
 
     # Instance Properties and Setters
     @property
@@ -86,7 +86,8 @@ class FgFwAddress(FgObject):
 
         else:
             if isinstance(name, str):
-                if name.isspace(): raise ValueError("'name', cannot be an empty string")
+                if name.isspace():
+                    raise ValueError("'name', cannot be an empty string")
                 if 1 <= len(name) <= 79:
                     self._name = name
                 else:
@@ -216,7 +217,8 @@ class FgFwAddress(FgObject):
             self._associated_interface = None
 
         else:
-            if intf.isspace(): raise ValueError("'associated_interface', when set, cannot be an empty string")
+            if intf.isspace():
+                raise ValueError("'associated_interface', when set, cannot be an empty string")
             if isinstance(intf, str):
                 if 1 <= len(intf) <= 35:
                     self._associated_interface = intf

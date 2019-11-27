@@ -1,5 +1,6 @@
-from fgobjlib import FgObject
 import ipaddress
+
+from fgobjlib import FgObject
 
 
 class FgInterfaceIpv4(FgObject):
@@ -49,12 +50,12 @@ class FgInterfaceIpv4(FgObject):
         super().__init__(api='cmdb', api_path='system', api_name='interface', cli_path="config system interface",
                          obj_id=name, vdom=vdom)
 
-        ### Set parent class attributes ###
+        # Set parent class attributes #
         # Map instance attribute names to fg attribute names
         self._data_attrs = {'name': 'name', 'ip': 'ip', 'vdom': 'vdom', 'intf_type': 'type', 'vrf': 'vrf',
-                           'allowaccess': 'allowaccess', 'role': 'role', 'vlanid': 'vlanid',
-                           'phys_intf': 'interface', 'device_ident': 'device-identification',
-                           'alias': 'alias', 'description': 'description'}
+                            'allowaccess': 'allowaccess', 'role': 'role', 'vlanid': 'vlanid',
+                            'phys_intf': 'interface', 'device_ident': 'device-identification',
+                            'alias': 'alias', 'description': 'description'}
 
         # Attributes to ignore for cli config
         self._cli_ignore_attrs = ['name']
@@ -64,26 +65,24 @@ class FgInterfaceIpv4(FgObject):
         self.is_global = is_global
 
         # Set instance attributes
-        self.set_name(name)
-        self.set_ip(ip)
-        self.set_mode(mode)
-        self.set_intf_type(intf_type)
-        self.set_vrf(vrf)
-        self.set_allowaccess(allowaccess)
-        self.set_role(role)
-        self.set_vlanid(vlanid)
-        self.set_phys_intf(phys_intf)
-        self.set_device_ident(device_ident)
-        self.set_alias(alias)
-        self.set_description(description)
+        self.name = name
+        self.ip = ip
+        self.mode = mode
+        self.intf_type = intf_type
+        self.vrf = vrf
+        self.allowaccess = allowaccess
+        self.role = role
+        self.vlanid = vlanid
+        self.phys_intf = phys_intf
+        self.device_ident = device_ident
+        self.alias = alias
+        self.description = description
 
         # Update the parent defined obj_to_str attribute with this objects str representation
         self._obj_to_str += f', name={self.name}, ip={self.ip}, mode={self.mode}, intf_type={self.intf_type}, ' \
-                          f'vrf={self.vrf}, allowaccess={self.allowaccess}, role={self.role}, vlanid={self.vlanid}, ' \
-                          f'phys_intf={self.phys_intf}.device_ident={self.device_ident}, alias={self.alias}, ' \
-                          f'description={self.description}, vdom={self.vdom}'
-
-
+                            f'vrf={self.vrf}, allowaccess={self.allowaccess}, role={self.role}, ' \
+                            f'vlanid={self.vlanid}, phys_intf={self.phys_intf}.device_ident={self.device_ident}, ' \
+                            f'alias={self.alias}, description={self.description}, vdom={self.vdom}'
 
     # Class Methods
     @classmethod
@@ -142,11 +141,13 @@ class FgInterfaceIpv4(FgObject):
             Class Instance
         """
 
-        if not vlanid: raise Exception("'vlan_intf()', requires to provide a 'vlanid'. vlanid should be type: int, "
-                                       "between 1 and 4960")
+        if not vlanid:
+            raise Exception("'vlan_intf()', requires to provide a 'vlanid'. vlanid should be type: int, between 1 and "
+                            "4960")
 
-        if not phys_intf: raise Exception("'vlan_intf', requires to provide 'phys_intf', phys_intf should be type: "
-                                          "str between 1 and 15 chars")
+        if not phys_intf:
+            raise Exception("'vlan_intf', requires to provide 'phys_intf', phys_intf should be type: str between 1 and "
+                            "15 chars")
 
         intf_type = 'vlan'
 
@@ -156,8 +157,13 @@ class FgInterfaceIpv4(FgObject):
 
         return obj
 
-    # Instance Methods
-    def set_name(self, name):
+    # Instance Properties and Setters
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, name):
         """ Set self.name to name if name meets requirements
 
         Args:
@@ -167,20 +173,25 @@ class FgInterfaceIpv4(FgObject):
             None
         """
         if name is None:
-            self.name = None
+            self._name = None
 
         else:
             if isinstance(name, str):
-                if name.isspace(): raise Exception("'name', cannot be an empty string")
-
+                if name.isspace():
+                    raise ValueError("'name', cannot be an empty string")
                 if len(name) < 15:
-                    self.name = name
+                    self._name = name
                 else:
-                    raise Exception("'name', must be less than 15 chars")
+                    raise ValueError("'name', must be less than 15 chars")
             else:
-                raise Exception("'name', must be a string")
+                raise ValueError("'name', must be a string")
 
-    def set_ip(self, ip):
+    @property
+    def ip(self):
+        return self._ip
+
+    @ip.setter
+    def ip(self, ip):
         """ Set self.ip as IP address for interface if IP is valid ipv4 address.  Otherwise raise Exception.
 
         Args:
@@ -190,65 +201,81 @@ class FgInterfaceIpv4(FgObject):
             None
         """
         if ip is None:
-            self.ip = None
+            self._ip = None
 
         else:
             try:
-                self.ip = str(ipaddress.ip_interface(ip))
+                self._ip = str(ipaddress.ip_interface(ip))
             except ValueError:
-                raise ValueError("'ip' must be a valid ipv4 address")
+                raise ValueError("'ip' must be type str() as valid ipv4 address")
 
-    def set_intf_type(self, intf_type):
+    @property
+    def intf_type(self):
+        return self._intf_type
+
+    @intf_type.setter
+    def intf_type(self, intf_type):
         """ Set self.intf_type if intf type matches allowed types
 
         Args:
-            intf_type (str): Interface type to set.  May be: 'vlan', 'standard', 'loopback', None (default standard or existing setting)
+            intf_type (str): Interface type: 'vlan', 'standard', 'loopback', None
 
         Returns:
             None
         """
         if intf_type is None:
-            self.intf_type = None
+            self._intf_type = None
 
         else:
             if isinstance(intf_type, str):
                 if intf_type.lower() == 'vlan':
-                    self. intf_type = 'vlan'
+                    self. _intf_type = 'vlan'
                 elif intf_type.lower() == 'standard':
-                    self.intf_type = None
+                    self._intf_type = None
                 elif intf_type.lower() == 'loopback':
-                    self.intf_type = 'loopback'
+                    self._intf_type = 'loopback'
                 else:
-                    raise ValueError(f"Interface type provided is not recognized: {intf_type}")
+                    raise ValueError("'intf_type' when set, must be type str() with value 'vlan', 'standard' or "
+                                     "'loopback")
             else:
-                raise ValueError("'intf_type', when set, must be type str")
+                raise ValueError("'intf_type', when set, must be type str()")
 
-    def set_role(self, role):
+    @property
+    def role(self):
+        return self._role
+
+    @role.setter
+    def role(self, role):
         """ Set self.role if role matches allowed role types.
 
         Args:
-            role (str): Interface role to set.   Allowed types:  'wan', 'lan', 'dmz', 'undefined', None (use existing setting)
+            role (str): Interface role.  Allowed types: 'wan', 'lan', 'dmz', 'undefined', None (use existing setting)
 
         Returns:
 
         """
         if role is None:
-            self.role = None
+            self._role = None
 
         else:
             if isinstance(role, str):
                 if role.lower() == 'wan':
-                    self.role = 'wan'
+                    self._role = 'wan'
                 elif role.lower() == 'lan':
-                    self.role = 'lan'
+                    self._role = 'lan'
                 elif role.lower() == 'dmz':
-                    self.role = 'dmz'
+                    self._role = 'dmz'
                 else:
-                    self.role = 'undefined'
+                    self._role = 'undefined'
             else:
-                raise ValueError("'role', when set, must be type str")
+                raise ValueError("'role', when set, must be type str()")
 
-    def set_mode(self, mode):
+    @property
+    def mode(self):
+        return self._mode
+
+    @mode.setter
+    def mode(self, mode):
         """ Set self.mode to mode if mode set with valid argument
 
         Args:
@@ -258,20 +285,25 @@ class FgInterfaceIpv4(FgObject):
             None
         """
         if mode is None:
-            self.mode = 'dhcp'
+            self._mode = 'dhcp'
 
         else:
             if isinstance(mode, str):
                 if mode.lower() == 'dhcp':
-                    self.mode = 'dhcp'
+                    self._mode = 'dhcp'
                 elif mode.lower() == 'static':
-                    self.mode = 'static'
+                    self._mode = 'static'
                 else:
-                    raise ValueError("'mode', when set,  must be set to either 'dhcp' or 'static'")
+                    raise ValueError("'mode', when set, must be type str() with value 'dhcp' or 'static'")
             else:
-                raise ValueError("'mode', when set, must be type str")
+                raise ValueError("'mode', when set, must be type str()")
 
-    def set_allowaccess(self, allowaccess):
+    @property
+    def allowaccess(self):
+        return self._allowaccess
+
+    @allowaccess.setter
+    def allowaccess(self, allowaccess):
         """ Set self.allowaccess  to allowaccess if allowaccess contains allowed params
 
         Args:
@@ -281,7 +313,7 @@ class FgInterfaceIpv4(FgObject):
             None
         """
         if allowaccess is None:
-            self.allowaccess = None
+            self._allowaccess = None
 
         else:
             if isinstance(allowaccess, str):
@@ -290,13 +322,18 @@ class FgInterfaceIpv4(FgObject):
                                            'probe-response', 'capwap', 'ftm']:
                         continue
                     else:
-                        raise ValueError(f"'allowaccces' has unrecognized services defined: {service}")
+                        raise ValueError("'allowaccess' has unrecognized services defined")
             else:
-                raise ValueError("'allowaccess', when set, must be type str")
+                raise ValueError("'allowaccess', when set, must be type str()")
 
-            self.allowaccess = allowaccess
+            self._allowaccess = allowaccess
 
-    def set_vlanid(self, vlanid):
+    @property
+    def vlanid(self):
+        return self._vlanid
+
+    @vlanid.setter
+    def vlanid(self, vlanid):
         """  Set self.vlanid if vlanid is valid
 
         Args:
@@ -306,18 +343,23 @@ class FgInterfaceIpv4(FgObject):
             None
         """
         if vlanid is None:
-            self.vlanid = None
+            self._vlanid = None
 
         else:
             if isinstance(vlanid, int):
                 if 1 <= vlanid <= 4096:
-                    self.vlanid = vlanid
+                    self._vlanid = vlanid
                 else:
-                    raise ValueError("'vlanid', when set, must be integer between 1 and 4096")
+                    raise ValueError("'vlanid', when set, must be type int() between 1 and 4096")
             else:
-                raise ValueError("vlanid, when set, must be an integer")
+                raise ValueError("vlanid, when set, must be type int()")
 
-    def set_phys_intf(self, phys_intf):
+    @property
+    def phys_intf(self):
+        return self._phys_intf
+
+    @phys_intf.setter
+    def phys_intf(self, phys_intf):
         """ Set self.phys_intf to phys_intf if phys_intf valid
 
         Args:
@@ -327,7 +369,7 @@ class FgInterfaceIpv4(FgObject):
             None
         """
         if phys_intf is None:
-            self.phys_intf = None
+            self._phys_intf = None
 
         else:
             if isinstance(phys_intf, str):
@@ -335,13 +377,18 @@ class FgInterfaceIpv4(FgObject):
                     raise ValueError("'phys_intf' cannot be an empty string")
 
                 if 1 <= len(phys_intf) <= 31:
-                    self.phys_intf = phys_intf
+                    self._phys_intf = phys_intf
                 else:
-                    raise ValueError("'phys_intf', when set, must be type str between 1 and 31 chars")
+                    raise ValueError("'phys_intf', when set, must be type str() between 1 and 31 chars")
             else:
-                raise ValueError("'phys_intf', when set, must be type str")
+                raise ValueError("'phys_intf', when set, must be type str()")
 
-    def set_vrf(self, vrf):
+    @property
+    def vrf(self):
+        return self._vrf
+
+    @vrf.setter
+    def vrf(self, vrf):
         """ Set self.vrf if vrf valid
 
         Args:
@@ -351,19 +398,24 @@ class FgInterfaceIpv4(FgObject):
             None
         """
         if vrf is None:
-            self.vrf = None
+            self._vrf = None
 
         else:
             if isinstance(vrf, int):
                 if 0 <= vrf <= 31:
-                    self.vrf = vrf
+                    self._vrf = vrf
                 else:
-                    raise Exception("'vrf', when set, must be an integer between 0 and 31")
+                    raise ValueError("'vrf', when set, must be type int() between 0 and 31")
             else:
-                raise Exception("'vrf', when set, must be an integer between 0 and 31")
+                raise ValueError("'vrf', when set, must be type int() between 0 and 31")
 
-    def set_device_ident(self, device_ident):
-        """ Set self.device_idnent if device_ident valid
+    @property
+    def device_ident(self):
+        return self._device_ident
+
+    @device_ident.setter
+    def device_ident(self, device_ident):
+        """ Set self.device_ident if device_ident valid
 
         Args:
             device_ident (str): device-identification  ('enable', 'disable', or None=inherit)
@@ -372,20 +424,25 @@ class FgInterfaceIpv4(FgObject):
             None
         """
         if device_ident is None:
-            self.device_ident = False
+            self._device_ident = False
 
         else:
             if isinstance(device_ident, str):
                 if device_ident == 'enable':
-                    self.device_ident = 'enable'
+                    self._device_ident = 'enable'
                 elif device_ident == 'disable':
-                    self.device_ident = 'disable'
+                    self._device_ident = 'disable'
                 else:
                     raise ValueError("'device_ident', when set, must be type str() with value 'enable' or 'disable'")
             else:
                 raise ValueError("'device_ident', when set, must be type str()")
 
-    def set_alias(self, alias):
+    @property
+    def alias(self):
+        return self._alias
+
+    @alias.setter
+    def alias(self, alias):
         """ Set self.alias to alias if alias valid
 
         Args:
@@ -395,18 +452,23 @@ class FgInterfaceIpv4(FgObject):
 
         """
         if alias is None:
-            self.alias = None
+            self._alias = None
 
         else:
             if isinstance(alias, str):
                 if 1 <= len(alias) <= 25:
-                    self.alias = alias
+                    self._alias = alias
                 else:
-                    raise ValueError("'alias', when set, must be type str between 1 and 25 chars")
+                    raise ValueError("'alias', when set, must be type str() between 1 and 25 chars")
             else:
-                raise ValueError("'alias', when set, must be type str")
+                raise ValueError("'alias', when set, must be type str()")
 
-    def set_description(self, description):
+    @property
+    def description(self):
+        return self._description
+
+    @description.setter
+    def description(self, description):
         """ Set self.description to description if description is valid
 
         Args:
@@ -416,13 +478,13 @@ class FgInterfaceIpv4(FgObject):
             None
         """
         if description is None:
-            self.description = None
+            self._description = None
 
         else:
             if isinstance(description, str):
                 if 1 <= len(description) <= 255:
-                    self.description = description
+                    self._description = description
                 else:
-                    raise Exception("'description', when set, must be type str between 1 and 255 chars")
+                    raise Exception("'description', when set, must be type str() between 1 and 255 chars")
             else:
-                raise Exception("'description', when set, must be type str")
+                raise Exception("'description', when set, must be type str()")
