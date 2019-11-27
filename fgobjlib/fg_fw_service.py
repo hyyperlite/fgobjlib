@@ -1,5 +1,7 @@
-from fgobjlib import FgObject
 import re
+from typing import Union
+
+from fgobjlib import FgObject
 
 
 class FgFwService(FgObject):
@@ -29,10 +31,10 @@ class FgFwService(FgObject):
             icmpcode (int): Value of icmp type.  Used when self's protocol is 'icmp'
     """
 
-    def __init__(self, name: str = None, vdom: str = None, protocol: str = None, tcp_portrange: list = None,
-                 udp_portrange: list = None, sctp_portrange: list = None, protocol_number: int = None,
-                 comment: str = None, visibility: str = None, session_ttl: int = None, udp_idle_timer: int = None,
-                 category: str = None, icmptype: int = None, icmpcode: int = None):
+    def __init__(self, name: str = None, vdom: str = None, protocol: str = None, tcp_portrange: Union[str, list] = None,
+                 udp_portrange: Union[str, list] = None, sctp_portrange: Union[str, list] = None,
+                 protocol_number: int = None, comment: str = None, visibility: str = None, session_ttl: int = None,
+                 udp_idle_timer: int = None, category: str = None, icmptype: int = None, icmpcode: int = None):
         """
         Args:
             name (str): Name of this FG object

@@ -1,3 +1,4 @@
+from typing import Union
 from fgobjlib import FgObject
 
 
@@ -23,10 +24,11 @@ class FgFwPolicy(FgObject):
         service (str): Negate the service in policy.  ('enable', 'disable', or None=inherit)
     """
 
-    def __init__(self, policyid: int = None, srcintf: list = None, dstintf: list = None, srcaddr: list = None,
-                 dstaddr: list = None, service: list = None, schedule: str = None, action: str = None,
-                 logtraffic: str = None, nat: str = None, vdom: str = None, srcaddr_negate: str = None,
-                 dstaddr_negate: str = None, name: str = None, comment: str = None, service_negate: str = None):
+    def __init__(self, policyid: int = None, srcintf: Union[str, list] = None, dstintf: Union[str, list] = None,
+                 srcaddr: Union[str, list] = None, dstaddr: Union[str, list] = None, service: Union[str, list] = None,
+                 schedule: str = None, action: str = None, logtraffic: str = None, nat: str = None, vdom: str = None,
+                 srcaddr_negate: str = None, dstaddr_negate: str = None, name: str = None, comment: str = None,
+                 service_negate: str = None):
         """
         Args:
             policyid (int): ID of object.  Defines ID used in configs when API or CLI for config methods (default: 0)

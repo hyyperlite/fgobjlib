@@ -1,5 +1,7 @@
-from fgobjlib import FgObject
 import ipaddress
+from typing import Union
+from fgobjlib import FgObject
+
 
 class FgIpsecP2Interface(FgObject):
     """
@@ -25,7 +27,7 @@ class FgIpsecP2Interface(FgObject):
     """
 
     def __init__(self, name: str = None, phase1name: str = None, proposal: list = None, pfs: str = None,
-                 dhgrp: list = None, keepalive: str = None, replay: str = None, comment: str = None,
+                 dhgrp: Union[str, list] = None, keepalive: str = None, replay: str = None, comment: str = None,
                  auto_negotiate: str = None, vdom: str = None, src_subnet: str = None, dst_subnet: str = None):
         """
         Args:

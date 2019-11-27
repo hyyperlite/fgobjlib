@@ -1,5 +1,8 @@
-from fgobjlib import FgObject
 import ipaddress
+from typing import Union
+
+from fgobjlib import FgObject
+
 
 class FgIpsecP1Interface(FgObject):
     """ FgIpsecP1Interface class represents FortiGate Firewall ipsec phase1 interface object and provides methods for
@@ -31,7 +34,7 @@ class FgIpsecP1Interface(FgObject):
         exchange_interface_ip (str): exchange-interface-ip ('enable', 'disable', or None=inherit)
     """
 
-    def __init__(self, name: str = None, p1_type: str = None, interface: str = None, proposal: list = None,
+    def __init__(self, name: str = None, p1_type: str = None, interface: str = None, proposal: Union[str, list] = None,
                  ike_version: int = None, local_gw: str = None, psksecret: str = None, localid: str = None,
                  remote_gw: str = None, add_route: str = None, add_gw_route: str = None, keepalive: int = None,
                  net_device: str = None, comment: str = None, vdom: str = None, tunnel_search: str = None,

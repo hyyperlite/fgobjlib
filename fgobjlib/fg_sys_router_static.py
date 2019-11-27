@@ -52,16 +52,16 @@ class FgRouteIPv4(FgObject):
         self._cli_ignore_attrs = ['routeid']
 
         # Set instance attributes
-        self.set_routeid(routeid)
-        self.set_dst(dst)
-        self.set_device(device)
-        self.set_gateway(gateway)
-        self.set_distance(distance)
-        self.set_priority(priority)
-        self.set_weight(weight)
-        self.set_comment(comment)
-        self.set_blackhole(blackhole)
-        self.set_vrf(vrf)
+        self.routeid = routeid
+        self.dst = dst
+        self.device = device
+        self.gateway = gateway
+        self.distance = distance
+        self.priority = priority
+        self.weight = weight
+        self.comment = comment
+        self.blackhole = blackhole
+        self.vrf = vrf
 
         # Update the parent defined obj_to_str attribute with this objects str representation
         self._obj_to_str += f", routeid={self.routeid}, dst={self.dst}, device={self.device}, gateway={self.gateway}," \
@@ -191,7 +191,7 @@ class FgRouteIPv4(FgObject):
             self.distance = None
 
         else:
-            if isinstance(distance, int) and  1 <= distance <= 255:
+            if isinstance(distance, int) and 1 <= distance <= 255:
                 self.distance = distance
             else:
                 raise ValueError("'distance', when set, must be type int with value between 1 and 255")
@@ -209,7 +209,7 @@ class FgRouteIPv4(FgObject):
             self.weight = None
 
         else:
-            if isinstance(weight, int) and  1 <= weight <= 255:
+            if isinstance(weight, int) and 1 <= weight <= 255:
                 self.weight = weight
             else:
                 raise ValueError("'weight', when set, must be type int with value between 1 and 255")
@@ -227,7 +227,7 @@ class FgRouteIPv4(FgObject):
             self.priority = None
 
         else:
-            if isinstance(priority, int) and  0 <= priority <= 4294967295:
+            if isinstance(priority, int) and 0 <= priority <= 4294967295:
                 self.priority = priority
             else:
                 raise ValueError("'priority', when set, must be type int with value between 0 and 4294967295")
@@ -245,7 +245,7 @@ class FgRouteIPv4(FgObject):
             self.vrf = None
 
         else:
-            if isinstance(vrf, int) and  0 <= vrf <= 31:
+            if isinstance(vrf, int) and 0 <= vrf <= 31:
                 self.vrf = vrf
             else:
                 raise ValueError("'vrf', when set, must be type int with value between 0 and 31")
