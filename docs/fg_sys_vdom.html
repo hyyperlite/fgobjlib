@@ -40,30 +40,33 @@ class FgVdom(FgObject):
         &#34;&#34;&#34;
         Args:
             name (str): Name of vdom
-            vdom_enabled (bool): VDOMs enabled on target FortiGate?  Set to True if VDOMs enabled False if not.
         &#34;&#34;&#34;
 
         # Initialize the parent class
         super().__init__(api=&#39;cmdb&#39;, api_path=&#39;system&#39;, api_name=&#39;vdom&#39;, cli_path=&#34;config vdom&#34;,
                          vdom=&#39;global&#39;, obj_id=name)
 
-
-
-        ### Set parent class attributes ###
+        # Set parent class attributes #
         # Map instance attribute names to fg attribute names
-        self.data_attrs = {&#39;name&#39;: &#39;name&#39;}
-        self.cli_ignore_attrs = [&#39;name&#39;]
+        self._data_attrs = {&#39;name&#39;: &#39;name&#39;}
+        self._cli_ignore_attrs = [&#39;name&#39;]
 
         # Enable global config instead of per VDOM
         self.is_global = True
 
         # Set instance attributes
-        self.set_name(name)
-        self.obj_to_str += f&#39;, name={self.name}&#39;
+        self.name = name
 
+        # Set obj to str conversion
+        self._obj_to_str += f&#39;, name={self.name}&#39;
 
-    # Instance Methods
-    def set_name(self, name):
+    # Instance properties and setters
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, name):
         &#34;&#34;&#34; Set self.name to name if name is valid
 
         Args:
@@ -73,19 +76,20 @@ class FgVdom(FgObject):
             None
         &#34;&#34;&#34;
         if name:
-            if name.isspace(): raise ValueError(&#34;\&#34;name\&#34;, cannot be an empty string&#34;)
+            if name.isspace():
+                raise ValueError(&#34;&#39;name&#39;, cannot be an empty string&#34;)
             for char in name:
                 if char.isspace():
-                    raise ValueError(&#34;\&#34;name\&#34; may not contain spaces&#34;)
+                    raise ValueError(&#34;&#39;name&#39; may not contain spaces&#34;)
             if isinstance(name, str):
                 if 1 &lt;= len(name) &lt;= 31:
-                    self.name = name
+                    self._name = name
                 else:
-                    raise ValueError(&#34;\&#34;name\&#34;, must be less than or equal to 31 chars&#34;)
+                    raise ValueError(&#34;&#39;name&#39;, must be type str() between 1 and 31 chars&#34;)
             else:
-                raise ValueError(&#34;\&#34;name\&#34;, must be a string&#34;)
+                raise ValueError(&#34;&#39;name&#39;, must be type str() between 1 and 31 chars&#34;)
         else:
-            raise ValueError(&#34;Value \&#34;name\&#34; is required but was not provided&#34;)</code></pre>
+            self._name = None</code></pre>
 </details>
 </section>
 <section>
@@ -114,9 +118,6 @@ and generating both cli and api configuration data for use in external configura
 <dl>
 <dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
 <dd>Name of vdom</dd>
-<dt><strong><code>vdom_enabled</code></strong> :&ensp;<code>bool</code></dt>
-<dd>VDOMs enabled on target FortiGate?
-Set to True if VDOMs enabled False if not.</dd>
 </dl></section>
 <details class="source">
 <summary>
@@ -136,30 +137,33 @@ Set to True if VDOMs enabled False if not.</dd>
         &#34;&#34;&#34;
         Args:
             name (str): Name of vdom
-            vdom_enabled (bool): VDOMs enabled on target FortiGate?  Set to True if VDOMs enabled False if not.
         &#34;&#34;&#34;
 
         # Initialize the parent class
         super().__init__(api=&#39;cmdb&#39;, api_path=&#39;system&#39;, api_name=&#39;vdom&#39;, cli_path=&#34;config vdom&#34;,
                          vdom=&#39;global&#39;, obj_id=name)
 
-
-
-        ### Set parent class attributes ###
+        # Set parent class attributes #
         # Map instance attribute names to fg attribute names
-        self.data_attrs = {&#39;name&#39;: &#39;name&#39;}
-        self.cli_ignore_attrs = [&#39;name&#39;]
+        self._data_attrs = {&#39;name&#39;: &#39;name&#39;}
+        self._cli_ignore_attrs = [&#39;name&#39;]
 
         # Enable global config instead of per VDOM
         self.is_global = True
 
         # Set instance attributes
-        self.set_name(name)
-        self.obj_to_str += f&#39;, name={self.name}&#39;
+        self.name = name
 
+        # Set obj to str conversion
+        self._obj_to_str += f&#39;, name={self.name}&#39;
 
-    # Instance Methods
-    def set_name(self, name):
+    # Instance properties and setters
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, name):
         &#34;&#34;&#34; Set self.name to name if name is valid
 
         Args:
@@ -169,68 +173,38 @@ Set to True if VDOMs enabled False if not.</dd>
             None
         &#34;&#34;&#34;
         if name:
-            if name.isspace(): raise ValueError(&#34;\&#34;name\&#34;, cannot be an empty string&#34;)
+            if name.isspace():
+                raise ValueError(&#34;&#39;name&#39;, cannot be an empty string&#34;)
             for char in name:
                 if char.isspace():
-                    raise ValueError(&#34;\&#34;name\&#34; may not contain spaces&#34;)
+                    raise ValueError(&#34;&#39;name&#39; may not contain spaces&#34;)
             if isinstance(name, str):
                 if 1 &lt;= len(name) &lt;= 31:
-                    self.name = name
+                    self._name = name
                 else:
-                    raise ValueError(&#34;\&#34;name\&#34;, must be less than or equal to 31 chars&#34;)
+                    raise ValueError(&#34;&#39;name&#39;, must be type str() between 1 and 31 chars&#34;)
             else:
-                raise ValueError(&#34;\&#34;name\&#34;, must be a string&#34;)
+                raise ValueError(&#34;&#39;name&#39;, must be type str() between 1 and 31 chars&#34;)
         else:
-            raise ValueError(&#34;Value \&#34;name\&#34; is required but was not provided&#34;)</code></pre>
+            self._name = None</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="fgobjlib.fg_object.FgObject" href="fg_object.html#fgobjlib.fg_object.FgObject">FgObject</a></li>
+<li>abc.ABC</li>
 </ul>
-<h3>Methods</h3>
+<h3>Instance variables</h3>
 <dl>
-<dt id="fgobjlib.fg_sys_vdom.FgVdom.set_name"><code class="name flex">
-<span>def <span class="ident">set_name</span></span>(<span>self, name)</span>
-</code></dt>
+<dt id="fgobjlib.fg_sys_vdom.FgVdom.name"><code class="name">var <span class="ident">name</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.name to name if name is valid</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
-<dd>Name of vdom</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_name(self, name):
-    &#34;&#34;&#34; Set self.name to name if name is valid
-
-    Args:
-        name (str): Name of vdom
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if name:
-        if name.isspace(): raise ValueError(&#34;\&#34;name\&#34;, cannot be an empty string&#34;)
-        for char in name:
-            if char.isspace():
-                raise ValueError(&#34;\&#34;name\&#34; may not contain spaces&#34;)
-        if isinstance(name, str):
-            if 1 &lt;= len(name) &lt;= 31:
-                self.name = name
-            else:
-                raise ValueError(&#34;\&#34;name\&#34;, must be less than or equal to 31 chars&#34;)
-        else:
-            raise ValueError(&#34;\&#34;name\&#34;, must be a string&#34;)
-    else:
-        raise ValueError(&#34;Value \&#34;name\&#34; is required but was not provided&#34;)</code></pre>
+<pre><code class="python">@property
+def name(self):
+    return self._name</code></pre>
 </details>
 </dd>
 </dl>
@@ -245,7 +219,6 @@ Set to True if VDOMs enabled False if not.</dd>
 <li><code><a title="fgobjlib.fg_object.FgObject.get_cli_config_add" href="fg_object.html#fgobjlib.fg_object.FgObject.get_cli_config_add">get_cli_config_add</a></code></li>
 <li><code><a title="fgobjlib.fg_object.FgObject.get_cli_config_del" href="fg_object.html#fgobjlib.fg_object.FgObject.get_cli_config_del">get_cli_config_del</a></code></li>
 <li><code><a title="fgobjlib.fg_object.FgObject.get_cli_config_update" href="fg_object.html#fgobjlib.fg_object.FgObject.get_cli_config_update">get_cli_config_update</a></code></li>
-<li><code><a title="fgobjlib.fg_object.FgObject.set_vdom" href="fg_object.html#fgobjlib.fg_object.FgObject.set_vdom">set_vdom</a></code></li>
 </ul>
 </li>
 </ul>
@@ -269,7 +242,7 @@ Set to True if VDOMs enabled False if not.</dd>
 <li>
 <h4><code><a title="fgobjlib.fg_sys_vdom.FgVdom" href="#fgobjlib.fg_sys_vdom.FgVdom">FgVdom</a></code></h4>
 <ul class="">
-<li><code><a title="fgobjlib.fg_sys_vdom.FgVdom.set_name" href="#fgobjlib.fg_sys_vdom.FgVdom.set_name">set_name</a></code></li>
+<li><code><a title="fgobjlib.fg_sys_vdom.FgVdom.name" href="#fgobjlib.fg_sys_vdom.FgVdom.name">name</a></code></li>
 </ul>
 </li>
 </ul>

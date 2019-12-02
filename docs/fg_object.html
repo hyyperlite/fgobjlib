@@ -24,8 +24,12 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class FgObject:
+<pre><code class="python">from abc import ABC
+
+class FgObject(ABC):
     &#34;&#34;&#34;FgObject class represents basic methods and attributes used commonly across most, if not all, child class objects
+
+    This is an abstract class and as such cannot be instantiated directly.
 
     FgObject class provides attributes and methods that are used by the specific FortiGate object child classes.  Common
     attributes such as VDOM and object ID are contained and validated in this parent class.  API and CLI path attributes
@@ -43,8 +47,6 @@
         vdom: defines the vdom this object is to be configured/updated/deleted/got from.
         vdom_enabled: used for objects which &#34;may&#34; be configured from global context to determine correct cli config path
         is_global (bool): Set if the object should be configured from global context only
-        data_attrs: the attributes from child classes to be used in generating configurations
-        cli_ignore_attrs: attributes from child classes that should be ignored
 &#34;&#34;&#34;
 
     def __init__(self, api: str = None, api_path: str = None, api_name: str = None,  cli_path = None,
@@ -71,7 +73,7 @@
 
         # Set attrs
         self.obj_id = obj_id
-        self.set_vdom(vdom)
+        self.vdom = vdom
 
         # Set and used only for objects that are configured via global context vs vdom context
         # these allow to determine if cli should use &#34;config system global&#34; or just configure the object
@@ -80,21 +82,27 @@
         self.is_global = None
 
         # Map of instance attribute names to fg attribute names
-        self.data_attrs = {}
-        self.cli_ignore_attrs = {}
+        self._data_attrs = {}
+        # In CLI config output some attributes in data_attrs may not be needed. So set which to ignore for CLI
+        self._cli_ignore_attrs = {}
 
         # For use in string output of object such as dunder methods __str__ and __repr__
-        self.obj_to_str = f&#39;obj_id={self.obj_id}, vdom={self.vdom}&#39;
+        self._obj_to_str = f&#39;obj_id={self.obj_id}, vdom={self.vdom}&#39;
 
     # Instance to string dunder methods
     def __str__(self):
-        return self.obj_to_str
+        return self._obj_to_str
 
     def __repr__(self):
-        return self.obj_to_str
+        return self._obj_to_str
 
-    # Public methods
-    def set_vdom(self, vdom):
+    # Property Methods
+    @property
+    def vdom(self):
+        return self._vdom
+
+    @vdom.setter
+    def vdom(self, vdom):
         &#34;&#34;&#34; Validate the vdom argument for FortiGate consumption, if acceptable set to self.vdom
 
         Verify that vdom argument is non-empty string, with no whitespace between 1 and 31 chars.  If valid then set
@@ -107,7 +115,7 @@
             None
         &#34;&#34;&#34;
         if vdom is None:
-            self.vdom = None
+            self._vdom = None
 
         else:
             if isinstance(vdom, str):
@@ -118,15 +126,13 @@
 
                 # Check vdom name string length meets FG requirements
                 if 1 &lt;= len(vdom) &lt;= 31:
-                    self.vdom = vdom
+                    self._vdom = vdom
                 else:
                     raise ValueError(&#34;&#39;vdom&#39;, when set, must be a str between 1 and 31 chars&#34;)
             else:
                 raise ValueError(&#34;&#39;vdom&#39;, when set, must be a str between 1 and 31&#34;)
 
-    ##########################
-    #   API Config Methods   #
-    ##########################
+    # API Config Methods
     def get_api_config_add(self):
         &#34;&#34;&#34; Get FortiGate API configuration for adding(post) self to FortiGate via API using Fortinet&#39;s ftntlib library
 
@@ -164,7 +170,7 @@
             else:
                 params.update({&#39;vdom&#39;: self.vdom})
 
-        for inst_attr, fg_attr in self.data_attrs.items():
+        for inst_attr, fg_attr in self._data_attrs.items():
             if getattr(self, inst_attr): data.update({fg_attr: getattr(self, inst_attr)})
 
         # Add data and parameter dictionaries to conf dictionary
@@ -275,9 +281,7 @@
         conf = self.get_api_config_del()
         return conf
 
-    ##########################
-    #   CLI Config Methods   #
-    ##########################
+    # CLI Config Methods
     def get_cli_config_add(self):
         &#34;&#34;&#34; Get FortiGate CLI configuration for adding self to FortiGate via CLI
 
@@ -309,10 +313,10 @@
 
         # For every attr defined in the data_attrs dictionary, if the dictionary value is true then add it to the
         # configuration.  Otherwise skip it.
-        for inst_attr, fg_attr in self.data_attrs.items():
+        for inst_attr, fg_attr in self._data_attrs.items():
 
             # Check for cli attribute in ignore list and skip if contained
-            if inst_attr in self.cli_ignore_attrs: continue
+            if inst_attr in self._cli_ignore_attrs: continue
 
             # get the value of an attribute based on the text name of the attribute in data_attrs dictionary
             config_attr = getattr(self, inst_attr)
@@ -336,7 +340,6 @@
 
         # End obj_id config
         conf += &#34;  end\nend\n&#34;
-
 
         # End vdom or global config
         if self.vdom:
@@ -420,6 +423,7 @@
 </code></dt>
 <dd>
 <section class="desc"><p>FgObject class represents basic methods and attributes used commonly across most, if not all, child class objects</p>
+<p>This is an abstract class and as such cannot be instantiated directly.</p>
 <p>FgObject class provides attributes and methods that are used by the specific FortiGate object child classes.
 Common
 attributes such as VDOM and object ID are contained and validated in this parent class.
@@ -449,10 +453,6 @@ is extended by the specific FortiGate object child classes such as FgFwPolicy.</
 <dd>used for objects which "may" be configured from global context to determine correct cli config path</dd>
 <dt><strong><code>is_global</code></strong> :&ensp;<code>bool</code></dt>
 <dd>Set if the object should be configured from global context only</dd>
-<dt><strong><code>data_attrs</code></strong></dt>
-<dd>the attributes from child classes to be used in generating configurations</dd>
-<dt><strong><code>cli_ignore_attrs</code></strong></dt>
-<dd>attributes from child classes that should be ignored</dd>
 </dl>
 <h2 id="args">Args</h2>
 <dl>
@@ -475,8 +475,10 @@ is extended by the specific FortiGate object child classes such as FgFwPolicy.</
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class FgObject:
+<pre><code class="python">class FgObject(ABC):
     &#34;&#34;&#34;FgObject class represents basic methods and attributes used commonly across most, if not all, child class objects
+
+    This is an abstract class and as such cannot be instantiated directly.
 
     FgObject class provides attributes and methods that are used by the specific FortiGate object child classes.  Common
     attributes such as VDOM and object ID are contained and validated in this parent class.  API and CLI path attributes
@@ -494,8 +496,6 @@ is extended by the specific FortiGate object child classes such as FgFwPolicy.</
         vdom: defines the vdom this object is to be configured/updated/deleted/got from.
         vdom_enabled: used for objects which &#34;may&#34; be configured from global context to determine correct cli config path
         is_global (bool): Set if the object should be configured from global context only
-        data_attrs: the attributes from child classes to be used in generating configurations
-        cli_ignore_attrs: attributes from child classes that should be ignored
 &#34;&#34;&#34;
 
     def __init__(self, api: str = None, api_path: str = None, api_name: str = None,  cli_path = None,
@@ -522,7 +522,7 @@ is extended by the specific FortiGate object child classes such as FgFwPolicy.</
 
         # Set attrs
         self.obj_id = obj_id
-        self.set_vdom(vdom)
+        self.vdom = vdom
 
         # Set and used only for objects that are configured via global context vs vdom context
         # these allow to determine if cli should use &#34;config system global&#34; or just configure the object
@@ -531,21 +531,27 @@ is extended by the specific FortiGate object child classes such as FgFwPolicy.</
         self.is_global = None
 
         # Map of instance attribute names to fg attribute names
-        self.data_attrs = {}
-        self.cli_ignore_attrs = {}
+        self._data_attrs = {}
+        # In CLI config output some attributes in data_attrs may not be needed. So set which to ignore for CLI
+        self._cli_ignore_attrs = {}
 
         # For use in string output of object such as dunder methods __str__ and __repr__
-        self.obj_to_str = f&#39;obj_id={self.obj_id}, vdom={self.vdom}&#39;
+        self._obj_to_str = f&#39;obj_id={self.obj_id}, vdom={self.vdom}&#39;
 
     # Instance to string dunder methods
     def __str__(self):
-        return self.obj_to_str
+        return self._obj_to_str
 
     def __repr__(self):
-        return self.obj_to_str
+        return self._obj_to_str
 
-    # Public methods
-    def set_vdom(self, vdom):
+    # Property Methods
+    @property
+    def vdom(self):
+        return self._vdom
+
+    @vdom.setter
+    def vdom(self, vdom):
         &#34;&#34;&#34; Validate the vdom argument for FortiGate consumption, if acceptable set to self.vdom
 
         Verify that vdom argument is non-empty string, with no whitespace between 1 and 31 chars.  If valid then set
@@ -558,7 +564,7 @@ is extended by the specific FortiGate object child classes such as FgFwPolicy.</
             None
         &#34;&#34;&#34;
         if vdom is None:
-            self.vdom = None
+            self._vdom = None
 
         else:
             if isinstance(vdom, str):
@@ -569,15 +575,13 @@ is extended by the specific FortiGate object child classes such as FgFwPolicy.</
 
                 # Check vdom name string length meets FG requirements
                 if 1 &lt;= len(vdom) &lt;= 31:
-                    self.vdom = vdom
+                    self._vdom = vdom
                 else:
                     raise ValueError(&#34;&#39;vdom&#39;, when set, must be a str between 1 and 31 chars&#34;)
             else:
                 raise ValueError(&#34;&#39;vdom&#39;, when set, must be a str between 1 and 31&#34;)
 
-    ##########################
-    #   API Config Methods   #
-    ##########################
+    # API Config Methods
     def get_api_config_add(self):
         &#34;&#34;&#34; Get FortiGate API configuration for adding(post) self to FortiGate via API using Fortinet&#39;s ftntlib library
 
@@ -615,7 +619,7 @@ is extended by the specific FortiGate object child classes such as FgFwPolicy.</
             else:
                 params.update({&#39;vdom&#39;: self.vdom})
 
-        for inst_attr, fg_attr in self.data_attrs.items():
+        for inst_attr, fg_attr in self._data_attrs.items():
             if getattr(self, inst_attr): data.update({fg_attr: getattr(self, inst_attr)})
 
         # Add data and parameter dictionaries to conf dictionary
@@ -726,9 +730,7 @@ is extended by the specific FortiGate object child classes such as FgFwPolicy.</
         conf = self.get_api_config_del()
         return conf
 
-    ##########################
-    #   CLI Config Methods   #
-    ##########################
+    # CLI Config Methods
     def get_cli_config_add(self):
         &#34;&#34;&#34; Get FortiGate CLI configuration for adding self to FortiGate via CLI
 
@@ -760,10 +762,10 @@ is extended by the specific FortiGate object child classes such as FgFwPolicy.</
 
         # For every attr defined in the data_attrs dictionary, if the dictionary value is true then add it to the
         # configuration.  Otherwise skip it.
-        for inst_attr, fg_attr in self.data_attrs.items():
+        for inst_attr, fg_attr in self._data_attrs.items():
 
             # Check for cli attribute in ignore list and skip if contained
-            if inst_attr in self.cli_ignore_attrs: continue
+            if inst_attr in self._cli_ignore_attrs: continue
 
             # get the value of an attribute based on the text name of the attribute in data_attrs dictionary
             config_attr = getattr(self, inst_attr)
@@ -787,7 +789,6 @@ is extended by the specific FortiGate object child classes such as FgFwPolicy.</
 
         # End obj_id config
         conf += &#34;  end\nend\n&#34;
-
 
         # End vdom or global config
         if self.vdom:
@@ -855,6 +856,10 @@ is extended by the specific FortiGate object child classes such as FgFwPolicy.</
         else:
             raise Exception(&#34;&#39;obj_id&#39; must be set in order to configure it for delete&#34;)</code></pre>
 </details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>abc.ABC</li>
+</ul>
 <h3>Subclasses</h3>
 <ul class="hlist">
 <li><a title="fgobjlib.fg_sys_router_static.FgRouteIPv4" href="fg_sys_router_static.html#fgobjlib.fg_sys_router_static.FgRouteIPv4">FgRouteIPv4</a></li>
@@ -867,6 +872,21 @@ is extended by the specific FortiGate object child classes such as FgFwPolicy.</
 <li><a title="fgobjlib.fg_sys_vdomlink.FgVdomLink" href="fg_sys_vdomlink.html#fgobjlib.fg_sys_vdomlink.FgVdomLink">FgVdomLink</a></li>
 <li><a title="fgobjlib.fg_sys_vdom.FgVdom" href="fg_sys_vdom.html#fgobjlib.fg_sys_vdom.FgVdom">FgVdom</a></li>
 </ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fgobjlib.fg_object.FgObject.vdom"><code class="name">var <span class="ident">vdom</span></code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def vdom(self):
+    return self._vdom</code></pre>
+</details>
+</dd>
+</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="fgobjlib.fg_object.FgObject.get_api_config_add"><code class="name flex">
@@ -938,7 +958,7 @@ for ftntlib REST API methods.</p>
         else:
             params.update({&#39;vdom&#39;: self.vdom})
 
-    for inst_attr, fg_attr in self.data_attrs.items():
+    for inst_attr, fg_attr in self._data_attrs.items():
         if getattr(self, inst_attr): data.update({fg_attr: getattr(self, inst_attr)})
 
     # Add data and parameter dictionaries to conf dictionary
@@ -1198,10 +1218,10 @@ snippet for the current instance object.</p>
 
     # For every attr defined in the data_attrs dictionary, if the dictionary value is true then add it to the
     # configuration.  Otherwise skip it.
-    for inst_attr, fg_attr in self.data_attrs.items():
+    for inst_attr, fg_attr in self._data_attrs.items():
 
         # Check for cli attribute in ignore list and skip if contained
-        if inst_attr in self.cli_ignore_attrs: continue
+        if inst_attr in self._cli_ignore_attrs: continue
 
         # get the value of an attribute based on the text name of the attribute in data_attrs dictionary
         config_attr = getattr(self, inst_attr)
@@ -1225,7 +1245,6 @@ snippet for the current instance object.</p>
 
     # End obj_id config
     conf += &#34;  end\nend\n&#34;
-
 
     # End vdom or global config
     if self.vdom:
@@ -1338,59 +1357,6 @@ snippet for the current instance object.</p>
     return conf</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_object.FgObject.set_vdom"><code class="name flex">
-<span>def <span class="ident">set_vdom</span></span>(<span>self, vdom)</span>
-</code></dt>
-<dd>
-<section class="desc"><p>Validate the vdom argument for FortiGate consumption, if acceptable set to self.vdom</p>
-<p>Verify that vdom argument is non-empty string, with no whitespace between 1 and 31 chars.
-If valid then set
-self.vdom = vdom</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>vdom</code></strong> :&ensp;<code>str</code></dt>
-<dd>FortiGate VDOM name that the instance object should be tied to</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def set_vdom(self, vdom):
-    &#34;&#34;&#34; Validate the vdom argument for FortiGate consumption, if acceptable set to self.vdom
-
-    Verify that vdom argument is non-empty string, with no whitespace between 1 and 31 chars.  If valid then set
-    self.vdom = vdom
-
-    Args:
-        vdom (str): FortiGate VDOM name that the instance object should be tied to
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if vdom is None:
-        self.vdom = None
-
-    else:
-        if isinstance(vdom, str):
-            # vdom names cannot have spaces so check for spaces and throw error if there are
-            for char in vdom:
-                if str.isspace(char):
-                    raise ValueError(&#34;&#39;vdom&#39;, when set, must be str with no whitespace&#34;)
-
-            # Check vdom name string length meets FG requirements
-            if 1 &lt;= len(vdom) &lt;= 31:
-                self.vdom = vdom
-            else:
-                raise ValueError(&#34;&#39;vdom&#39;, when set, must be a str between 1 and 31 chars&#34;)
-        else:
-            raise ValueError(&#34;&#39;vdom&#39;, when set, must be a str between 1 and 31&#34;)</code></pre>
-</details>
-</dd>
 </dl>
 </dd>
 </dl>
@@ -1419,7 +1385,7 @@ self.vdom = vdom</p>
 <li><code><a title="fgobjlib.fg_object.FgObject.get_cli_config_add" href="#fgobjlib.fg_object.FgObject.get_cli_config_add">get_cli_config_add</a></code></li>
 <li><code><a title="fgobjlib.fg_object.FgObject.get_cli_config_del" href="#fgobjlib.fg_object.FgObject.get_cli_config_del">get_cli_config_del</a></code></li>
 <li><code><a title="fgobjlib.fg_object.FgObject.get_cli_config_update" href="#fgobjlib.fg_object.FgObject.get_cli_config_update">get_cli_config_update</a></code></li>
-<li><code><a title="fgobjlib.fg_object.FgObject.set_vdom" href="#fgobjlib.fg_object.FgObject.set_vdom">set_vdom</a></code></li>
+<li><code><a title="fgobjlib.fg_object.FgObject.vdom" href="#fgobjlib.fg_object.FgObject.vdom">vdom</a></code></li>
 </ul>
 </li>
 </ul>

@@ -24,7 +24,10 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from fgobjlib import FgObject
+<pre><code class="python">from typing import Union
+
+from fgobjlib import FgObject
+
 
 class FgFwPolicy(FgObject):
     &#34;&#34;&#34;
@@ -32,8 +35,6 @@ class FgFwPolicy(FgObject):
     and generating both cli and api configuration data for use in external configuration applications.
 
     Attributes:
-        data_attrs (dict): Dictionary to define relevant config attributes and map instance attr names to fg attr names
-        cli_ignore_attrs (list): List of attributes to ignore when generating CLI configurations
         policyid (int): Object ID
         srcintf (list):  Policy source interface(s), may be string or list of strings
         dstintf (list): Policy destination interface(s), may be string or list of strings
@@ -50,68 +51,67 @@ class FgFwPolicy(FgObject):
         service (str): Negate the service in policy.  (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
     &#34;&#34;&#34;
 
-    def __init__(self, policyid: int = None, srcintf: list = None, dstintf: list = None, srcaddr: list = None,
-                 dstaddr: list = None, service: list = None, schedule: str = None, action: str = None,
-                 logtraffic: str = None, nat: str = None, vdom: str = None, srcaddr_negate: str = None,
-                 dstaddr_negate: str = None, name: str = None, comment: str = None, service_negate: str = None):
+    def __init__(self, policyid: int = None, srcintf: Union[str, list] = None, dstintf: Union[str, list] = None,
+                 srcaddr: Union[str, list] = None, dstaddr: Union[str, list] = None, service: Union[str, list] = None,
+                 schedule: str = None, action: str = None, logtraffic: str = None, nat: str = None, vdom: str = None,
+                 srcaddr_negate: str = None, dstaddr_negate: str = None, name: str = None, comment: str = None,
+                 service_negate: str = None):
         &#34;&#34;&#34;
         Args:
-            policyid (int): optional - ID of object.  Defines ID used in configs when API or CLI for config methods (default: 0)
-            srcintf (list): required - string or list of strings referencing src interface(s) of policy
-            dstintf (list): required - string or list of strings referencing dst interface(s) of policy
-            srcaddr (list): required - string or list of strings referencing src address(s) of policy
-            dstaddr (list): required - string or list of strings referencing dst address(s) of policy
-            schedule (str): optional - string referencing schedule to associated with policy (default: &#39;always&#39;)
-            action (str): optional - string sets action to assign to policy; may be &#39;accept&#39; or &#39;deny&#39; (default: deny)
-            logtraffic (str): optional - string set logtraffic action to assign; may be utm/all/disabled (default: disabled)
-            nat (str): optional - set nat enabled or disable (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
-            comment (str): optional - Set a comment up to 255 characters (default: None)
-            vdom (str): optional - Set vdom.  If unset object configs uses default fg context (default: None)
+            policyid (int): ID of object.  Defines ID used in configs when API or CLI for config methods (default: 0)
+            srcintf (list): string or list of strings referencing src interface(s) of policy
+            dstintf (list): string or list of strings referencing dst interface(s) of policy
+            srcaddr (list): string or list of strings referencing src address(s) of policy
+            dstaddr (list): string or list of strings referencing dst address(s) of policy
+            schedule (str): string referencing schedule to associated with policy (default: &#39;always&#39;)
+            action (str): string sets action to assign to policy; may be &#39;accept&#39; or &#39;deny&#39; (default: deny)
+            logtraffic (str): string set logtraffic action to assign; may be utm/all/disabled (default: disabled)
+            nat (str): set nat enabled or disable (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
+            comment (str): set a comment up to 255 characters (default: None)
+            vdom (str): opt - set vdom.  If unset object configs uses default fg context (default: None)
             srcaddr_negate (str): Negate the source address in policy.  (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
             dstaddr_negate (str): Negate the destination address in policy.  (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
             service (str): Negate the service in policy.  (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
         &#34;&#34;&#34;
-
 
         # Initialize the parent class - we do set this here, because the subclass will first verify obj_id
         # is acceptable for this class type in the above attribute set functions
         super().__init__(api=&#39;cmdb&#39;, api_path=&#39;firewall&#39;, api_name=&#39;policy&#39;, cli_path=&#34;config firewall policy&#34;,
                          obj_id=policyid, vdom=vdom)
 
-        ### Set parent class attributes ###
+        # Set parent class attributes
         # Map instance attribute names to fg attribute names
-        self.data_attrs = {&#39;policyid&#39;: &#39;policyid&#39;, &#39;srcintf&#39;: &#39;srcintf&#39;, &#39;dstintf&#39;: &#39;dstintf&#39;, &#39;srcaddr&#39;: &#39;srcaddr&#39;,
-                           &#39;service&#39;: &#39;service&#39;, &#39;schedule&#39;: &#39;schedule&#39;, &#39;action&#39;: &#39;action&#39;, &#39;logtraffic&#39;: &#39;logtraffic&#39;,
-                           &#39;nat&#39;: &#39;nat&#39;, &#39;srcaddr_negate&#39;: &#39;srcaddr-negate&#39;, &#39;dstaddr_negate&#39;: &#39;dstaddr-negate&#39;,
-                           &#39;service_negate&#39;: &#39;service-negate&#39;, &#39;name&#39;: &#39;name&#39;}
+        self._data_attrs = {&#39;policyid&#39;: &#39;policyid&#39;, &#39;srcintf&#39;: &#39;srcintf&#39;, &#39;dstintf&#39;: &#39;dstintf&#39;, &#39;srcaddr&#39;: &#39;srcaddr&#39;,
+                            &#39;service&#39;: &#39;service&#39;, &#39;schedule&#39;: &#39;schedule&#39;, &#39;action&#39;: &#39;action&#39;,
+                            &#39;logtraffic&#39;: &#39;logtraffic&#39;, &#39;nat&#39;: &#39;nat&#39;, &#39;srcaddr_negate&#39;: &#39;srcaddr-negate&#39;,
+                            &#39;dstaddr_negate&#39;: &#39;dstaddr-negate&#39;, &#39;service_negate&#39;: &#39;service-negate&#39;, &#39;name&#39;: &#39;name&#39;}
 
-        self.cli_ignore_attrs = [&#39;policyid&#39;]
+        self._cli_ignore_attrs = [&#39;policyid&#39;]
 
-        # Set Instance Variables
-        self.set_policyid(policyid)
-        self.set_srcintf(srcintf)
-        self.set_dstintf(dstintf)
-        self.set_srcaddr(srcaddr)
-        self.set_dstaddr(dstaddr)
-        self.set_service(service)
-        self.set_schedule(schedule)
-        self.set_action(action)
-        self.set_logtraffic(logtraffic)
-        self.set_nat(nat)
-        self.set_srcaddr_negate(srcaddr_negate)
-        self.set_dstaddr_negate(dstaddr_negate)
-        self.set_service_negate(service_negate)
-        self.set_comment(comment)
-        self.set_name(name)
+        # Set Instance Variables (uses @property and setters defined below)
+        self.policyid = policyid
+        self.srcintf = srcintf
+        self.dstintf = dstintf
+        self.srcaddr = srcaddr
+        self.dstaddr = dstaddr
+        self.service = service
+        self.schedule = schedule
+        self.action = action
+        self.logtraffic = logtraffic
+        self.nat = nat
+        self.srcaddr_negate = srcaddr_negate
+        self.dstaddr_negate = dstaddr_negate
+        self.service_negate = service_negate
+        self.comment = comment
+        self.name = name
 
         # Update the parent defined obj_to_str attribute with this objects str representation
-        self.obj_to_str += f&#39;, policyid={self.policyid}, srcintf={self.srcintf}, dstintf={self.dstintf}, &#39; \
-                          f&#39;srcaddr={self.srcaddr}, dstaddr={self.dstaddr}, service={self.service}, &#39; \
-                          f&#39;schedule={self.schedule}, action={self.action}, logtraffic={self.logtraffic}, &#39; \
-                          f&#39;nat={self.nat}, srcaddr_negate={self.srcaddr_negate}, &#39; \
-                          f&#39;dstaddr_negate={self.dstaddr_negate}, service_negate={self.service_negate}, &#39; \
-                          f&#39;comment={self.comment}, vdom={self.vdom}&#39;
-
+        self._obj_to_str += f&#39;, policyid={self.policyid}, srcintf={self.srcintf}, dstintf={self.dstintf}, &#39; \
+                            f&#39;srcaddr={self.srcaddr}, dstaddr={self.dstaddr}, service={self.service}, &#39; \
+                            f&#39;schedule={self.schedule}, action={self.action}, logtraffic={self.logtraffic}, &#39; \
+                            f&#39;nat={self.nat}, srcaddr_negate={self.srcaddr_negate}, &#39; \
+                            f&#39;dstaddr_negate={self.dstaddr_negate}, service_negate={self.service_negate}, &#39; \
+                            f&#39;comment={self.comment}, vdom={self.vdom}&#39;
 
     # Static Methods
     @staticmethod
@@ -148,7 +148,8 @@ class FgFwPolicy(FgObject):
             # Make sure each interface passed in is not all whitespace and it is less than 80 chars
             for item in obj_list:
                 if isinstance(item[&#39;name&#39;], str):
-                    if item[&#39;name&#39;].isspace(): raise Exception(f&#34;{item} cannot be an empty string&#34;)
+                    if item[&#39;name&#39;].isspace():
+                        raise Exception(f&#34;{item} cannot be an empty string&#34;)
 
                     if not len(item[&#39;name&#39;]) &lt; 80:
                         raise Exception(&#34;&#39;policy_object(s)&#39;, must be 79 chars or less&#34;)
@@ -159,8 +160,13 @@ class FgFwPolicy(FgObject):
             # set self.&lt;obj_type&gt; attribute with the verified and formatted obj_list
             return obj_list
 
-    # Instance Methods
-    def set_policyid(self, policyid):
+    # Instance Properties and Setters
+    @property
+    def policyid(self):
+        return self._policyid
+
+    @policyid.setter
+    def policyid(self, policyid):
         &#34;&#34;&#34; Set self.policyid to policyid if policyid is valid or if not provided set policyid = 0.
 
         Args:
@@ -170,17 +176,20 @@ class FgFwPolicy(FgObject):
             None
         &#34;&#34;&#34;
         if policyid is None:
-            self.policyid = 0
+            self._policyid = 0
 
         else:
             if isinstance(policyid, int):
-                self.policyid = policyid
+                self._policyid = policyid
             else:
                 raise Exception(&#34;&#39;id&#39;, when set, must be an integer&#34;)
 
+    @property
+    def srcintf(self):
+        return self._srcintf
 
-
-    def set_srcintf(self, policy_object):
+    @srcintf.setter
+    def srcintf(self, policy_object):
         &#34;&#34;&#34; Check the validity of srcintf objects and sets self.srcintf to list containing objects of dstintf
 
         Calls _validate_and_get_policy_obj()
@@ -191,9 +200,14 @@ class FgFwPolicy(FgObject):
         Returns:
             None
         &#34;&#34;&#34;
-        self.srcintf = self._validate_and_get_policy_obj(policy_object)
+        self._srcintf = self._validate_and_get_policy_obj(policy_object)
 
-    def set_dstintf(self, policy_object):
+    @property
+    def dstintf(self):
+        return self._dstintf
+
+    @dstintf.setter
+    def dstintf(self, policy_object):
         &#34;&#34;&#34; Check the validity of dstintf objects and sets self.dstintf to list containing objects of dstintf
 
         Calls _validate_and_get_policy_obj()
@@ -204,9 +218,14 @@ class FgFwPolicy(FgObject):
         Returns:
             None
         &#34;&#34;&#34;
-        self.dstintf = self._validate_and_get_policy_obj(policy_object)
+        self._dstintf = self._validate_and_get_policy_obj(policy_object)
 
-    def set_srcaddr(self, policy_object):
+    @property
+    def srcaddr(self):
+        return self._srcaddr
+
+    @srcaddr.setter
+    def srcaddr(self, policy_object):
         &#34;&#34;&#34; Check the validity of srcaddr objects and sets self.srcaddr to list containing objects of srcaddr
 
         Calls _validate_and_get_policy_obj()
@@ -217,10 +236,14 @@ class FgFwPolicy(FgObject):
         Returns:
             None
         &#34;&#34;&#34;
-        self.srcaddr = self._validate_and_get_policy_obj(policy_object)
+        self._srcaddr = self._validate_and_get_policy_obj(policy_object)
 
+    @property
+    def dstaddr(self):
+        return self._dstaddr
 
-    def set_dstaddr(self, policy_object):
+    @dstaddr.setter
+    def dstaddr(self, policy_object):
         &#34;&#34;&#34; Check the validity of dstaddr objects and sets self.dstaddr to list containing objects of dstaddr
 
         Calls _validate_and_get_policy_obj()
@@ -231,10 +254,14 @@ class FgFwPolicy(FgObject):
         Returns:
             None
         &#34;&#34;&#34;
-        self.dstaddr = self._validate_and_get_policy_obj(policy_object)
+        self._dstaddr = self._validate_and_get_policy_obj(policy_object)
 
+    @property
+    def service(self):
+        return self._service
 
-    def set_service(self, policy_object):
+    @service.setter
+    def service(self, policy_object):
         &#34;&#34;&#34; Check the validity of service objects and sets self.service to list containing objects of service
 
         Calls _validate_and_get_policy_obj()
@@ -245,10 +272,14 @@ class FgFwPolicy(FgObject):
         Returns:
             None
         &#34;&#34;&#34;
-        self.service = self._validate_and_get_policy_obj(policy_object)
+        self._service = self._validate_and_get_policy_obj(policy_object)
 
+    @property
+    def schedule(self):
+        return self._schedule
 
-    def set_schedule(self, schedule):
+    @schedule.setter
+    def schedule(self, schedule):
         &#34;&#34;&#34; Set self.schedule to &#39;schedule&#39; if &#39;schedule&#39; name provided meets requirements
 
         Args:
@@ -258,21 +289,26 @@ class FgFwPolicy(FgObject):
             None
         &#34;&#34;&#34;
         if schedule is None:
-            self.schedule = None
+            self._schedule = None
 
         else:
             if isinstance(schedule, str):
-                if not len(schedule) &lt;= 36:
-                    raise Exception(&#34;&#39;schedule, when set, must be less 35 chars or less&#34;)
+                if not len(schedule) &lt;= 35:
+                    raise ValueError(&#34;&#39;schedule, when set, must be type str() 35 chars or less&#34;)
 
                 if schedule.isspace():
-                    raise Exception(&#34;&#39;schedule&#39;, when set, cannot be an empty string&#34;)
+                    raise ValueError(&#34;&#39;schedule&#39;, when set, cannot be an empty string&#34;)
             else:
-                raise Exception(&#34;&#39;schedule&#39;, when set, must be type str&#34;)
+                raise ValueError(&#34;&#39;schedule&#39;, when set, must be type str() 35 chars or less&#34;)
 
-            self.schedule = schedule
+            self._schedule = schedule
 
-    def set_action(self, action):
+    @property
+    def action(self):
+        return self._action
+
+    @action.setter
+    def action(self, action):
         &#34;&#34;&#34; Set self.action to &#39;action&#39; if action meets requirements
 
         Args:
@@ -282,17 +318,24 @@ class FgFwPolicy(FgObject):
             None
         &#34;&#34;&#34;
         if action is None:
-            self.action = None
+            self._action = None
 
-        else:
+        elif isinstance(action, str):
             if action.lower() == &#39;accept&#39; or action.lower() == &#39;allow&#39;:
-                self.action = &#39;accept&#39;
+                self._action = &#39;accept&#39;
             elif action.lower() == &#39;deny&#39; or action.lower() == &#39;drop&#39;:
-                self.action = &#39;deny&#39;
+                self._action = &#39;deny&#39;
             else:
-                raise ValueError(&#34;&#39;action&#39;, when set, must be either &#39;accept&#39; or &#39;deny&#39;&#34;)
+                raise ValueError(&#34;&#39;action&#39;, when set, must be type str() with value &#39;accept&#39; or &#39;deny&#39;&#34;)
+        else:
+            raise ValueError(&#34;&#39;action&#39;, when set, must be type str() with value &#39;accept&#39; or &#39;deny&#39;&#34;)
 
-    def set_logtraffic(self, logtraffic):
+    @property
+    def logtraffic(self):
+        return self._logtraffic
+
+    @logtraffic.setter
+    def logtraffic(self, logtraffic):
         &#34;&#34;&#34; Set self.logtraffic to &#39;logtraffic&#39; if logtraffic is valid
 
         Args:
@@ -302,19 +345,28 @@ class FgFwPolicy(FgObject):
             None
         &#34;&#34;&#34;
         if logtraffic is None:
-            self.logtraffic = None
+            self._logtraffic = None
 
-        else:
+        elif isinstance(logtraffic, str):
             if logtraffic.lower() == &#39;utm&#39;:
-                self.logtraffic = &#39;utm&#39;
+                self._logtraffic = &#39;utm&#39;
 
             elif logtraffic.lower() == &#39;all&#39;:
-                self.logtraffic = &#39;all&#39;
+                self._logtraffic = &#39;all&#39;
 
             elif logtraffic.lower() == &#39;disabled&#39; or logtraffic.lower() == &#39;disable&#39;:
-                self.logtraffic = &#39;disabled&#39;
+                self._logtraffic = &#39;disabled&#39;
+            else:
+                raise ValueError(&#34;&#39;logtraffic&#39;, when set must be type str() with value &#39;utm&#39;, &#39;all&#39; or &#39;disabled&#39;&#34;)
+        else:
+            raise ValueError(&#34;&#39;logtraffic&#39;, when set must be type str()&#34;)
 
-    def set_nat(self, nat):
+    @property
+    def nat(self):
+        return self._nat
+
+    @nat.setter
+    def nat(self, nat):
         &#34;&#34;&#34; Set self.nat to &#39;nat&#39; if valid.  True=enable, False=disable
 
         Args:
@@ -324,20 +376,25 @@ class FgFwPolicy(FgObject):
             None
         &#34;&#34;&#34;
         if nat is None:
-            self.nat = None
+            self._nat = None
 
         else:
             if isinstance(nat, str):
                 if nat == &#39;enable&#39;:
-                    self.nat = &#39;enable&#39;
+                    self._nat = &#39;enable&#39;
                 elif nat == &#39;disable&#39;:
-                    self.nat = &#39;disable&#39;
+                    self._nat = &#39;disable&#39;
                 else:
                     raise ValueError(&#34;&#39;nat&#39;, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#39;&#34;)
             else:
                 raise ValueError(&#34;&#39;nat&#39;, when set, must be type str()&#34;)
 
-    def set_comment(self, comment):
+    @property
+    def comment(self):
+        return self._comment
+
+    @comment.setter
+    def comment(self, comment):
         &#34;&#34;&#34; Set self.comment to &#39;comment&#39; if comment string within requirements
 
         Args:
@@ -347,18 +404,23 @@ class FgFwPolicy(FgObject):
             None
         &#34;&#34;&#34;
         if comment is None:
-            self.comment = None
+            self._comment = None
 
         else:
             if isinstance(comment, str):
                 if 1 &lt;= len(comment) &lt;= 1023:
-                    self.comment = comment
+                    self._comment = comment
                 else:
-                    raise Exception(&#34;&#39;comment&#39;, when set, must be type str between 1 and 1023 chars&#34;)
+                    raise ValueError(&#34;&#39;comment&#39;, when set, must be type str() between 1 and 1023 chars&#34;)
             else:
-                raise Exception(&#34;&#39;comment&#39;, when set, must be type str&#34;)
+                raise ValueError(&#34;&#39;comment&#39;, when set, must be type str()&#34;)
 
-    def set_name(self, name):
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, name):
         &#34;&#34;&#34; Set self.comment to &#39;comment&#39; if comment string within requirements
 
         Args:
@@ -368,18 +430,23 @@ class FgFwPolicy(FgObject):
             None
         &#34;&#34;&#34;
         if name is None:
-            self.name = None
+            self._name = None
 
         else:
             if isinstance(name, str):
                 if 1 &lt;= len(name) &lt;= 35:
-                    self.name = name
+                    self._name = name
                 else:
-                    raise Exception(&#34;&#39;name&#39;, when set, must be type str() between 1 and 1,023 chars&#34;)
+                    raise ValueError(&#34;&#39;name&#39;, when set, must be type str() between 1 and 1,023 chars&#34;)
             else:
-                raise Exception(&#34;&#39;name&#39;, when set, must be type str()&#34;)
+                raise ValueError(&#34;&#39;name&#39;, when set, must be type str()&#34;)
 
-    def set_srcaddr_negate(self, negate):
+    @property
+    def srcaddr_negate(self):
+        return self._srcaddr_negate
+
+    @srcaddr_negate.setter
+    def srcaddr_negate(self, negate):
         &#34;&#34;&#34; Set the self.srcaddr_negate attribute representing negate type in policy
 
         Args:
@@ -389,20 +456,25 @@ class FgFwPolicy(FgObject):
             None
         &#34;&#34;&#34;
         if negate is None:
-            self.srcaddr_negate = None
+            self._srcaddr_negate = None
 
         else:
             if isinstance(negate, str):
                 if negate == &#39;enable&#39;:
-                    self.srcaddr_negate = &#39;enable&#39;
+                    self._srcaddr_negate = &#39;enable&#39;
                 elif negate == &#39;disable&#39;:
-                    self.srcaddr_negate = &#39;disable&#39;
+                    self._srcaddr_negate = &#39;disable&#39;
                 else:
                     raise ValueError(&#34;&#39;srcaddr_negate, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#34;)
             else:
                 raise ValueError(&#34;&#39;srcaddr_negate&#39;, when set, must be type str()&#34;)
 
-    def set_dstaddr_negate(self, negate):
+    @property
+    def dstaddr_negate(self):
+        return self._dstaddr_negate
+
+    @dstaddr_negate.setter
+    def dstaddr_negate(self, negate):
         &#34;&#34;&#34; Set the self.dstaddr_negate attribute representing negate type in policy
 
         Args:
@@ -412,21 +484,26 @@ class FgFwPolicy(FgObject):
             None
         &#34;&#34;&#34;
         if negate is None:
-            self.dstaddr_negate = None
+            self._dstaddr_negate = None
 
         else:
             if isinstance(negate, str):
                 if negate == &#39;enable&#39;:
-                    self.dstaddr_negate = &#39;enable&#39;
+                    self._dstaddr_negate = &#39;enable&#39;
                 elif negate == &#39;disable&#39;:
-                    self.dstaddr_negate = &#39;disable&#39;
+                    self._dstaddr_negate = &#39;disable&#39;
                 else:
                     raise ValueError(&#34;&#39;dstaddr_negate&#39;, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#39;&#34;)
 
             else:
                 raise ValueError(&#34;&#39;dstaddr_negate&#39;, when set, must be type str()&#34;)
 
-    def set_service_negate(self, negate):
+    @property
+    def service_negate(self):
+        return self._service_negate
+
+    @service_negate.setter
+    def service_negate(self, negate):
         &#34;&#34;&#34; Set the self.service attribute representing negate type in policy
 
         Args:
@@ -436,14 +513,14 @@ class FgFwPolicy(FgObject):
             None
         &#34;&#34;&#34;
         if negate is None:
-            self.service_negate = None
+            self._service_negate = None
 
         else:
             if isinstance(negate, str):
                 if negate == &#39;enable&#39;:
-                    self.service_negate = &#39;enable&#39;
+                    self._service_negate = &#39;enable&#39;
                 elif negate == &#39;disable&#39;:
-                    self.service_negate = &#39;disable&#39;
+                    self._service_negate = &#39;disable&#39;
                 else:
                     raise ValueError(&#34;&#39;service_negate&#39;, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#39;&#34;)
             else:
@@ -468,10 +545,6 @@ class FgFwPolicy(FgObject):
 and generating both cli and api configuration data for use in external configuration applications.</p>
 <h2 id="attributes">Attributes</h2>
 <dl>
-<dt><strong><code>data_attrs</code></strong> :&ensp;<code>dict</code></dt>
-<dd>Dictionary to define relevant config attributes and map instance attr names to fg attr names</dd>
-<dt><strong><code>cli_ignore_attrs</code></strong> :&ensp;<code>list</code></dt>
-<dd>List of attributes to ignore when generating CLI configurations</dd>
 <dt><strong><code>policyid</code></strong> :&ensp;<code>int</code></dt>
 <dd>Object ID</dd>
 <dt><strong><code>srcintf</code></strong> :&ensp;<code>list</code></dt>
@@ -509,28 +582,28 @@ and generating both cli and api configuration data for use in external configura
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>policyid</code></strong> :&ensp;<code>int</code></dt>
-<dd>optional - ID of object.
+<dd>ID of object.
 Defines ID used in configs when API or CLI for config methods (default: 0)</dd>
 <dt><strong><code>srcintf</code></strong> :&ensp;<code>list</code></dt>
-<dd>required - string or list of strings referencing src interface(s) of policy</dd>
+<dd>string or list of strings referencing src interface(s) of policy</dd>
 <dt><strong><code>dstintf</code></strong> :&ensp;<code>list</code></dt>
-<dd>required - string or list of strings referencing dst interface(s) of policy</dd>
+<dd>string or list of strings referencing dst interface(s) of policy</dd>
 <dt><strong><code>srcaddr</code></strong> :&ensp;<code>list</code></dt>
-<dd>required - string or list of strings referencing src address(s) of policy</dd>
+<dd>string or list of strings referencing src address(s) of policy</dd>
 <dt><strong><code>dstaddr</code></strong> :&ensp;<code>list</code></dt>
-<dd>required - string or list of strings referencing dst address(s) of policy</dd>
+<dd>string or list of strings referencing dst address(s) of policy</dd>
 <dt><strong><code>schedule</code></strong> :&ensp;<code>str</code></dt>
-<dd>optional - string referencing schedule to associated with policy (default: 'always')</dd>
+<dd>string referencing schedule to associated with policy (default: 'always')</dd>
 <dt><strong><code>action</code></strong> :&ensp;<code>str</code></dt>
-<dd>optional - string sets action to assign to policy; may be 'accept' or 'deny' (default: deny)</dd>
+<dd>string sets action to assign to policy; may be 'accept' or 'deny' (default: deny)</dd>
 <dt><strong><code>logtraffic</code></strong> :&ensp;<code>str</code></dt>
-<dd>optional - string set logtraffic action to assign; may be utm/all/disabled (default: disabled)</dd>
+<dd>string set logtraffic action to assign; may be utm/all/disabled (default: disabled)</dd>
 <dt><strong><code>nat</code></strong> :&ensp;<code>str</code></dt>
-<dd>optional - set nat enabled or disable ('enable', 'disable', or None=inherit)</dd>
+<dd>set nat enabled or disable ('enable', 'disable', or None=inherit)</dd>
 <dt><strong><code>comment</code></strong> :&ensp;<code>str</code></dt>
-<dd>optional - Set a comment up to 255 characters (default: None)</dd>
+<dd>set a comment up to 255 characters (default: None)</dd>
 <dt><strong><code>vdom</code></strong> :&ensp;<code>str</code></dt>
-<dd>optional - Set vdom.
+<dd>opt - set vdom.
 If unset object configs uses default fg context (default: None)</dd>
 <dt><strong><code>srcaddr_negate</code></strong> :&ensp;<code>str</code></dt>
 <dd>Negate the source address in policy.
@@ -552,8 +625,6 @@ If unset object configs uses default fg context (default: None)</dd>
     and generating both cli and api configuration data for use in external configuration applications.
 
     Attributes:
-        data_attrs (dict): Dictionary to define relevant config attributes and map instance attr names to fg attr names
-        cli_ignore_attrs (list): List of attributes to ignore when generating CLI configurations
         policyid (int): Object ID
         srcintf (list):  Policy source interface(s), may be string or list of strings
         dstintf (list): Policy destination interface(s), may be string or list of strings
@@ -570,68 +641,67 @@ If unset object configs uses default fg context (default: None)</dd>
         service (str): Negate the service in policy.  (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
     &#34;&#34;&#34;
 
-    def __init__(self, policyid: int = None, srcintf: list = None, dstintf: list = None, srcaddr: list = None,
-                 dstaddr: list = None, service: list = None, schedule: str = None, action: str = None,
-                 logtraffic: str = None, nat: str = None, vdom: str = None, srcaddr_negate: str = None,
-                 dstaddr_negate: str = None, name: str = None, comment: str = None, service_negate: str = None):
+    def __init__(self, policyid: int = None, srcintf: Union[str, list] = None, dstintf: Union[str, list] = None,
+                 srcaddr: Union[str, list] = None, dstaddr: Union[str, list] = None, service: Union[str, list] = None,
+                 schedule: str = None, action: str = None, logtraffic: str = None, nat: str = None, vdom: str = None,
+                 srcaddr_negate: str = None, dstaddr_negate: str = None, name: str = None, comment: str = None,
+                 service_negate: str = None):
         &#34;&#34;&#34;
         Args:
-            policyid (int): optional - ID of object.  Defines ID used in configs when API or CLI for config methods (default: 0)
-            srcintf (list): required - string or list of strings referencing src interface(s) of policy
-            dstintf (list): required - string or list of strings referencing dst interface(s) of policy
-            srcaddr (list): required - string or list of strings referencing src address(s) of policy
-            dstaddr (list): required - string or list of strings referencing dst address(s) of policy
-            schedule (str): optional - string referencing schedule to associated with policy (default: &#39;always&#39;)
-            action (str): optional - string sets action to assign to policy; may be &#39;accept&#39; or &#39;deny&#39; (default: deny)
-            logtraffic (str): optional - string set logtraffic action to assign; may be utm/all/disabled (default: disabled)
-            nat (str): optional - set nat enabled or disable (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
-            comment (str): optional - Set a comment up to 255 characters (default: None)
-            vdom (str): optional - Set vdom.  If unset object configs uses default fg context (default: None)
+            policyid (int): ID of object.  Defines ID used in configs when API or CLI for config methods (default: 0)
+            srcintf (list): string or list of strings referencing src interface(s) of policy
+            dstintf (list): string or list of strings referencing dst interface(s) of policy
+            srcaddr (list): string or list of strings referencing src address(s) of policy
+            dstaddr (list): string or list of strings referencing dst address(s) of policy
+            schedule (str): string referencing schedule to associated with policy (default: &#39;always&#39;)
+            action (str): string sets action to assign to policy; may be &#39;accept&#39; or &#39;deny&#39; (default: deny)
+            logtraffic (str): string set logtraffic action to assign; may be utm/all/disabled (default: disabled)
+            nat (str): set nat enabled or disable (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
+            comment (str): set a comment up to 255 characters (default: None)
+            vdom (str): opt - set vdom.  If unset object configs uses default fg context (default: None)
             srcaddr_negate (str): Negate the source address in policy.  (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
             dstaddr_negate (str): Negate the destination address in policy.  (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
             service (str): Negate the service in policy.  (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
         &#34;&#34;&#34;
-
 
         # Initialize the parent class - we do set this here, because the subclass will first verify obj_id
         # is acceptable for this class type in the above attribute set functions
         super().__init__(api=&#39;cmdb&#39;, api_path=&#39;firewall&#39;, api_name=&#39;policy&#39;, cli_path=&#34;config firewall policy&#34;,
                          obj_id=policyid, vdom=vdom)
 
-        ### Set parent class attributes ###
+        # Set parent class attributes
         # Map instance attribute names to fg attribute names
-        self.data_attrs = {&#39;policyid&#39;: &#39;policyid&#39;, &#39;srcintf&#39;: &#39;srcintf&#39;, &#39;dstintf&#39;: &#39;dstintf&#39;, &#39;srcaddr&#39;: &#39;srcaddr&#39;,
-                           &#39;service&#39;: &#39;service&#39;, &#39;schedule&#39;: &#39;schedule&#39;, &#39;action&#39;: &#39;action&#39;, &#39;logtraffic&#39;: &#39;logtraffic&#39;,
-                           &#39;nat&#39;: &#39;nat&#39;, &#39;srcaddr_negate&#39;: &#39;srcaddr-negate&#39;, &#39;dstaddr_negate&#39;: &#39;dstaddr-negate&#39;,
-                           &#39;service_negate&#39;: &#39;service-negate&#39;, &#39;name&#39;: &#39;name&#39;}
+        self._data_attrs = {&#39;policyid&#39;: &#39;policyid&#39;, &#39;srcintf&#39;: &#39;srcintf&#39;, &#39;dstintf&#39;: &#39;dstintf&#39;, &#39;srcaddr&#39;: &#39;srcaddr&#39;,
+                            &#39;service&#39;: &#39;service&#39;, &#39;schedule&#39;: &#39;schedule&#39;, &#39;action&#39;: &#39;action&#39;,
+                            &#39;logtraffic&#39;: &#39;logtraffic&#39;, &#39;nat&#39;: &#39;nat&#39;, &#39;srcaddr_negate&#39;: &#39;srcaddr-negate&#39;,
+                            &#39;dstaddr_negate&#39;: &#39;dstaddr-negate&#39;, &#39;service_negate&#39;: &#39;service-negate&#39;, &#39;name&#39;: &#39;name&#39;}
 
-        self.cli_ignore_attrs = [&#39;policyid&#39;]
+        self._cli_ignore_attrs = [&#39;policyid&#39;]
 
-        # Set Instance Variables
-        self.set_policyid(policyid)
-        self.set_srcintf(srcintf)
-        self.set_dstintf(dstintf)
-        self.set_srcaddr(srcaddr)
-        self.set_dstaddr(dstaddr)
-        self.set_service(service)
-        self.set_schedule(schedule)
-        self.set_action(action)
-        self.set_logtraffic(logtraffic)
-        self.set_nat(nat)
-        self.set_srcaddr_negate(srcaddr_negate)
-        self.set_dstaddr_negate(dstaddr_negate)
-        self.set_service_negate(service_negate)
-        self.set_comment(comment)
-        self.set_name(name)
+        # Set Instance Variables (uses @property and setters defined below)
+        self.policyid = policyid
+        self.srcintf = srcintf
+        self.dstintf = dstintf
+        self.srcaddr = srcaddr
+        self.dstaddr = dstaddr
+        self.service = service
+        self.schedule = schedule
+        self.action = action
+        self.logtraffic = logtraffic
+        self.nat = nat
+        self.srcaddr_negate = srcaddr_negate
+        self.dstaddr_negate = dstaddr_negate
+        self.service_negate = service_negate
+        self.comment = comment
+        self.name = name
 
         # Update the parent defined obj_to_str attribute with this objects str representation
-        self.obj_to_str += f&#39;, policyid={self.policyid}, srcintf={self.srcintf}, dstintf={self.dstintf}, &#39; \
-                          f&#39;srcaddr={self.srcaddr}, dstaddr={self.dstaddr}, service={self.service}, &#39; \
-                          f&#39;schedule={self.schedule}, action={self.action}, logtraffic={self.logtraffic}, &#39; \
-                          f&#39;nat={self.nat}, srcaddr_negate={self.srcaddr_negate}, &#39; \
-                          f&#39;dstaddr_negate={self.dstaddr_negate}, service_negate={self.service_negate}, &#39; \
-                          f&#39;comment={self.comment}, vdom={self.vdom}&#39;
-
+        self._obj_to_str += f&#39;, policyid={self.policyid}, srcintf={self.srcintf}, dstintf={self.dstintf}, &#39; \
+                            f&#39;srcaddr={self.srcaddr}, dstaddr={self.dstaddr}, service={self.service}, &#39; \
+                            f&#39;schedule={self.schedule}, action={self.action}, logtraffic={self.logtraffic}, &#39; \
+                            f&#39;nat={self.nat}, srcaddr_negate={self.srcaddr_negate}, &#39; \
+                            f&#39;dstaddr_negate={self.dstaddr_negate}, service_negate={self.service_negate}, &#39; \
+                            f&#39;comment={self.comment}, vdom={self.vdom}&#39;
 
     # Static Methods
     @staticmethod
@@ -668,7 +738,8 @@ If unset object configs uses default fg context (default: None)</dd>
             # Make sure each interface passed in is not all whitespace and it is less than 80 chars
             for item in obj_list:
                 if isinstance(item[&#39;name&#39;], str):
-                    if item[&#39;name&#39;].isspace(): raise Exception(f&#34;{item} cannot be an empty string&#34;)
+                    if item[&#39;name&#39;].isspace():
+                        raise Exception(f&#34;{item} cannot be an empty string&#34;)
 
                     if not len(item[&#39;name&#39;]) &lt; 80:
                         raise Exception(&#34;&#39;policy_object(s)&#39;, must be 79 chars or less&#34;)
@@ -679,8 +750,13 @@ If unset object configs uses default fg context (default: None)</dd>
             # set self.&lt;obj_type&gt; attribute with the verified and formatted obj_list
             return obj_list
 
-    # Instance Methods
-    def set_policyid(self, policyid):
+    # Instance Properties and Setters
+    @property
+    def policyid(self):
+        return self._policyid
+
+    @policyid.setter
+    def policyid(self, policyid):
         &#34;&#34;&#34; Set self.policyid to policyid if policyid is valid or if not provided set policyid = 0.
 
         Args:
@@ -690,17 +766,20 @@ If unset object configs uses default fg context (default: None)</dd>
             None
         &#34;&#34;&#34;
         if policyid is None:
-            self.policyid = 0
+            self._policyid = 0
 
         else:
             if isinstance(policyid, int):
-                self.policyid = policyid
+                self._policyid = policyid
             else:
                 raise Exception(&#34;&#39;id&#39;, when set, must be an integer&#34;)
 
+    @property
+    def srcintf(self):
+        return self._srcintf
 
-
-    def set_srcintf(self, policy_object):
+    @srcintf.setter
+    def srcintf(self, policy_object):
         &#34;&#34;&#34; Check the validity of srcintf objects and sets self.srcintf to list containing objects of dstintf
 
         Calls _validate_and_get_policy_obj()
@@ -711,9 +790,14 @@ If unset object configs uses default fg context (default: None)</dd>
         Returns:
             None
         &#34;&#34;&#34;
-        self.srcintf = self._validate_and_get_policy_obj(policy_object)
+        self._srcintf = self._validate_and_get_policy_obj(policy_object)
 
-    def set_dstintf(self, policy_object):
+    @property
+    def dstintf(self):
+        return self._dstintf
+
+    @dstintf.setter
+    def dstintf(self, policy_object):
         &#34;&#34;&#34; Check the validity of dstintf objects and sets self.dstintf to list containing objects of dstintf
 
         Calls _validate_and_get_policy_obj()
@@ -724,9 +808,14 @@ If unset object configs uses default fg context (default: None)</dd>
         Returns:
             None
         &#34;&#34;&#34;
-        self.dstintf = self._validate_and_get_policy_obj(policy_object)
+        self._dstintf = self._validate_and_get_policy_obj(policy_object)
 
-    def set_srcaddr(self, policy_object):
+    @property
+    def srcaddr(self):
+        return self._srcaddr
+
+    @srcaddr.setter
+    def srcaddr(self, policy_object):
         &#34;&#34;&#34; Check the validity of srcaddr objects and sets self.srcaddr to list containing objects of srcaddr
 
         Calls _validate_and_get_policy_obj()
@@ -737,10 +826,14 @@ If unset object configs uses default fg context (default: None)</dd>
         Returns:
             None
         &#34;&#34;&#34;
-        self.srcaddr = self._validate_and_get_policy_obj(policy_object)
+        self._srcaddr = self._validate_and_get_policy_obj(policy_object)
 
+    @property
+    def dstaddr(self):
+        return self._dstaddr
 
-    def set_dstaddr(self, policy_object):
+    @dstaddr.setter
+    def dstaddr(self, policy_object):
         &#34;&#34;&#34; Check the validity of dstaddr objects and sets self.dstaddr to list containing objects of dstaddr
 
         Calls _validate_and_get_policy_obj()
@@ -751,10 +844,14 @@ If unset object configs uses default fg context (default: None)</dd>
         Returns:
             None
         &#34;&#34;&#34;
-        self.dstaddr = self._validate_and_get_policy_obj(policy_object)
+        self._dstaddr = self._validate_and_get_policy_obj(policy_object)
 
+    @property
+    def service(self):
+        return self._service
 
-    def set_service(self, policy_object):
+    @service.setter
+    def service(self, policy_object):
         &#34;&#34;&#34; Check the validity of service objects and sets self.service to list containing objects of service
 
         Calls _validate_and_get_policy_obj()
@@ -765,10 +862,14 @@ If unset object configs uses default fg context (default: None)</dd>
         Returns:
             None
         &#34;&#34;&#34;
-        self.service = self._validate_and_get_policy_obj(policy_object)
+        self._service = self._validate_and_get_policy_obj(policy_object)
 
+    @property
+    def schedule(self):
+        return self._schedule
 
-    def set_schedule(self, schedule):
+    @schedule.setter
+    def schedule(self, schedule):
         &#34;&#34;&#34; Set self.schedule to &#39;schedule&#39; if &#39;schedule&#39; name provided meets requirements
 
         Args:
@@ -778,21 +879,26 @@ If unset object configs uses default fg context (default: None)</dd>
             None
         &#34;&#34;&#34;
         if schedule is None:
-            self.schedule = None
+            self._schedule = None
 
         else:
             if isinstance(schedule, str):
-                if not len(schedule) &lt;= 36:
-                    raise Exception(&#34;&#39;schedule, when set, must be less 35 chars or less&#34;)
+                if not len(schedule) &lt;= 35:
+                    raise ValueError(&#34;&#39;schedule, when set, must be type str() 35 chars or less&#34;)
 
                 if schedule.isspace():
-                    raise Exception(&#34;&#39;schedule&#39;, when set, cannot be an empty string&#34;)
+                    raise ValueError(&#34;&#39;schedule&#39;, when set, cannot be an empty string&#34;)
             else:
-                raise Exception(&#34;&#39;schedule&#39;, when set, must be type str&#34;)
+                raise ValueError(&#34;&#39;schedule&#39;, when set, must be type str() 35 chars or less&#34;)
 
-            self.schedule = schedule
+            self._schedule = schedule
 
-    def set_action(self, action):
+    @property
+    def action(self):
+        return self._action
+
+    @action.setter
+    def action(self, action):
         &#34;&#34;&#34; Set self.action to &#39;action&#39; if action meets requirements
 
         Args:
@@ -802,17 +908,24 @@ If unset object configs uses default fg context (default: None)</dd>
             None
         &#34;&#34;&#34;
         if action is None:
-            self.action = None
+            self._action = None
 
-        else:
+        elif isinstance(action, str):
             if action.lower() == &#39;accept&#39; or action.lower() == &#39;allow&#39;:
-                self.action = &#39;accept&#39;
+                self._action = &#39;accept&#39;
             elif action.lower() == &#39;deny&#39; or action.lower() == &#39;drop&#39;:
-                self.action = &#39;deny&#39;
+                self._action = &#39;deny&#39;
             else:
-                raise ValueError(&#34;&#39;action&#39;, when set, must be either &#39;accept&#39; or &#39;deny&#39;&#34;)
+                raise ValueError(&#34;&#39;action&#39;, when set, must be type str() with value &#39;accept&#39; or &#39;deny&#39;&#34;)
+        else:
+            raise ValueError(&#34;&#39;action&#39;, when set, must be type str() with value &#39;accept&#39; or &#39;deny&#39;&#34;)
 
-    def set_logtraffic(self, logtraffic):
+    @property
+    def logtraffic(self):
+        return self._logtraffic
+
+    @logtraffic.setter
+    def logtraffic(self, logtraffic):
         &#34;&#34;&#34; Set self.logtraffic to &#39;logtraffic&#39; if logtraffic is valid
 
         Args:
@@ -822,19 +935,28 @@ If unset object configs uses default fg context (default: None)</dd>
             None
         &#34;&#34;&#34;
         if logtraffic is None:
-            self.logtraffic = None
+            self._logtraffic = None
 
-        else:
+        elif isinstance(logtraffic, str):
             if logtraffic.lower() == &#39;utm&#39;:
-                self.logtraffic = &#39;utm&#39;
+                self._logtraffic = &#39;utm&#39;
 
             elif logtraffic.lower() == &#39;all&#39;:
-                self.logtraffic = &#39;all&#39;
+                self._logtraffic = &#39;all&#39;
 
             elif logtraffic.lower() == &#39;disabled&#39; or logtraffic.lower() == &#39;disable&#39;:
-                self.logtraffic = &#39;disabled&#39;
+                self._logtraffic = &#39;disabled&#39;
+            else:
+                raise ValueError(&#34;&#39;logtraffic&#39;, when set must be type str() with value &#39;utm&#39;, &#39;all&#39; or &#39;disabled&#39;&#34;)
+        else:
+            raise ValueError(&#34;&#39;logtraffic&#39;, when set must be type str()&#34;)
 
-    def set_nat(self, nat):
+    @property
+    def nat(self):
+        return self._nat
+
+    @nat.setter
+    def nat(self, nat):
         &#34;&#34;&#34; Set self.nat to &#39;nat&#39; if valid.  True=enable, False=disable
 
         Args:
@@ -844,20 +966,25 @@ If unset object configs uses default fg context (default: None)</dd>
             None
         &#34;&#34;&#34;
         if nat is None:
-            self.nat = None
+            self._nat = None
 
         else:
             if isinstance(nat, str):
                 if nat == &#39;enable&#39;:
-                    self.nat = &#39;enable&#39;
+                    self._nat = &#39;enable&#39;
                 elif nat == &#39;disable&#39;:
-                    self.nat = &#39;disable&#39;
+                    self._nat = &#39;disable&#39;
                 else:
                     raise ValueError(&#34;&#39;nat&#39;, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#39;&#34;)
             else:
                 raise ValueError(&#34;&#39;nat&#39;, when set, must be type str()&#34;)
 
-    def set_comment(self, comment):
+    @property
+    def comment(self):
+        return self._comment
+
+    @comment.setter
+    def comment(self, comment):
         &#34;&#34;&#34; Set self.comment to &#39;comment&#39; if comment string within requirements
 
         Args:
@@ -867,18 +994,23 @@ If unset object configs uses default fg context (default: None)</dd>
             None
         &#34;&#34;&#34;
         if comment is None:
-            self.comment = None
+            self._comment = None
 
         else:
             if isinstance(comment, str):
                 if 1 &lt;= len(comment) &lt;= 1023:
-                    self.comment = comment
+                    self._comment = comment
                 else:
-                    raise Exception(&#34;&#39;comment&#39;, when set, must be type str between 1 and 1023 chars&#34;)
+                    raise ValueError(&#34;&#39;comment&#39;, when set, must be type str() between 1 and 1023 chars&#34;)
             else:
-                raise Exception(&#34;&#39;comment&#39;, when set, must be type str&#34;)
+                raise ValueError(&#34;&#39;comment&#39;, when set, must be type str()&#34;)
 
-    def set_name(self, name):
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, name):
         &#34;&#34;&#34; Set self.comment to &#39;comment&#39; if comment string within requirements
 
         Args:
@@ -888,18 +1020,23 @@ If unset object configs uses default fg context (default: None)</dd>
             None
         &#34;&#34;&#34;
         if name is None:
-            self.name = None
+            self._name = None
 
         else:
             if isinstance(name, str):
                 if 1 &lt;= len(name) &lt;= 35:
-                    self.name = name
+                    self._name = name
                 else:
-                    raise Exception(&#34;&#39;name&#39;, when set, must be type str() between 1 and 1,023 chars&#34;)
+                    raise ValueError(&#34;&#39;name&#39;, when set, must be type str() between 1 and 1,023 chars&#34;)
             else:
-                raise Exception(&#34;&#39;name&#39;, when set, must be type str()&#34;)
+                raise ValueError(&#34;&#39;name&#39;, when set, must be type str()&#34;)
 
-    def set_srcaddr_negate(self, negate):
+    @property
+    def srcaddr_negate(self):
+        return self._srcaddr_negate
+
+    @srcaddr_negate.setter
+    def srcaddr_negate(self, negate):
         &#34;&#34;&#34; Set the self.srcaddr_negate attribute representing negate type in policy
 
         Args:
@@ -909,20 +1046,25 @@ If unset object configs uses default fg context (default: None)</dd>
             None
         &#34;&#34;&#34;
         if negate is None:
-            self.srcaddr_negate = None
+            self._srcaddr_negate = None
 
         else:
             if isinstance(negate, str):
                 if negate == &#39;enable&#39;:
-                    self.srcaddr_negate = &#39;enable&#39;
+                    self._srcaddr_negate = &#39;enable&#39;
                 elif negate == &#39;disable&#39;:
-                    self.srcaddr_negate = &#39;disable&#39;
+                    self._srcaddr_negate = &#39;disable&#39;
                 else:
                     raise ValueError(&#34;&#39;srcaddr_negate, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#34;)
             else:
                 raise ValueError(&#34;&#39;srcaddr_negate&#39;, when set, must be type str()&#34;)
 
-    def set_dstaddr_negate(self, negate):
+    @property
+    def dstaddr_negate(self):
+        return self._dstaddr_negate
+
+    @dstaddr_negate.setter
+    def dstaddr_negate(self, negate):
         &#34;&#34;&#34; Set the self.dstaddr_negate attribute representing negate type in policy
 
         Args:
@@ -932,21 +1074,26 @@ If unset object configs uses default fg context (default: None)</dd>
             None
         &#34;&#34;&#34;
         if negate is None:
-            self.dstaddr_negate = None
+            self._dstaddr_negate = None
 
         else:
             if isinstance(negate, str):
                 if negate == &#39;enable&#39;:
-                    self.dstaddr_negate = &#39;enable&#39;
+                    self._dstaddr_negate = &#39;enable&#39;
                 elif negate == &#39;disable&#39;:
-                    self.dstaddr_negate = &#39;disable&#39;
+                    self._dstaddr_negate = &#39;disable&#39;
                 else:
                     raise ValueError(&#34;&#39;dstaddr_negate&#39;, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#39;&#34;)
 
             else:
                 raise ValueError(&#34;&#39;dstaddr_negate&#39;, when set, must be type str()&#34;)
 
-    def set_service_negate(self, negate):
+    @property
+    def service_negate(self):
+        return self._service_negate
+
+    @service_negate.setter
+    def service_negate(self, negate):
         &#34;&#34;&#34; Set the self.service attribute representing negate type in policy
 
         Args:
@@ -956,14 +1103,14 @@ If unset object configs uses default fg context (default: None)</dd>
             None
         &#34;&#34;&#34;
         if negate is None:
-            self.service_negate = None
+            self._service_negate = None
 
         else:
             if isinstance(negate, str):
                 if negate == &#39;enable&#39;:
-                    self.service_negate = &#39;enable&#39;
+                    self._service_negate = &#39;enable&#39;
                 elif negate == &#39;disable&#39;:
-                    self.service_negate = &#39;disable&#39;
+                    self._service_negate = &#39;disable&#39;
                 else:
                     raise ValueError(&#34;&#39;service_negate&#39;, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#39;&#34;)
             else:
@@ -972,598 +1119,188 @@ If unset object configs uses default fg context (default: None)</dd>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="fgobjlib.fg_object.FgObject" href="fg_object.html#fgobjlib.fg_object.FgObject">FgObject</a></li>
+<li>abc.ABC</li>
 </ul>
-<h3>Methods</h3>
+<h3>Instance variables</h3>
 <dl>
-<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.set_action"><code class="name flex">
-<span>def <span class="ident">set_action</span></span>(<span>self, action)</span>
-</code></dt>
+<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.action"><code class="name">var <span class="ident">action</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.action to 'action' if action meets requirements</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>action</code></strong> :&ensp;<code>str</code></dt>
-<dd>policy action, may be 'accept' or 'deny'</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_action(self, action):
-    &#34;&#34;&#34; Set self.action to &#39;action&#39; if action meets requirements
-
-    Args:
-        action (str): policy action, may be &#39;accept&#39; or &#39;deny&#39;
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if action is None:
-        self.action = None
-
-    else:
-        if action.lower() == &#39;accept&#39; or action.lower() == &#39;allow&#39;:
-            self.action = &#39;accept&#39;
-        elif action.lower() == &#39;deny&#39; or action.lower() == &#39;drop&#39;:
-            self.action = &#39;deny&#39;
-        else:
-            raise ValueError(&#34;&#39;action&#39;, when set, must be either &#39;accept&#39; or &#39;deny&#39;&#34;)</code></pre>
+<pre><code class="python">@property
+def action(self):
+    return self._action</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.set_comment"><code class="name flex">
-<span>def <span class="ident">set_comment</span></span>(<span>self, comment)</span>
-</code></dt>
+<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.comment"><code class="name">var <span class="ident">comment</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.comment to 'comment' if comment string within requirements</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>comment</code></strong> :&ensp;<code>str</code></dt>
-<dd>Comment for this policy object</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_comment(self, comment):
-    &#34;&#34;&#34; Set self.comment to &#39;comment&#39; if comment string within requirements
-
-    Args:
-        comment (str):  Comment for this policy object
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if comment is None:
-        self.comment = None
-
-    else:
-        if isinstance(comment, str):
-            if 1 &lt;= len(comment) &lt;= 1023:
-                self.comment = comment
-            else:
-                raise Exception(&#34;&#39;comment&#39;, when set, must be type str between 1 and 1023 chars&#34;)
-        else:
-            raise Exception(&#34;&#39;comment&#39;, when set, must be type str&#34;)</code></pre>
+<pre><code class="python">@property
+def comment(self):
+    return self._comment</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.set_dstaddr"><code class="name flex">
-<span>def <span class="ident">set_dstaddr</span></span>(<span>self, policy_object)</span>
-</code></dt>
+<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.dstaddr"><code class="name">var <span class="ident">dstaddr</span></code></dt>
 <dd>
-<section class="desc"><p>Check the validity of dstaddr objects and sets self.dstaddr to list containing objects of dstaddr</p>
-<p>Calls _validate_and_get_policy_obj()</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>policy_object</code></strong> :&ensp;<code>list</code></dt>
-<dd>string or list of strings containing dstintf(s)</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_dstaddr(self, policy_object):
-    &#34;&#34;&#34; Check the validity of dstaddr objects and sets self.dstaddr to list containing objects of dstaddr
-
-    Calls _validate_and_get_policy_obj()
-
-    Args:
-        policy_object (list): string or list of strings containing dstintf(s)
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    self.dstaddr = self._validate_and_get_policy_obj(policy_object)</code></pre>
+<pre><code class="python">@property
+def dstaddr(self):
+    return self._dstaddr</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.set_dstaddr_negate"><code class="name flex">
-<span>def <span class="ident">set_dstaddr_negate</span></span>(<span>self, negate)</span>
-</code></dt>
+<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.dstaddr_negate"><code class="name">var <span class="ident">dstaddr_negate</span></code></dt>
 <dd>
-<section class="desc"><p>Set the self.dstaddr_negate attribute representing negate type in policy</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>negate</code></strong> :&ensp;<code>str</code></dt>
-<dd>('enable', 'disable', or None=inherit)</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_dstaddr_negate(self, negate):
-    &#34;&#34;&#34; Set the self.dstaddr_negate attribute representing negate type in policy
-
-    Args:
-        negate (str): (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if negate is None:
-        self.dstaddr_negate = None
-
-    else:
-        if isinstance(negate, str):
-            if negate == &#39;enable&#39;:
-                self.dstaddr_negate = &#39;enable&#39;
-            elif negate == &#39;disable&#39;:
-                self.dstaddr_negate = &#39;disable&#39;
-            else:
-                raise ValueError(&#34;&#39;dstaddr_negate&#39;, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#39;&#34;)
-
-        else:
-            raise ValueError(&#34;&#39;dstaddr_negate&#39;, when set, must be type str()&#34;)</code></pre>
+<pre><code class="python">@property
+def dstaddr_negate(self):
+    return self._dstaddr_negate</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.set_dstintf"><code class="name flex">
-<span>def <span class="ident">set_dstintf</span></span>(<span>self, policy_object)</span>
-</code></dt>
+<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.dstintf"><code class="name">var <span class="ident">dstintf</span></code></dt>
 <dd>
-<section class="desc"><p>Check the validity of dstintf objects and sets self.dstintf to list containing objects of dstintf</p>
-<p>Calls _validate_and_get_policy_obj()</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>policy_object</code></strong> :&ensp;<code>list</code></dt>
-<dd>string or list of strings containing dstintf(s)</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_dstintf(self, policy_object):
-    &#34;&#34;&#34; Check the validity of dstintf objects and sets self.dstintf to list containing objects of dstintf
-
-    Calls _validate_and_get_policy_obj()
-
-    Args:
-        policy_object (list): string or list of strings containing dstintf(s)
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    self.dstintf = self._validate_and_get_policy_obj(policy_object)</code></pre>
+<pre><code class="python">@property
+def dstintf(self):
+    return self._dstintf</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.set_logtraffic"><code class="name flex">
-<span>def <span class="ident">set_logtraffic</span></span>(<span>self, logtraffic)</span>
-</code></dt>
+<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.logtraffic"><code class="name">var <span class="ident">logtraffic</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.logtraffic to 'logtraffic' if logtraffic is valid</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>logtraffic</code></strong> :&ensp;<code>str</code></dt>
-<dd>Policy log action.
-May be 'utm', 'all' or 'disabled'</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_logtraffic(self, logtraffic):
-    &#34;&#34;&#34; Set self.logtraffic to &#39;logtraffic&#39; if logtraffic is valid
-
-    Args:
-        logtraffic (str): Policy log action.  May be &#39;utm&#39;, &#39;all&#39; or &#39;disabled&#39;
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if logtraffic is None:
-        self.logtraffic = None
-
-    else:
-        if logtraffic.lower() == &#39;utm&#39;:
-            self.logtraffic = &#39;utm&#39;
-
-        elif logtraffic.lower() == &#39;all&#39;:
-            self.logtraffic = &#39;all&#39;
-
-        elif logtraffic.lower() == &#39;disabled&#39; or logtraffic.lower() == &#39;disable&#39;:
-            self.logtraffic = &#39;disabled&#39;</code></pre>
+<pre><code class="python">@property
+def logtraffic(self):
+    return self._logtraffic</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.set_name"><code class="name flex">
-<span>def <span class="ident">set_name</span></span>(<span>self, name)</span>
-</code></dt>
+<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.name"><code class="name">var <span class="ident">name</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.comment to 'comment' if comment string within requirements</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
-<dd>Optional Name for this policy object</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_name(self, name):
-    &#34;&#34;&#34; Set self.comment to &#39;comment&#39; if comment string within requirements
-
-    Args:
-        name (str):  Optional Name for this policy object
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if name is None:
-        self.name = None
-
-    else:
-        if isinstance(name, str):
-            if 1 &lt;= len(name) &lt;= 35:
-                self.name = name
-            else:
-                raise Exception(&#34;&#39;name&#39;, when set, must be type str() between 1 and 1,023 chars&#34;)
-        else:
-            raise Exception(&#34;&#39;name&#39;, when set, must be type str()&#34;)</code></pre>
+<pre><code class="python">@property
+def name(self):
+    return self._name</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.set_nat"><code class="name flex">
-<span>def <span class="ident">set_nat</span></span>(<span>self, nat)</span>
-</code></dt>
+<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.nat"><code class="name">var <span class="ident">nat</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.nat to 'nat' if valid.
-True=enable, False=disable</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>nat</code></strong> :&ensp;<code>str</code></dt>
-<dd>Policy source NAT. ('enable', 'disable', or None=inherit)</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_nat(self, nat):
-    &#34;&#34;&#34; Set self.nat to &#39;nat&#39; if valid.  True=enable, False=disable
-
-    Args:
-        nat (str): Policy source NAT. (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if nat is None:
-        self.nat = None
-
-    else:
-        if isinstance(nat, str):
-            if nat == &#39;enable&#39;:
-                self.nat = &#39;enable&#39;
-            elif nat == &#39;disable&#39;:
-                self.nat = &#39;disable&#39;
-            else:
-                raise ValueError(&#34;&#39;nat&#39;, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#39;&#34;)
-        else:
-            raise ValueError(&#34;&#39;nat&#39;, when set, must be type str()&#34;)</code></pre>
+<pre><code class="python">@property
+def nat(self):
+    return self._nat</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.set_policyid"><code class="name flex">
-<span>def <span class="ident">set_policyid</span></span>(<span>self, policyid)</span>
-</code></dt>
+<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.policyid"><code class="name">var <span class="ident">policyid</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.policyid to policyid if policyid is valid or if not provided set policyid = 0.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>policyid</code></strong> :&ensp;<code>int</code></dt>
-<dd>Integer representing ID of policy.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_policyid(self, policyid):
-    &#34;&#34;&#34; Set self.policyid to policyid if policyid is valid or if not provided set policyid = 0.
-
-    Args:
-        policyid (int):  Integer representing ID of policy.
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if policyid is None:
-        self.policyid = 0
-
-    else:
-        if isinstance(policyid, int):
-            self.policyid = policyid
-        else:
-            raise Exception(&#34;&#39;id&#39;, when set, must be an integer&#34;)</code></pre>
+<pre><code class="python">@property
+def policyid(self):
+    return self._policyid</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.set_schedule"><code class="name flex">
-<span>def <span class="ident">set_schedule</span></span>(<span>self, schedule)</span>
-</code></dt>
+<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.schedule"><code class="name">var <span class="ident">schedule</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.schedule to 'schedule' if 'schedule' name provided meets requirements</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>schedule</code></strong> :&ensp;<code>str</code></dt>
-<dd>Policy schedule name</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_schedule(self, schedule):
-    &#34;&#34;&#34; Set self.schedule to &#39;schedule&#39; if &#39;schedule&#39; name provided meets requirements
-
-    Args:
-        schedule (str): Policy schedule name
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if schedule is None:
-        self.schedule = None
-
-    else:
-        if isinstance(schedule, str):
-            if not len(schedule) &lt;= 36:
-                raise Exception(&#34;&#39;schedule, when set, must be less 35 chars or less&#34;)
-
-            if schedule.isspace():
-                raise Exception(&#34;&#39;schedule&#39;, when set, cannot be an empty string&#34;)
-        else:
-            raise Exception(&#34;&#39;schedule&#39;, when set, must be type str&#34;)
-
-        self.schedule = schedule</code></pre>
+<pre><code class="python">@property
+def schedule(self):
+    return self._schedule</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.set_service"><code class="name flex">
-<span>def <span class="ident">set_service</span></span>(<span>self, policy_object)</span>
-</code></dt>
+<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.service"><code class="name">var <span class="ident">service</span></code></dt>
 <dd>
-<section class="desc"><p>Check the validity of service objects and sets self.service to list containing objects of service</p>
-<p>Calls _validate_and_get_policy_obj()</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>policy_object</code></strong> :&ensp;<code>list</code></dt>
-<dd>string or list of strings containing dstintf(s)</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_service(self, policy_object):
-    &#34;&#34;&#34; Check the validity of service objects and sets self.service to list containing objects of service
-
-    Calls _validate_and_get_policy_obj()
-
-    Args:
-        policy_object (list): string or list of strings containing dstintf(s)
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    self.service = self._validate_and_get_policy_obj(policy_object)</code></pre>
+<pre><code class="python">@property
+def service(self):
+    return self._service</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.set_service_negate"><code class="name flex">
-<span>def <span class="ident">set_service_negate</span></span>(<span>self, negate)</span>
-</code></dt>
+<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.service_negate"><code class="name">var <span class="ident">service_negate</span></code></dt>
 <dd>
-<section class="desc"><p>Set the self.service attribute representing negate type in policy</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>negate</code></strong> :&ensp;<code>str</code></dt>
-<dd>('enable', 'disable', or None=inherit)</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_service_negate(self, negate):
-    &#34;&#34;&#34; Set the self.service attribute representing negate type in policy
-
-    Args:
-        negate (str): (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if negate is None:
-        self.service_negate = None
-
-    else:
-        if isinstance(negate, str):
-            if negate == &#39;enable&#39;:
-                self.service_negate = &#39;enable&#39;
-            elif negate == &#39;disable&#39;:
-                self.service_negate = &#39;disable&#39;
-            else:
-                raise ValueError(&#34;&#39;service_negate&#39;, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#39;&#34;)
-        else:
-            raise ValueError(&#34;&#39;service_negate&#39;, when set, must be type str()&#34;)</code></pre>
+<pre><code class="python">@property
+def service_negate(self):
+    return self._service_negate</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.set_srcaddr"><code class="name flex">
-<span>def <span class="ident">set_srcaddr</span></span>(<span>self, policy_object)</span>
-</code></dt>
+<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.srcaddr"><code class="name">var <span class="ident">srcaddr</span></code></dt>
 <dd>
-<section class="desc"><p>Check the validity of srcaddr objects and sets self.srcaddr to list containing objects of srcaddr</p>
-<p>Calls _validate_and_get_policy_obj()</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>policy_object</code></strong> :&ensp;<code>list</code></dt>
-<dd>string or list of strings containing dstintf(s)</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_srcaddr(self, policy_object):
-    &#34;&#34;&#34; Check the validity of srcaddr objects and sets self.srcaddr to list containing objects of srcaddr
-
-    Calls _validate_and_get_policy_obj()
-
-    Args:
-        policy_object (list): string or list of strings containing dstintf(s)
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    self.srcaddr = self._validate_and_get_policy_obj(policy_object)</code></pre>
+<pre><code class="python">@property
+def srcaddr(self):
+    return self._srcaddr</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.set_srcaddr_negate"><code class="name flex">
-<span>def <span class="ident">set_srcaddr_negate</span></span>(<span>self, negate)</span>
-</code></dt>
+<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.srcaddr_negate"><code class="name">var <span class="ident">srcaddr_negate</span></code></dt>
 <dd>
-<section class="desc"><p>Set the self.srcaddr_negate attribute representing negate type in policy</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>negate</code></strong> :&ensp;<code>str</code></dt>
-<dd>('enable', 'disable', or None=inherit)</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_srcaddr_negate(self, negate):
-    &#34;&#34;&#34; Set the self.srcaddr_negate attribute representing negate type in policy
-
-    Args:
-        negate (str): (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if negate is None:
-        self.srcaddr_negate = None
-
-    else:
-        if isinstance(negate, str):
-            if negate == &#39;enable&#39;:
-                self.srcaddr_negate = &#39;enable&#39;
-            elif negate == &#39;disable&#39;:
-                self.srcaddr_negate = &#39;disable&#39;
-            else:
-                raise ValueError(&#34;&#39;srcaddr_negate, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#34;)
-        else:
-            raise ValueError(&#34;&#39;srcaddr_negate&#39;, when set, must be type str()&#34;)</code></pre>
+<pre><code class="python">@property
+def srcaddr_negate(self):
+    return self._srcaddr_negate</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.set_srcintf"><code class="name flex">
-<span>def <span class="ident">set_srcintf</span></span>(<span>self, policy_object)</span>
-</code></dt>
+<dt id="fgobjlib.fg_fw_policy.FgFwPolicy.srcintf"><code class="name">var <span class="ident">srcintf</span></code></dt>
 <dd>
-<section class="desc"><p>Check the validity of srcintf objects and sets self.srcintf to list containing objects of dstintf</p>
-<p>Calls _validate_and_get_policy_obj()</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>policy_object</code></strong> :&ensp;<code>list</code></dt>
-<dd>string or list of strings containing srcintfs(s)</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_srcintf(self, policy_object):
-    &#34;&#34;&#34; Check the validity of srcintf objects and sets self.srcintf to list containing objects of dstintf
-
-    Calls _validate_and_get_policy_obj()
-
-    Args:
-        policy_object (list): string or list of strings containing srcintfs(s)
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    self.srcintf = self._validate_and_get_policy_obj(policy_object)</code></pre>
+<pre><code class="python">@property
+def srcintf(self):
+    return self._srcintf</code></pre>
 </details>
 </dd>
 </dl>
@@ -1578,7 +1315,6 @@ True=enable, False=disable</p>
 <li><code><a title="fgobjlib.fg_object.FgObject.get_cli_config_add" href="fg_object.html#fgobjlib.fg_object.FgObject.get_cli_config_add">get_cli_config_add</a></code></li>
 <li><code><a title="fgobjlib.fg_object.FgObject.get_cli_config_del" href="fg_object.html#fgobjlib.fg_object.FgObject.get_cli_config_del">get_cli_config_del</a></code></li>
 <li><code><a title="fgobjlib.fg_object.FgObject.get_cli_config_update" href="fg_object.html#fgobjlib.fg_object.FgObject.get_cli_config_update">get_cli_config_update</a></code></li>
-<li><code><a title="fgobjlib.fg_object.FgObject.set_vdom" href="fg_object.html#fgobjlib.fg_object.FgObject.set_vdom">set_vdom</a></code></li>
 </ul>
 </li>
 </ul>
@@ -1602,21 +1338,21 @@ True=enable, False=disable</p>
 <li>
 <h4><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy" href="#fgobjlib.fg_fw_policy.FgFwPolicy">FgFwPolicy</a></code></h4>
 <ul class="two-column">
-<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.set_action" href="#fgobjlib.fg_fw_policy.FgFwPolicy.set_action">set_action</a></code></li>
-<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.set_comment" href="#fgobjlib.fg_fw_policy.FgFwPolicy.set_comment">set_comment</a></code></li>
-<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.set_dstaddr" href="#fgobjlib.fg_fw_policy.FgFwPolicy.set_dstaddr">set_dstaddr</a></code></li>
-<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.set_dstaddr_negate" href="#fgobjlib.fg_fw_policy.FgFwPolicy.set_dstaddr_negate">set_dstaddr_negate</a></code></li>
-<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.set_dstintf" href="#fgobjlib.fg_fw_policy.FgFwPolicy.set_dstintf">set_dstintf</a></code></li>
-<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.set_logtraffic" href="#fgobjlib.fg_fw_policy.FgFwPolicy.set_logtraffic">set_logtraffic</a></code></li>
-<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.set_name" href="#fgobjlib.fg_fw_policy.FgFwPolicy.set_name">set_name</a></code></li>
-<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.set_nat" href="#fgobjlib.fg_fw_policy.FgFwPolicy.set_nat">set_nat</a></code></li>
-<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.set_policyid" href="#fgobjlib.fg_fw_policy.FgFwPolicy.set_policyid">set_policyid</a></code></li>
-<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.set_schedule" href="#fgobjlib.fg_fw_policy.FgFwPolicy.set_schedule">set_schedule</a></code></li>
-<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.set_service" href="#fgobjlib.fg_fw_policy.FgFwPolicy.set_service">set_service</a></code></li>
-<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.set_service_negate" href="#fgobjlib.fg_fw_policy.FgFwPolicy.set_service_negate">set_service_negate</a></code></li>
-<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.set_srcaddr" href="#fgobjlib.fg_fw_policy.FgFwPolicy.set_srcaddr">set_srcaddr</a></code></li>
-<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.set_srcaddr_negate" href="#fgobjlib.fg_fw_policy.FgFwPolicy.set_srcaddr_negate">set_srcaddr_negate</a></code></li>
-<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.set_srcintf" href="#fgobjlib.fg_fw_policy.FgFwPolicy.set_srcintf">set_srcintf</a></code></li>
+<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.action" href="#fgobjlib.fg_fw_policy.FgFwPolicy.action">action</a></code></li>
+<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.comment" href="#fgobjlib.fg_fw_policy.FgFwPolicy.comment">comment</a></code></li>
+<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.dstaddr" href="#fgobjlib.fg_fw_policy.FgFwPolicy.dstaddr">dstaddr</a></code></li>
+<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.dstaddr_negate" href="#fgobjlib.fg_fw_policy.FgFwPolicy.dstaddr_negate">dstaddr_negate</a></code></li>
+<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.dstintf" href="#fgobjlib.fg_fw_policy.FgFwPolicy.dstintf">dstintf</a></code></li>
+<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.logtraffic" href="#fgobjlib.fg_fw_policy.FgFwPolicy.logtraffic">logtraffic</a></code></li>
+<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.name" href="#fgobjlib.fg_fw_policy.FgFwPolicy.name">name</a></code></li>
+<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.nat" href="#fgobjlib.fg_fw_policy.FgFwPolicy.nat">nat</a></code></li>
+<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.policyid" href="#fgobjlib.fg_fw_policy.FgFwPolicy.policyid">policyid</a></code></li>
+<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.schedule" href="#fgobjlib.fg_fw_policy.FgFwPolicy.schedule">schedule</a></code></li>
+<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.service" href="#fgobjlib.fg_fw_policy.FgFwPolicy.service">service</a></code></li>
+<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.service_negate" href="#fgobjlib.fg_fw_policy.FgFwPolicy.service_negate">service_negate</a></code></li>
+<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.srcaddr" href="#fgobjlib.fg_fw_policy.FgFwPolicy.srcaddr">srcaddr</a></code></li>
+<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.srcaddr_negate" href="#fgobjlib.fg_fw_policy.FgFwPolicy.srcaddr_negate">srcaddr_negate</a></code></li>
+<li><code><a title="fgobjlib.fg_fw_policy.FgFwPolicy.srcintf" href="#fgobjlib.fg_fw_policy.FgFwPolicy.srcintf">srcintf</a></code></li>
 </ul>
 </li>
 </ul>

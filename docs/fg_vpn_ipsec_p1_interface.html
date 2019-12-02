@@ -24,8 +24,11 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from fgobjlib import FgObject
-import ipaddress
+<pre><code class="python">import ipaddress
+from typing import Union
+
+from fgobjlib import FgObject
+
 
 class FgIpsecP1Interface(FgObject):
     &#34;&#34;&#34; FgIpsecP1Interface class represents FortiGate Firewall ipsec phase1 interface object and provides methods for
@@ -57,7 +60,7 @@ class FgIpsecP1Interface(FgObject):
         exchange_interface_ip (str): exchange-interface-ip (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
     &#34;&#34;&#34;
 
-    def __init__(self, name: str = None, p1_type: str = None, interface: str = None, proposal: list = None,
+    def __init__(self, name: str = None, p1_type: str = None, interface: str = None, proposal: Union[str, list] = None,
                  ike_version: int = None, local_gw: str = None, psksecret: str = None, localid: str = None,
                  remote_gw: str = None, add_route: str = None, add_gw_route: str = None, keepalive: int = None,
                  net_device: str = None, comment: str = None, vdom: str = None, tunnel_search: str = None,
@@ -90,52 +93,55 @@ class FgIpsecP1Interface(FgObject):
         super().__init__(api=&#39;cmdb&#39;, api_path=&#39;vpn.ipsec&#39;, api_name=&#39;phase1-interface&#39;,
                          cli_path=&#34;config vpn ipsec phase1-interface&#34;, obj_id=name, vdom=vdom)
 
-        ### Set parent class attributes ###
-        # CLI config path for this object type
-        self.cli_path = &#34;config vpn ipsec phase1-interface&#34;
-
+        # Set parent class attributes #
         # Map instance attribute names to fg attribute names
-        self.data_attrs = {&#39;name&#39;: &#39;name&#39;, &#39;p1_type&#39;: &#39;type&#39;, &#39;interface&#39;: &#39;interface&#39;, &#39;proposal&#39;: &#39;proposal&#39;,
-                           &#39;ike_version&#39;: &#39;ike-version&#39;, &#39;local_gw&#39;: &#39;local-gw&#39;, &#39;psksecret&#39;: &#39;psksecret&#39;,
-                           &#39;localid&#39;: &#39;localid&#39;, &#39;remote_gw&#39;: &#39;remote-gw&#39;, &#39;comment&#39;: &#39;comments&#39;,
-                           &#39;add_route&#39;: &#39;add-route&#39;, &#39;add_gw_route&#39;: &#39;add-gw-route&#39;, &#39;keepalive&#39;: &#39;keepalive&#39;,
-                           &#39;net_device&#39;: &#39;net-device&#39;, &#39;tunnel_search&#39;: &#39;tunnel-search&#39;, &#39;dpd&#39;: &#39;dpd&#39;, &#39;dhgrp&#39;: &#39;dhgrp&#39;,
-                           &#39;nattraversal&#39;: &#39;nattraversal&#39;, &#39;exchange_interface_ip&#39;: &#39;exchange-interface-ip&#39;}
+        self._data_attrs = {&#39;name&#39;: &#39;name&#39;, &#39;p1_type&#39;: &#39;type&#39;, &#39;interface&#39;: &#39;interface&#39;, &#39;proposal&#39;: &#39;proposal&#39;,
+                            &#39;ike_version&#39;: &#39;ike-version&#39;, &#39;local_gw&#39;: &#39;local-gw&#39;, &#39;psksecret&#39;: &#39;psksecret&#39;,
+                            &#39;localid&#39;: &#39;localid&#39;, &#39;remote_gw&#39;: &#39;remote-gw&#39;, &#39;comment&#39;: &#39;comments&#39;,
+                            &#39;add_route&#39;: &#39;add-route&#39;, &#39;add_gw_route&#39;: &#39;add-gw-route&#39;, &#39;keepalive&#39;: &#39;keepalive&#39;,
+                            &#39;net_device&#39;: &#39;net-device&#39;, &#39;tunnel_search&#39;: &#39;tunnel-search&#39;, &#39;dpd&#39;: &#39;dpd&#39;,
+                            &#39;dhgrp&#39;: &#39;dhgrp&#39;, &#39;nattraversal&#39;: &#39;nattraversal&#39;,
+                            &#39;exchange_interface_ip&#39;: &#39;exchange-interface-ip&#39;}
 
-        self.cli_ignore_attrs = [&#39;name&#39;]
+        self._cli_ignore_attrs = [&#39;name&#39;]
 
-        # Set instance attributes
-        self.set_name(name)
-        self.set_p1_type(p1_type)
-        self.set_interface(interface)
-        self.set_proposal(proposal)
-        self.set_ike_version(ike_version)
-        self.set_local_gw(local_gw)
-        self.set_psksecret(psksecret)
-        self.set_localid(localid)
-        self.set_remote_gw(remote_gw)
-        self.set_comment(comment)
-        self.set_add_route(add_route)
-        self.set_keepalive(keepalive)
-        self.set_add_gw_route(add_gw_route)
-        self.set_net_device(net_device)
-        self.set_tunnel_search(tunnel_search)
-        self.set_dpd(dpd)
-        self.set_dhgrp(dhgrp)
-        self.set_nattraversal(nattraversal)
-        self.set_exchange_interface_ip(exchange_interface_ip)
+        # Set instance attributes #
+        self.name = name
+        self.p1_type = p1_type
+        self.interface = interface
+        self.proposal = proposal
+        self.ike_version = ike_version
+        self.local_gw = local_gw
+        self.psksecret = psksecret
+        self.localid = localid
+        self.remote_gw = remote_gw
+        self.comment = comment
+        self.add_route = add_route
+        self.keepalive = keepalive
+        self.add_gw_route = add_gw_route
+        self.net_device = net_device
+        self.tunnel_search = tunnel_search
+        self.dpd = dpd
+        self.dhgrp = dhgrp
+        self.nattraversal = nattraversal
+        self.exchange_interface_ip = exchange_interface_ip
 
-        self.obj_to_str += f&#39;, name={name}, p1_type={p1_type}, interface={self.interface}, &#39; \
-                          f&#39;proposal={self.proposal}, ike_version={self.ike_version}, local_gw={self.local_gw}, &#39; \
-                          f&#39;psksecret={self.psksecret}, localid={self.localid}, remote_gw={self.remote_gw}, &#39; \
-                          f&#39;comment={self.comment}, add_route={self.add_route}, add_gw_route={self.add_gw_route}, &#39; \
-                          f&#39;keepalive={self.keepalive}, net_device={self.net_device}, &#39; \
-                          f&#39;tunnel_search={self.tunnel_search}, dpd={self.dpd}, dhgrp={self.dhgrp},&#39; \
-                          f&#39;nattraversal={self.nattraversal}, exchange_interface_ip={self.exchange_interface_ip}&#39;
+        # Set object to string config
+        self._obj_to_str += f&#39;, name={name}, p1_type={p1_type}, interface={self.interface}, &#39; \
+                            f&#39;proposal={self.proposal}, ike_version={self.ike_version}, local_gw={self.local_gw}, &#39; \
+                            f&#39;psksecret={self.psksecret}, localid={self.localid}, remote_gw={self.remote_gw}, &#39; \
+                            f&#39;comment={self.comment}, add_route={self.add_route}, add_gw_route={self.add_gw_route}, &#39; \
+                            f&#39;keepalive={self.keepalive}, net_device={self.net_device}, &#39; \
+                            f&#39;tunnel_search={self.tunnel_search}, dpd={self.dpd}, dhgrp={self.dhgrp},&#39; \
+                            f&#39;nattraversal={self.nattraversal}, exchange_interface_ip={self.exchange_interface_ip}&#39;
 
+    # Instance properties and setters
+    @property
+    def name(self):
+        return self._name
 
-    # Instance Methods
-    def set_name(self, name):
+    @name.setter
+    def name(self, name):
         &#34;&#34;&#34; Set self.name to name if name is valid
 
         Args:
@@ -145,19 +151,25 @@ class FgIpsecP1Interface(FgObject):
             None
         &#34;&#34;&#34;
         if name is None:
-            self.name = None
+            self._name = None
 
         else:
-            if name.isspace(): raise Exception(&#34;&#39;name&#39;, cannot be an empty string&#34;)
+            if name.isspace():
+                raise Exception(&#34;&#39;name&#39;, cannot be an empty string&#34;)
             if isinstance(name, str):
                 if len(name) &lt;= 35:
-                    self.name = name
+                    self._name = name
                 else:
-                    raise Exception(&#34;&#39;name&#39;, must be less than 35 chars or less&#34;)
+                    raise Exception(&#34;&#39;name&#39;, must be type str() between 1 and 35 chars&#34;)
             else:
-                raise Exception(&#34;&#39;name&#39;, must be a string&#34;)
+                raise Exception(&#34;&#39;name&#39;, must be type str()&#34;)
 
-    def set_proposal(self, proposal):
+    @property
+    def proposal(self):
+        return self._proposal
+
+    @proposal.setter
+    def proposal(self, proposal):
         &#34;&#34;&#34; Set self.proposal with list of proposals from proposal if items are all acceptable FG proposals
 
         Args:
@@ -177,7 +189,7 @@ class FgIpsecP1Interface(FgObject):
                            &#39;seed-sha512&#39;]
 
         if proposal is None:
-            self.proposal = None
+            self._proposal = None
 
         else:
             proposal_items = &#39;&#39;
@@ -190,7 +202,7 @@ class FgIpsecP1Interface(FgObject):
                 if proposal in valid_proposals:
                     proposal_items += f&#34;{proposal} &#34;
                 else:
-                    raise ValueError(f&#34;&#39;proposal&#39; provided: {proposal} is not a valid FortiGate phase1 proposal&#34;)
+                    raise ValueError(&#34;&#39;proposal&#39; provided is not a valid FortiGate phase1 proposal option&#34;)
 
             elif isinstance(proposal, list):
                 for item in proposal:
@@ -200,14 +212,19 @@ class FgIpsecP1Interface(FgObject):
                         if item in valid_proposals:
                             proposal_items += f&#34;{item} &#34;
                         else:
-                            raise ValueError(&#34;&#39;proposal&#39; provided: {proposal} is not a valid FortiGate phase1 proposal&#34;)
+                            raise ValueError(&#34;&#39;proposal&#39;(s) provided contain at least one that is not a valid &#34;
+                                             &#34;FortiGate phase1 proposal option&#34;)
             else:
-                raise ValueError(&#34;proposal must be provided as type string (with single proposal referenced or as a &#34;
-                                 &#34;list for multiple proposal references&#34;)
+                raise ValueError(&#34;&#39;proposal&#39; must be type str() or list() of str()&#34;)
 
-            self.proposal = proposal_items
+            self._proposal = proposal_items
 
-    def set_dhgrp(self, dhgrp):
+    @property
+    def dhgrp(self):
+        return self._dhgrp
+
+    @dhgrp.setter
+    def dhgrp(self, dhgrp):
         &#34;&#34;&#34; Set self.dhgrp to dhgrp if dhgrp is valid ForitGate dhgrp
 
         The dhgrp may be passed in as a str, or a list.  If the dhgrp(s) passed in are valid, add each
@@ -220,7 +237,7 @@ class FgIpsecP1Interface(FgObject):
             None
         &#34;&#34;&#34;
         if dhgrp is None:
-            self.dhgrp = None
+            self._dhgrp = None
 
         else:
             dhgrp_items = &#39;&#39;
@@ -233,7 +250,7 @@ class FgIpsecP1Interface(FgObject):
                 if dhgrp in valid_dhgrps:
                     dhgrp_items += &#34;{} &#34;.format(dhgrp)
                 else:
-                    raise ValueError(f&#34;&#39;dhgrp&#39; provided: {dhgrp}, is not a valid fortigate dhgrp&#34;)
+                    raise ValueError(&#34;&#39;dhgrp&#39; provided is not a valid fortigate dhgrp option&#34;)
 
             elif isinstance(dhgrp, list):
                 for item in dhgrp:
@@ -243,14 +260,18 @@ class FgIpsecP1Interface(FgObject):
                         if item in valid_dhgrps:
                             dhgrp_items += &#34;{} &#34;.format(item)
                         else:
-                            raise ValueError(f&#34;At least one &#39;dhgrp&#39; provided: {dhgrp} is not a valid fortigate phase1 &#34;
-                                             &#34;proposal option&#34;)
+                            raise ValueError(f&#34;At least one &#39;dhgrp&#39; provided is not a valid fortigate dhgrp option&#34;)
             else:
-                raise ValueError(&#34;dhgrp must be provided as type integer&#34;)
+                raise ValueError(&#34;dhgrp must be type int()&#34;)
 
-            self.dhgrp = dhgrp_items
+            self._dhgrp = dhgrp_items
 
-    def set_p1_type(self, p1_type):
+    @property
+    def p1_type(self):
+        return self._p1_type
+
+    @p1_type.setter
+    def p1_type(self, p1_type):
         &#34;&#34;&#34; Set self.pt_type to p1_type if p1_type is valid
 
         Args:
@@ -260,21 +281,26 @@ class FgIpsecP1Interface(FgObject):
 
         &#34;&#34;&#34;
         if p1_type is None:
-            self.p1_type = None
+            self._p1_type = None
         else:
             if isinstance(p1_type, str):
                 if p1_type.lower() == &#39;dynamic&#39;:
-                    self.p1_type = &#39;dynamic&#39;
+                    self._p1_type = &#39;dynamic&#39;
                 elif p1_type.lower() == &#39;static&#39;:
-                    self.p1_type = &#39;static&#39;
+                    self._p1_type = &#39;static&#39;
                 elif p1_type.lower() == &#39;ddns&#39;:
                     raise ValueError(&#34;p1_type of &#39;ddns&#39; is not yet supported&#34;)
                 else:
-                    raise ValueError(f&#34;&#39;p1_type&#39;: {p1_type} is not supported&#34;)
+                    raise ValueError(&#34;&#39;p1_type&#39;, must be type str() with value &#39;dynamic&#39; or &#39;static&#39;&#34;)
             else:
-                raise ValueError(&#34;&#39;p1_type&#39;, when set, must be a str with value of &#39;dynamic&#39; or &#39;static&#39;&#34;)
+                raise ValueError(&#34;&#39;p1_type&#39;, must be type str() with value of &#39;dynamic&#39; or &#39;static&#39;&#34;)
 
-    def set_interface(self, interface):
+    @property
+    def interface(self):
+        return self._interface
+
+    @interface.setter
+    def interface(self, interface):
         &#34;&#34;&#34; set self.local_intfs to intf if intfs is valid
 
         Args:
@@ -284,19 +310,25 @@ class FgIpsecP1Interface(FgObject):
             None
         &#34;&#34;&#34;
         if interface is None:
-            self.interface = None
+            self._interface = None
 
         else:
-            if interface.isspace(): raise ValueError(&#34;&#39;interface&#39;, cannot be an empty string&#34;)
+            if interface.isspace():
+                raise ValueError(&#34;&#39;interface&#39;, cannot be an empty string&#34;)
             if isinstance(interface, str):
                 if len(interface) &lt; 35:
-                    self.interface = interface
+                    self._interface = interface
                 else:
-                    raise ValueError(&#34;&#39;interface&#39;, when set, must be less than 35 chars or less&#34;)
+                    raise ValueError(&#34;&#39;interface&#39;, when set, must be type str() between 1 and 35 chars&#34;)
             else:
-                raise ValueError(&#34;&#39;interface&#39;, when set, must be a string&#34;)
+                raise ValueError(&#34;&#39;interface&#39;, when set, must be type str()&#34;)
 
-    def set_ike_version(self, ike_version):
+    @property
+    def ike_version(self):
+        return self._ike_version
+
+    @ike_version.setter
+    def ike_version(self, ike_version):
         &#34;&#34;&#34; Set self.ike_version to 1 or 2 if ike_version = 1 or 2.  Otherwise raise Exception
 
         Args:
@@ -306,19 +338,24 @@ class FgIpsecP1Interface(FgObject):
             None
         &#34;&#34;&#34;
         if ike_version is None:
-            self.ike_version = None
+            self._ike_version = None
         else:
             if isinstance(ike_version, int):
                 if ike_version == 1:
-                    self.ike_version = 1
+                    self._ike_version = 1
                 elif ike_version == 2:
-                    self.ike_version = 2
+                    self._ike_version = 2
                 else:
-                    raise ValueError(&#34;&#39;ike_version&#39;, when set must be type int with value = &#39;1&#39; or &#39;2&#39;&#34;)
+                    raise ValueError(&#34;&#39;ike_version&#39;, must be type int() with value &#39;1&#39; or &#39;2&#39;&#34;)
             else:
-                raise ValueError(&#34;&#39;ike_version&#39; when set, must be type int with value = &#39;1&#39; or &#39;2&#39;&#34;)
+                raise ValueError(&#34;&#39;ike_version&#39; must be type int() with value = &#39;1&#39; or &#39;2&#39;&#34;)
 
-    def set_local_gw(self, local_gw):
+    @property
+    def local_gw(self):
+        return self._local_gw
+
+    @local_gw.setter
+    def local_gw(self, local_gw):
         &#34;&#34;&#34; Set self.local_gw to local_gw if local_gw is valid ipv4 address
 
         Args:
@@ -328,15 +365,19 @@ class FgIpsecP1Interface(FgObject):
             None
         &#34;&#34;&#34;
         if local_gw is None:
-            self.local_gw = None
+            self._local_gw = None
         else:
             try:
-                self.local_gw = str(ipaddress.ip_address(local_gw))
+                self._local_gw = str(ipaddress.ip_address(local_gw))
             except ValueError:
                 raise ValueError(&#34;&#39;local_gw&#39;, when set, must type str() with value containing a valid ipv4 address&#34;)
 
+    @property
+    def remote_gw(self):
+        return self._remote_gw
 
-    def set_remote_gw(self, remote_gw):
+    @remote_gw.setter
+    def remote_gw(self, remote_gw):
         &#34;&#34;&#34; Set self.remote_gw to remote_gw if remote_gw is valid ipv4 address
 
         Args:
@@ -346,15 +387,19 @@ class FgIpsecP1Interface(FgObject):
             None
         &#34;&#34;&#34;
         if remote_gw is None:
-            self.remote_gw = None
+            self._remote_gw = None
         else:
             try:
-                self.remote_gw = str(ipaddress.ip_address(remote_gw))
+                self._remote_gw = str(ipaddress.ip_address(remote_gw))
             except ValueError:
                 raise ValueError(&#34;&#39;remote_gw&#39;, when set, must be type str() with value containing a valid ipv4 address&#34;)
 
+    @property
+    def psksecret(self):
+        return self._psksecret
 
-    def set_psksecret(self, psk):
+    @psksecret.setter
+    def psksecret(self, psk):
         &#34;&#34;&#34; Set self.psk to psk if psk valid
 
         Args:
@@ -364,17 +409,22 @@ class FgIpsecP1Interface(FgObject):
             None
         &#34;&#34;&#34;
         if psk is None:
-            self.psksecret = None
+            self._psksecret = None
         else:
             if isinstance(psk, str):
                 if 6 &lt;= len(psk) &lt;= 30:
-                    self.psksecret = psk
+                    self._psksecret = psk
                 else:
                     raise ValueError(&#34;&#39;psksecret&#39;, must be type str() between 6 and 30 chars&#34;)
             else:
                 raise ValueError(&#34;&#39;psksecret&#39;, must be type str()&#34;)
 
-    def set_localid(self, localid):
+    @property
+    def localid(self):
+        return self._localid
+
+    @localid.setter
+    def localid(self, localid):
         &#34;&#34;&#34; Set self.local_id to local_id if local_id is valid
 
         Args:
@@ -384,17 +434,22 @@ class FgIpsecP1Interface(FgObject):
             None
         &#34;&#34;&#34;
         if localid is None:
-            self.localid = None
+            self._localid = None
         else:
             if isinstance(localid, str):
                 if 1 &lt;= len(localid) &lt;= 63:
-                    self.localid = localid
+                    self._localid = localid
                 else:
                     raise ValueError(&#34;&#39;localid&#39;, when set, must be type str() between 1 and 63 chars&#34;)
             else:
                 raise ValueError(&#34;&#39;localid&#39;, when set, must be type str()&#34;)
 
-    def set_comment(self, comment):
+    @property
+    def comment(self):
+        return self._comment
+
+    @comment.setter
+    def comment(self, comment):
         &#34;&#34;&#34; Set self.comment to comment if comment is valid
 
         Args:
@@ -404,17 +459,22 @@ class FgIpsecP1Interface(FgObject):
             None
         &#34;&#34;&#34;
         if comment is None:
-            self.comment = None
+            self._comment = None
         else:
             if isinstance(comment, str):
                 if 1 &lt;= len(comment) &lt;= 1023:
-                    self.comment = comment
+                    self._comment = comment
                 else:
                     raise ValueError(&#34;&#39;description&#39;, when set, must be type str() between 1 and 1,023 chars&#34;)
             else:
                 raise Exception(&#34;&#39;description&#39;, when set, must be type str()&#34;)
 
-    def set_keepalive(self, keepalive):
+    @property
+    def keepalive(self):
+        return self._keepalive
+
+    @keepalive.setter
+    def keepalive(self, keepalive):
         &#34;&#34;&#34; Set self.keepalive if keepalive valid
 
         Args:
@@ -424,17 +484,22 @@ class FgIpsecP1Interface(FgObject):
             None
         &#34;&#34;&#34;
         if keepalive is None:
-            self.keepalive = None
+            self._keepalive = None
         else:
             if isinstance(keepalive, int):
                 if 10 &lt;= keepalive &lt;= 900:
-                    self.keepalive = keepalive
+                    self._keepalive = keepalive
                 else:
                     raise ValueError(&#34;&#39;keepalive&#39;, when set, must be type int() between 10 and 900&#34;)
             else:
                 raise ValueError(&#34;&#39;keepalive&#39;, when set, must be type int()&#34;)
 
-    def set_add_route(self, add_route):
+    @property
+    def add_route(self):
+        return self._add_route
+
+    @add_route.setter
+    def add_route(self, add_route):
         &#34;&#34;&#34; Set self.add_route
 
         Args:
@@ -444,19 +509,24 @@ class FgIpsecP1Interface(FgObject):
 
         &#34;&#34;&#34;
         if add_route is None:
-            self.add_route = None
+            self._add_route = None
         else:
             if isinstance(add_route, str):
                 if add_route == &#39;enable&#39;:
-                    self.add_route = &#39;enable&#39;
+                    self._add_route = &#39;enable&#39;
                 elif add_route == &#39;disable&#39;:
-                    self.add_route = &#39;disable&#39;
+                    self._add_route = &#39;disable&#39;
                 else:
                     raise ValueError(&#34;&#39;add_route&#39;, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#39;&#34;)
             else:
                 raise ValueError(&#34;&#39;add_route&#39;, when set, must be type str()&#34;)
 
-    def set_add_gw_route(self, add_gw_route):
+    @property
+    def add_gw_route(self):
+        return self._add_gw_route
+
+    @add_gw_route.setter
+    def add_gw_route(self, add_gw_route):
         &#34;&#34;&#34; Set self.add_gw_route
 
         Args:
@@ -466,19 +536,24 @@ class FgIpsecP1Interface(FgObject):
             None
         &#34;&#34;&#34;
         if add_gw_route is None:
-            self.add_gw_route = None
+            self._add_gw_route = None
         else:
             if isinstance(add_gw_route, str):
                 if add_gw_route == &#39;enable&#39;:
-                    self.add_gw_route = &#39;enable&#39;
+                    self._add_gw_route = &#39;enable&#39;
                 elif add_gw_route == &#39;disable&#39;:
-                    self.add_gw_route = &#39;disable&#39;
+                    self._add_gw_route = &#39;disable&#39;
                 else:
                     raise ValueError(&#34;&#39;add_gw_route&#39;, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#34;)
             else:
                 raise ValueError(&#34;&#39;add_gw_route&#39;, when set, must be type str()&#34;)
 
-    def set_net_device(self, net_device):
+    @property
+    def net_device(self):
+        return self._net_device
+
+    @net_device.setter
+    def net_device(self, net_device):
         &#34;&#34;&#34; set self.net_device
 
         Args:
@@ -488,19 +563,24 @@ class FgIpsecP1Interface(FgObject):
             None
         &#34;&#34;&#34;
         if net_device is None:
-            self.net_device = None
+            self._net_device = None
         else:
             if isinstance(net_device, str):
                 if net_device == &#39;enable&#39;:
-                    self.net_device = &#39;enable&#39;
+                    self._net_device = &#39;enable&#39;
                 elif net_device == &#39;disable&#39;:
-                    self.net_device = &#39;disable&#39;
+                    self._net_device = &#39;disable&#39;
                 else:
                     raise ValueError(&#34;&#39;net_device&#39;, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#39;&#34;)
             else:
                 raise ValueError(&#34;&#39;net_device&#39;, when set, must be type str()&#34;)
 
-    def set_tunnel_search(self, tunnel_search):
+    @property
+    def tunnel_search(self):
+        return self._tunnel_search
+
+    @tunnel_search.setter
+    def tunnel_search(self, tunnel_search):
         &#34;&#34;&#34; Set self.tunnel_search
 
         Args:
@@ -510,19 +590,24 @@ class FgIpsecP1Interface(FgObject):
             None
         &#34;&#34;&#34;
         if tunnel_search is None:
-            self.tunnel_search = None
+            self._tunnel_search = None
         else:
             if isinstance(tunnel_search, str):
                 if tunnel_search.lower() == &#39;selectors&#39;:
-                    self.tunnel_search = &#39;selectors&#39;
+                    self._tunnel_search = &#39;selectors&#39;
                 elif tunnel_search.lower() == &#39;nexthop&#39;:
-                    self.tunnel_search = &#39;nexthop&#39;
+                    self._tunnel_search = &#39;nexthop&#39;
                 else:
                     raise Exception(&#34;&#39;tunnel_search&#39; when set, must be type str() with value &#39;selectors&#39;, &#39;nexthop&#39;&#34;)
             else:
                 raise ValueError(&#34;&#39;tunnel_search&#39;, when set, must be type str(0&#34;)
 
-    def set_dpd(self, dpd):
+    @property
+    def dpd(self):
+        return self._dpd
+
+    @dpd.setter
+    def dpd(self, dpd):
         &#34;&#34;&#34; Set self.dpd
 
         Args:
@@ -532,22 +617,27 @@ class FgIpsecP1Interface(FgObject):
             None
         &#34;&#34;&#34;
         if dpd is None:
-            self.dpd = None
+            self._dpd = None
         else:
             if isinstance(dpd, str):
                 if dpd.lower() == &#39;disable&#39;:
-                    self.dpd = &#39;disable&#39;
+                    self._dpd = &#39;disable&#39;
                 elif dpd.lower() == &#39;on-idle&#39;:
-                    self.dpd = &#39;on-idle&#39;
+                    self._dpd = &#39;on-idle&#39;
                 elif dpd.lower == &#39;on-demand&#39;:
-                    self.dpd = &#39;on-demand&#39;
+                    self._dpd = &#39;on-demand&#39;
                 else:
                     raise Exception(&#34;&#39;dpd&#39;, when set, must be type str() with value &#39;disable&#39;, &#39;on-idle&#39; or &#34;
                                     &#34;&#39;on-demmand&#34;)
             else:
                 raise ValueError(&#34;&#39;dpd&#39;, when set, must be type str()&#34;)
 
-    def set_nattraversal(self, nattraversal):
+    @property
+    def nattraversal(self):
+        return self._nattraversal
+
+    @nattraversal.setter
+    def nattraversal(self, nattraversal):
         &#34;&#34;&#34; Set self.nat_traversal
 
         Args:
@@ -557,22 +647,27 @@ class FgIpsecP1Interface(FgObject):
             None
         &#34;&#34;&#34;
         if nattraversal is None:
-            self.nattraversal = None
+            self._nattraversal = None
         else:
             if isinstance(nattraversal, str):
                 if nattraversal.lower() == &#39;enable&#39;:
-                    self.nattraversal = &#39;enable&#39;
+                    self._nattraversal = &#39;enable&#39;
                 elif nattraversal.lower() == &#39;disable&#39;:
-                    self.nattraversal = &#39;disable&#39;
+                    self._nattraversal = &#39;disable&#39;
                 elif nattraversal.lower() == &#39;forced&#39;:
-                    self.nattraversal = &#39;forced&#39;
+                    self._nattraversal = &#39;forced&#39;
                 else:
                     raise ValueError(&#34;&#39;nattraversal&#39;, when set, must be type str() with value &#39;enable&#39;, &#39;disable&#39; &#34;
-                                    &#34;or &#39;forced&#39;&#34;)
+                                     &#34;or &#39;forced&#39;&#34;)
             else:
                 raise ValueError(&#34;&#39;nattraversal&#39;, when set, must be type str()&#34;)
 
-    def set_exchange_interface_ip(self, exchange_interface_ip):
+    @property
+    def exchange_interface_ip(self):
+        return self._exchange_interface_ip
+
+    @exchange_interface_ip.setter
+    def exchange_interface_ip(self, exchange_interface_ip):
         &#34;&#34;&#34; Set self.exchange_interface_ip
 
         Args:
@@ -582,13 +677,13 @@ class FgIpsecP1Interface(FgObject):
             None
         &#34;&#34;&#34;
         if exchange_interface_ip is None:
-            self.exchange_interface_ip = None
+            self._exchange_interface_ip = None
         else:
             if isinstance(exchange_interface_ip, str):
                 if exchange_interface_ip == &#39;enable&#39;:
-                    self.exchange_interface_ip = &#39;enable&#39;
+                    self._exchange_interface_ip = &#39;enable&#39;
                 elif exchange_interface_ip == &#39;disable&#39;:
-                    self.exchange_interface_ip = &#39;disable&#39;
+                    self._exchange_interface_ip = &#39;disable&#39;
                 else:
                     raise ValueError(&#34;exchange_interface_ip, when set, must be type str() with value &#39;enable&#39; or &#34;
                                      &#34;&#39;disable&#34;)
@@ -733,7 +828,7 @@ applications</p>
         exchange_interface_ip (str): exchange-interface-ip (&#39;enable&#39;, &#39;disable&#39;, or None=inherit)
     &#34;&#34;&#34;
 
-    def __init__(self, name: str = None, p1_type: str = None, interface: str = None, proposal: list = None,
+    def __init__(self, name: str = None, p1_type: str = None, interface: str = None, proposal: Union[str, list] = None,
                  ike_version: int = None, local_gw: str = None, psksecret: str = None, localid: str = None,
                  remote_gw: str = None, add_route: str = None, add_gw_route: str = None, keepalive: int = None,
                  net_device: str = None, comment: str = None, vdom: str = None, tunnel_search: str = None,
@@ -766,52 +861,55 @@ applications</p>
         super().__init__(api=&#39;cmdb&#39;, api_path=&#39;vpn.ipsec&#39;, api_name=&#39;phase1-interface&#39;,
                          cli_path=&#34;config vpn ipsec phase1-interface&#34;, obj_id=name, vdom=vdom)
 
-        ### Set parent class attributes ###
-        # CLI config path for this object type
-        self.cli_path = &#34;config vpn ipsec phase1-interface&#34;
-
+        # Set parent class attributes #
         # Map instance attribute names to fg attribute names
-        self.data_attrs = {&#39;name&#39;: &#39;name&#39;, &#39;p1_type&#39;: &#39;type&#39;, &#39;interface&#39;: &#39;interface&#39;, &#39;proposal&#39;: &#39;proposal&#39;,
-                           &#39;ike_version&#39;: &#39;ike-version&#39;, &#39;local_gw&#39;: &#39;local-gw&#39;, &#39;psksecret&#39;: &#39;psksecret&#39;,
-                           &#39;localid&#39;: &#39;localid&#39;, &#39;remote_gw&#39;: &#39;remote-gw&#39;, &#39;comment&#39;: &#39;comments&#39;,
-                           &#39;add_route&#39;: &#39;add-route&#39;, &#39;add_gw_route&#39;: &#39;add-gw-route&#39;, &#39;keepalive&#39;: &#39;keepalive&#39;,
-                           &#39;net_device&#39;: &#39;net-device&#39;, &#39;tunnel_search&#39;: &#39;tunnel-search&#39;, &#39;dpd&#39;: &#39;dpd&#39;, &#39;dhgrp&#39;: &#39;dhgrp&#39;,
-                           &#39;nattraversal&#39;: &#39;nattraversal&#39;, &#39;exchange_interface_ip&#39;: &#39;exchange-interface-ip&#39;}
+        self._data_attrs = {&#39;name&#39;: &#39;name&#39;, &#39;p1_type&#39;: &#39;type&#39;, &#39;interface&#39;: &#39;interface&#39;, &#39;proposal&#39;: &#39;proposal&#39;,
+                            &#39;ike_version&#39;: &#39;ike-version&#39;, &#39;local_gw&#39;: &#39;local-gw&#39;, &#39;psksecret&#39;: &#39;psksecret&#39;,
+                            &#39;localid&#39;: &#39;localid&#39;, &#39;remote_gw&#39;: &#39;remote-gw&#39;, &#39;comment&#39;: &#39;comments&#39;,
+                            &#39;add_route&#39;: &#39;add-route&#39;, &#39;add_gw_route&#39;: &#39;add-gw-route&#39;, &#39;keepalive&#39;: &#39;keepalive&#39;,
+                            &#39;net_device&#39;: &#39;net-device&#39;, &#39;tunnel_search&#39;: &#39;tunnel-search&#39;, &#39;dpd&#39;: &#39;dpd&#39;,
+                            &#39;dhgrp&#39;: &#39;dhgrp&#39;, &#39;nattraversal&#39;: &#39;nattraversal&#39;,
+                            &#39;exchange_interface_ip&#39;: &#39;exchange-interface-ip&#39;}
 
-        self.cli_ignore_attrs = [&#39;name&#39;]
+        self._cli_ignore_attrs = [&#39;name&#39;]
 
-        # Set instance attributes
-        self.set_name(name)
-        self.set_p1_type(p1_type)
-        self.set_interface(interface)
-        self.set_proposal(proposal)
-        self.set_ike_version(ike_version)
-        self.set_local_gw(local_gw)
-        self.set_psksecret(psksecret)
-        self.set_localid(localid)
-        self.set_remote_gw(remote_gw)
-        self.set_comment(comment)
-        self.set_add_route(add_route)
-        self.set_keepalive(keepalive)
-        self.set_add_gw_route(add_gw_route)
-        self.set_net_device(net_device)
-        self.set_tunnel_search(tunnel_search)
-        self.set_dpd(dpd)
-        self.set_dhgrp(dhgrp)
-        self.set_nattraversal(nattraversal)
-        self.set_exchange_interface_ip(exchange_interface_ip)
+        # Set instance attributes #
+        self.name = name
+        self.p1_type = p1_type
+        self.interface = interface
+        self.proposal = proposal
+        self.ike_version = ike_version
+        self.local_gw = local_gw
+        self.psksecret = psksecret
+        self.localid = localid
+        self.remote_gw = remote_gw
+        self.comment = comment
+        self.add_route = add_route
+        self.keepalive = keepalive
+        self.add_gw_route = add_gw_route
+        self.net_device = net_device
+        self.tunnel_search = tunnel_search
+        self.dpd = dpd
+        self.dhgrp = dhgrp
+        self.nattraversal = nattraversal
+        self.exchange_interface_ip = exchange_interface_ip
 
-        self.obj_to_str += f&#39;, name={name}, p1_type={p1_type}, interface={self.interface}, &#39; \
-                          f&#39;proposal={self.proposal}, ike_version={self.ike_version}, local_gw={self.local_gw}, &#39; \
-                          f&#39;psksecret={self.psksecret}, localid={self.localid}, remote_gw={self.remote_gw}, &#39; \
-                          f&#39;comment={self.comment}, add_route={self.add_route}, add_gw_route={self.add_gw_route}, &#39; \
-                          f&#39;keepalive={self.keepalive}, net_device={self.net_device}, &#39; \
-                          f&#39;tunnel_search={self.tunnel_search}, dpd={self.dpd}, dhgrp={self.dhgrp},&#39; \
-                          f&#39;nattraversal={self.nattraversal}, exchange_interface_ip={self.exchange_interface_ip}&#39;
+        # Set object to string config
+        self._obj_to_str += f&#39;, name={name}, p1_type={p1_type}, interface={self.interface}, &#39; \
+                            f&#39;proposal={self.proposal}, ike_version={self.ike_version}, local_gw={self.local_gw}, &#39; \
+                            f&#39;psksecret={self.psksecret}, localid={self.localid}, remote_gw={self.remote_gw}, &#39; \
+                            f&#39;comment={self.comment}, add_route={self.add_route}, add_gw_route={self.add_gw_route}, &#39; \
+                            f&#39;keepalive={self.keepalive}, net_device={self.net_device}, &#39; \
+                            f&#39;tunnel_search={self.tunnel_search}, dpd={self.dpd}, dhgrp={self.dhgrp},&#39; \
+                            f&#39;nattraversal={self.nattraversal}, exchange_interface_ip={self.exchange_interface_ip}&#39;
 
+    # Instance properties and setters
+    @property
+    def name(self):
+        return self._name
 
-    # Instance Methods
-    def set_name(self, name):
+    @name.setter
+    def name(self, name):
         &#34;&#34;&#34; Set self.name to name if name is valid
 
         Args:
@@ -821,19 +919,25 @@ applications</p>
             None
         &#34;&#34;&#34;
         if name is None:
-            self.name = None
+            self._name = None
 
         else:
-            if name.isspace(): raise Exception(&#34;&#39;name&#39;, cannot be an empty string&#34;)
+            if name.isspace():
+                raise Exception(&#34;&#39;name&#39;, cannot be an empty string&#34;)
             if isinstance(name, str):
                 if len(name) &lt;= 35:
-                    self.name = name
+                    self._name = name
                 else:
-                    raise Exception(&#34;&#39;name&#39;, must be less than 35 chars or less&#34;)
+                    raise Exception(&#34;&#39;name&#39;, must be type str() between 1 and 35 chars&#34;)
             else:
-                raise Exception(&#34;&#39;name&#39;, must be a string&#34;)
+                raise Exception(&#34;&#39;name&#39;, must be type str()&#34;)
 
-    def set_proposal(self, proposal):
+    @property
+    def proposal(self):
+        return self._proposal
+
+    @proposal.setter
+    def proposal(self, proposal):
         &#34;&#34;&#34; Set self.proposal with list of proposals from proposal if items are all acceptable FG proposals
 
         Args:
@@ -853,7 +957,7 @@ applications</p>
                            &#39;seed-sha512&#39;]
 
         if proposal is None:
-            self.proposal = None
+            self._proposal = None
 
         else:
             proposal_items = &#39;&#39;
@@ -866,7 +970,7 @@ applications</p>
                 if proposal in valid_proposals:
                     proposal_items += f&#34;{proposal} &#34;
                 else:
-                    raise ValueError(f&#34;&#39;proposal&#39; provided: {proposal} is not a valid FortiGate phase1 proposal&#34;)
+                    raise ValueError(&#34;&#39;proposal&#39; provided is not a valid FortiGate phase1 proposal option&#34;)
 
             elif isinstance(proposal, list):
                 for item in proposal:
@@ -876,14 +980,19 @@ applications</p>
                         if item in valid_proposals:
                             proposal_items += f&#34;{item} &#34;
                         else:
-                            raise ValueError(&#34;&#39;proposal&#39; provided: {proposal} is not a valid FortiGate phase1 proposal&#34;)
+                            raise ValueError(&#34;&#39;proposal&#39;(s) provided contain at least one that is not a valid &#34;
+                                             &#34;FortiGate phase1 proposal option&#34;)
             else:
-                raise ValueError(&#34;proposal must be provided as type string (with single proposal referenced or as a &#34;
-                                 &#34;list for multiple proposal references&#34;)
+                raise ValueError(&#34;&#39;proposal&#39; must be type str() or list() of str()&#34;)
 
-            self.proposal = proposal_items
+            self._proposal = proposal_items
 
-    def set_dhgrp(self, dhgrp):
+    @property
+    def dhgrp(self):
+        return self._dhgrp
+
+    @dhgrp.setter
+    def dhgrp(self, dhgrp):
         &#34;&#34;&#34; Set self.dhgrp to dhgrp if dhgrp is valid ForitGate dhgrp
 
         The dhgrp may be passed in as a str, or a list.  If the dhgrp(s) passed in are valid, add each
@@ -896,7 +1005,7 @@ applications</p>
             None
         &#34;&#34;&#34;
         if dhgrp is None:
-            self.dhgrp = None
+            self._dhgrp = None
 
         else:
             dhgrp_items = &#39;&#39;
@@ -909,7 +1018,7 @@ applications</p>
                 if dhgrp in valid_dhgrps:
                     dhgrp_items += &#34;{} &#34;.format(dhgrp)
                 else:
-                    raise ValueError(f&#34;&#39;dhgrp&#39; provided: {dhgrp}, is not a valid fortigate dhgrp&#34;)
+                    raise ValueError(&#34;&#39;dhgrp&#39; provided is not a valid fortigate dhgrp option&#34;)
 
             elif isinstance(dhgrp, list):
                 for item in dhgrp:
@@ -919,14 +1028,18 @@ applications</p>
                         if item in valid_dhgrps:
                             dhgrp_items += &#34;{} &#34;.format(item)
                         else:
-                            raise ValueError(f&#34;At least one &#39;dhgrp&#39; provided: {dhgrp} is not a valid fortigate phase1 &#34;
-                                             &#34;proposal option&#34;)
+                            raise ValueError(f&#34;At least one &#39;dhgrp&#39; provided is not a valid fortigate dhgrp option&#34;)
             else:
-                raise ValueError(&#34;dhgrp must be provided as type integer&#34;)
+                raise ValueError(&#34;dhgrp must be type int()&#34;)
 
-            self.dhgrp = dhgrp_items
+            self._dhgrp = dhgrp_items
 
-    def set_p1_type(self, p1_type):
+    @property
+    def p1_type(self):
+        return self._p1_type
+
+    @p1_type.setter
+    def p1_type(self, p1_type):
         &#34;&#34;&#34; Set self.pt_type to p1_type if p1_type is valid
 
         Args:
@@ -936,21 +1049,26 @@ applications</p>
 
         &#34;&#34;&#34;
         if p1_type is None:
-            self.p1_type = None
+            self._p1_type = None
         else:
             if isinstance(p1_type, str):
                 if p1_type.lower() == &#39;dynamic&#39;:
-                    self.p1_type = &#39;dynamic&#39;
+                    self._p1_type = &#39;dynamic&#39;
                 elif p1_type.lower() == &#39;static&#39;:
-                    self.p1_type = &#39;static&#39;
+                    self._p1_type = &#39;static&#39;
                 elif p1_type.lower() == &#39;ddns&#39;:
                     raise ValueError(&#34;p1_type of &#39;ddns&#39; is not yet supported&#34;)
                 else:
-                    raise ValueError(f&#34;&#39;p1_type&#39;: {p1_type} is not supported&#34;)
+                    raise ValueError(&#34;&#39;p1_type&#39;, must be type str() with value &#39;dynamic&#39; or &#39;static&#39;&#34;)
             else:
-                raise ValueError(&#34;&#39;p1_type&#39;, when set, must be a str with value of &#39;dynamic&#39; or &#39;static&#39;&#34;)
+                raise ValueError(&#34;&#39;p1_type&#39;, must be type str() with value of &#39;dynamic&#39; or &#39;static&#39;&#34;)
 
-    def set_interface(self, interface):
+    @property
+    def interface(self):
+        return self._interface
+
+    @interface.setter
+    def interface(self, interface):
         &#34;&#34;&#34; set self.local_intfs to intf if intfs is valid
 
         Args:
@@ -960,19 +1078,25 @@ applications</p>
             None
         &#34;&#34;&#34;
         if interface is None:
-            self.interface = None
+            self._interface = None
 
         else:
-            if interface.isspace(): raise ValueError(&#34;&#39;interface&#39;, cannot be an empty string&#34;)
+            if interface.isspace():
+                raise ValueError(&#34;&#39;interface&#39;, cannot be an empty string&#34;)
             if isinstance(interface, str):
                 if len(interface) &lt; 35:
-                    self.interface = interface
+                    self._interface = interface
                 else:
-                    raise ValueError(&#34;&#39;interface&#39;, when set, must be less than 35 chars or less&#34;)
+                    raise ValueError(&#34;&#39;interface&#39;, when set, must be type str() between 1 and 35 chars&#34;)
             else:
-                raise ValueError(&#34;&#39;interface&#39;, when set, must be a string&#34;)
+                raise ValueError(&#34;&#39;interface&#39;, when set, must be type str()&#34;)
 
-    def set_ike_version(self, ike_version):
+    @property
+    def ike_version(self):
+        return self._ike_version
+
+    @ike_version.setter
+    def ike_version(self, ike_version):
         &#34;&#34;&#34; Set self.ike_version to 1 or 2 if ike_version = 1 or 2.  Otherwise raise Exception
 
         Args:
@@ -982,19 +1106,24 @@ applications</p>
             None
         &#34;&#34;&#34;
         if ike_version is None:
-            self.ike_version = None
+            self._ike_version = None
         else:
             if isinstance(ike_version, int):
                 if ike_version == 1:
-                    self.ike_version = 1
+                    self._ike_version = 1
                 elif ike_version == 2:
-                    self.ike_version = 2
+                    self._ike_version = 2
                 else:
-                    raise ValueError(&#34;&#39;ike_version&#39;, when set must be type int with value = &#39;1&#39; or &#39;2&#39;&#34;)
+                    raise ValueError(&#34;&#39;ike_version&#39;, must be type int() with value &#39;1&#39; or &#39;2&#39;&#34;)
             else:
-                raise ValueError(&#34;&#39;ike_version&#39; when set, must be type int with value = &#39;1&#39; or &#39;2&#39;&#34;)
+                raise ValueError(&#34;&#39;ike_version&#39; must be type int() with value = &#39;1&#39; or &#39;2&#39;&#34;)
 
-    def set_local_gw(self, local_gw):
+    @property
+    def local_gw(self):
+        return self._local_gw
+
+    @local_gw.setter
+    def local_gw(self, local_gw):
         &#34;&#34;&#34; Set self.local_gw to local_gw if local_gw is valid ipv4 address
 
         Args:
@@ -1004,15 +1133,19 @@ applications</p>
             None
         &#34;&#34;&#34;
         if local_gw is None:
-            self.local_gw = None
+            self._local_gw = None
         else:
             try:
-                self.local_gw = str(ipaddress.ip_address(local_gw))
+                self._local_gw = str(ipaddress.ip_address(local_gw))
             except ValueError:
                 raise ValueError(&#34;&#39;local_gw&#39;, when set, must type str() with value containing a valid ipv4 address&#34;)
 
+    @property
+    def remote_gw(self):
+        return self._remote_gw
 
-    def set_remote_gw(self, remote_gw):
+    @remote_gw.setter
+    def remote_gw(self, remote_gw):
         &#34;&#34;&#34; Set self.remote_gw to remote_gw if remote_gw is valid ipv4 address
 
         Args:
@@ -1022,15 +1155,19 @@ applications</p>
             None
         &#34;&#34;&#34;
         if remote_gw is None:
-            self.remote_gw = None
+            self._remote_gw = None
         else:
             try:
-                self.remote_gw = str(ipaddress.ip_address(remote_gw))
+                self._remote_gw = str(ipaddress.ip_address(remote_gw))
             except ValueError:
                 raise ValueError(&#34;&#39;remote_gw&#39;, when set, must be type str() with value containing a valid ipv4 address&#34;)
 
+    @property
+    def psksecret(self):
+        return self._psksecret
 
-    def set_psksecret(self, psk):
+    @psksecret.setter
+    def psksecret(self, psk):
         &#34;&#34;&#34; Set self.psk to psk if psk valid
 
         Args:
@@ -1040,17 +1177,22 @@ applications</p>
             None
         &#34;&#34;&#34;
         if psk is None:
-            self.psksecret = None
+            self._psksecret = None
         else:
             if isinstance(psk, str):
                 if 6 &lt;= len(psk) &lt;= 30:
-                    self.psksecret = psk
+                    self._psksecret = psk
                 else:
                     raise ValueError(&#34;&#39;psksecret&#39;, must be type str() between 6 and 30 chars&#34;)
             else:
                 raise ValueError(&#34;&#39;psksecret&#39;, must be type str()&#34;)
 
-    def set_localid(self, localid):
+    @property
+    def localid(self):
+        return self._localid
+
+    @localid.setter
+    def localid(self, localid):
         &#34;&#34;&#34; Set self.local_id to local_id if local_id is valid
 
         Args:
@@ -1060,17 +1202,22 @@ applications</p>
             None
         &#34;&#34;&#34;
         if localid is None:
-            self.localid = None
+            self._localid = None
         else:
             if isinstance(localid, str):
                 if 1 &lt;= len(localid) &lt;= 63:
-                    self.localid = localid
+                    self._localid = localid
                 else:
                     raise ValueError(&#34;&#39;localid&#39;, when set, must be type str() between 1 and 63 chars&#34;)
             else:
                 raise ValueError(&#34;&#39;localid&#39;, when set, must be type str()&#34;)
 
-    def set_comment(self, comment):
+    @property
+    def comment(self):
+        return self._comment
+
+    @comment.setter
+    def comment(self, comment):
         &#34;&#34;&#34; Set self.comment to comment if comment is valid
 
         Args:
@@ -1080,17 +1227,22 @@ applications</p>
             None
         &#34;&#34;&#34;
         if comment is None:
-            self.comment = None
+            self._comment = None
         else:
             if isinstance(comment, str):
                 if 1 &lt;= len(comment) &lt;= 1023:
-                    self.comment = comment
+                    self._comment = comment
                 else:
                     raise ValueError(&#34;&#39;description&#39;, when set, must be type str() between 1 and 1,023 chars&#34;)
             else:
                 raise Exception(&#34;&#39;description&#39;, when set, must be type str()&#34;)
 
-    def set_keepalive(self, keepalive):
+    @property
+    def keepalive(self):
+        return self._keepalive
+
+    @keepalive.setter
+    def keepalive(self, keepalive):
         &#34;&#34;&#34; Set self.keepalive if keepalive valid
 
         Args:
@@ -1100,17 +1252,22 @@ applications</p>
             None
         &#34;&#34;&#34;
         if keepalive is None:
-            self.keepalive = None
+            self._keepalive = None
         else:
             if isinstance(keepalive, int):
                 if 10 &lt;= keepalive &lt;= 900:
-                    self.keepalive = keepalive
+                    self._keepalive = keepalive
                 else:
                     raise ValueError(&#34;&#39;keepalive&#39;, when set, must be type int() between 10 and 900&#34;)
             else:
                 raise ValueError(&#34;&#39;keepalive&#39;, when set, must be type int()&#34;)
 
-    def set_add_route(self, add_route):
+    @property
+    def add_route(self):
+        return self._add_route
+
+    @add_route.setter
+    def add_route(self, add_route):
         &#34;&#34;&#34; Set self.add_route
 
         Args:
@@ -1120,19 +1277,24 @@ applications</p>
 
         &#34;&#34;&#34;
         if add_route is None:
-            self.add_route = None
+            self._add_route = None
         else:
             if isinstance(add_route, str):
                 if add_route == &#39;enable&#39;:
-                    self.add_route = &#39;enable&#39;
+                    self._add_route = &#39;enable&#39;
                 elif add_route == &#39;disable&#39;:
-                    self.add_route = &#39;disable&#39;
+                    self._add_route = &#39;disable&#39;
                 else:
                     raise ValueError(&#34;&#39;add_route&#39;, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#39;&#34;)
             else:
                 raise ValueError(&#34;&#39;add_route&#39;, when set, must be type str()&#34;)
 
-    def set_add_gw_route(self, add_gw_route):
+    @property
+    def add_gw_route(self):
+        return self._add_gw_route
+
+    @add_gw_route.setter
+    def add_gw_route(self, add_gw_route):
         &#34;&#34;&#34; Set self.add_gw_route
 
         Args:
@@ -1142,19 +1304,24 @@ applications</p>
             None
         &#34;&#34;&#34;
         if add_gw_route is None:
-            self.add_gw_route = None
+            self._add_gw_route = None
         else:
             if isinstance(add_gw_route, str):
                 if add_gw_route == &#39;enable&#39;:
-                    self.add_gw_route = &#39;enable&#39;
+                    self._add_gw_route = &#39;enable&#39;
                 elif add_gw_route == &#39;disable&#39;:
-                    self.add_gw_route = &#39;disable&#39;
+                    self._add_gw_route = &#39;disable&#39;
                 else:
                     raise ValueError(&#34;&#39;add_gw_route&#39;, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#34;)
             else:
                 raise ValueError(&#34;&#39;add_gw_route&#39;, when set, must be type str()&#34;)
 
-    def set_net_device(self, net_device):
+    @property
+    def net_device(self):
+        return self._net_device
+
+    @net_device.setter
+    def net_device(self, net_device):
         &#34;&#34;&#34; set self.net_device
 
         Args:
@@ -1164,19 +1331,24 @@ applications</p>
             None
         &#34;&#34;&#34;
         if net_device is None:
-            self.net_device = None
+            self._net_device = None
         else:
             if isinstance(net_device, str):
                 if net_device == &#39;enable&#39;:
-                    self.net_device = &#39;enable&#39;
+                    self._net_device = &#39;enable&#39;
                 elif net_device == &#39;disable&#39;:
-                    self.net_device = &#39;disable&#39;
+                    self._net_device = &#39;disable&#39;
                 else:
                     raise ValueError(&#34;&#39;net_device&#39;, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#39;&#34;)
             else:
                 raise ValueError(&#34;&#39;net_device&#39;, when set, must be type str()&#34;)
 
-    def set_tunnel_search(self, tunnel_search):
+    @property
+    def tunnel_search(self):
+        return self._tunnel_search
+
+    @tunnel_search.setter
+    def tunnel_search(self, tunnel_search):
         &#34;&#34;&#34; Set self.tunnel_search
 
         Args:
@@ -1186,19 +1358,24 @@ applications</p>
             None
         &#34;&#34;&#34;
         if tunnel_search is None:
-            self.tunnel_search = None
+            self._tunnel_search = None
         else:
             if isinstance(tunnel_search, str):
                 if tunnel_search.lower() == &#39;selectors&#39;:
-                    self.tunnel_search = &#39;selectors&#39;
+                    self._tunnel_search = &#39;selectors&#39;
                 elif tunnel_search.lower() == &#39;nexthop&#39;:
-                    self.tunnel_search = &#39;nexthop&#39;
+                    self._tunnel_search = &#39;nexthop&#39;
                 else:
                     raise Exception(&#34;&#39;tunnel_search&#39; when set, must be type str() with value &#39;selectors&#39;, &#39;nexthop&#39;&#34;)
             else:
                 raise ValueError(&#34;&#39;tunnel_search&#39;, when set, must be type str(0&#34;)
 
-    def set_dpd(self, dpd):
+    @property
+    def dpd(self):
+        return self._dpd
+
+    @dpd.setter
+    def dpd(self, dpd):
         &#34;&#34;&#34; Set self.dpd
 
         Args:
@@ -1208,22 +1385,27 @@ applications</p>
             None
         &#34;&#34;&#34;
         if dpd is None:
-            self.dpd = None
+            self._dpd = None
         else:
             if isinstance(dpd, str):
                 if dpd.lower() == &#39;disable&#39;:
-                    self.dpd = &#39;disable&#39;
+                    self._dpd = &#39;disable&#39;
                 elif dpd.lower() == &#39;on-idle&#39;:
-                    self.dpd = &#39;on-idle&#39;
+                    self._dpd = &#39;on-idle&#39;
                 elif dpd.lower == &#39;on-demand&#39;:
-                    self.dpd = &#39;on-demand&#39;
+                    self._dpd = &#39;on-demand&#39;
                 else:
                     raise Exception(&#34;&#39;dpd&#39;, when set, must be type str() with value &#39;disable&#39;, &#39;on-idle&#39; or &#34;
                                     &#34;&#39;on-demmand&#34;)
             else:
                 raise ValueError(&#34;&#39;dpd&#39;, when set, must be type str()&#34;)
 
-    def set_nattraversal(self, nattraversal):
+    @property
+    def nattraversal(self):
+        return self._nattraversal
+
+    @nattraversal.setter
+    def nattraversal(self, nattraversal):
         &#34;&#34;&#34; Set self.nat_traversal
 
         Args:
@@ -1233,22 +1415,27 @@ applications</p>
             None
         &#34;&#34;&#34;
         if nattraversal is None:
-            self.nattraversal = None
+            self._nattraversal = None
         else:
             if isinstance(nattraversal, str):
                 if nattraversal.lower() == &#39;enable&#39;:
-                    self.nattraversal = &#39;enable&#39;
+                    self._nattraversal = &#39;enable&#39;
                 elif nattraversal.lower() == &#39;disable&#39;:
-                    self.nattraversal = &#39;disable&#39;
+                    self._nattraversal = &#39;disable&#39;
                 elif nattraversal.lower() == &#39;forced&#39;:
-                    self.nattraversal = &#39;forced&#39;
+                    self._nattraversal = &#39;forced&#39;
                 else:
                     raise ValueError(&#34;&#39;nattraversal&#39;, when set, must be type str() with value &#39;enable&#39;, &#39;disable&#39; &#34;
-                                    &#34;or &#39;forced&#39;&#34;)
+                                     &#34;or &#39;forced&#39;&#34;)
             else:
                 raise ValueError(&#34;&#39;nattraversal&#39;, when set, must be type str()&#34;)
 
-    def set_exchange_interface_ip(self, exchange_interface_ip):
+    @property
+    def exchange_interface_ip(self):
+        return self._exchange_interface_ip
+
+    @exchange_interface_ip.setter
+    def exchange_interface_ip(self, exchange_interface_ip):
         &#34;&#34;&#34; Set self.exchange_interface_ip
 
         Args:
@@ -1258,13 +1445,13 @@ applications</p>
             None
         &#34;&#34;&#34;
         if exchange_interface_ip is None:
-            self.exchange_interface_ip = None
+            self._exchange_interface_ip = None
         else:
             if isinstance(exchange_interface_ip, str):
                 if exchange_interface_ip == &#39;enable&#39;:
-                    self.exchange_interface_ip = &#39;enable&#39;
+                    self._exchange_interface_ip = &#39;enable&#39;
                 elif exchange_interface_ip == &#39;disable&#39;:
-                    self.exchange_interface_ip = &#39;disable&#39;
+                    self._exchange_interface_ip = &#39;disable&#39;
                 else:
                     raise ValueError(&#34;exchange_interface_ip, when set, must be type str() with value &#39;enable&#39; or &#34;
                                      &#34;&#39;disable&#34;)
@@ -1274,851 +1461,236 @@ applications</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="fgobjlib.fg_object.FgObject" href="fg_object.html#fgobjlib.fg_object.FgObject">FgObject</a></li>
+<li>abc.ABC</li>
 </ul>
-<h3>Methods</h3>
+<h3>Instance variables</h3>
 <dl>
-<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_add_gw_route"><code class="name flex">
-<span>def <span class="ident">set_add_gw_route</span></span>(<span>self, add_gw_route)</span>
-</code></dt>
+<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.add_gw_route"><code class="name">var <span class="ident">add_gw_route</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.add_gw_route</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>add_gw_route</code></strong> :&ensp;<code>str</code></dt>
-<dd>add-gw-route. ('enable', 'disable' or None=inherit)</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_add_gw_route(self, add_gw_route):
-    &#34;&#34;&#34; Set self.add_gw_route
-
-    Args:
-        add_gw_route (str): add-gw-route. (&#39;enable&#39;, &#39;disable&#39; or None=inherit)
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if add_gw_route is None:
-        self.add_gw_route = None
-    else:
-        if isinstance(add_gw_route, str):
-            if add_gw_route == &#39;enable&#39;:
-                self.add_gw_route = &#39;enable&#39;
-            elif add_gw_route == &#39;disable&#39;:
-                self.add_gw_route = &#39;disable&#39;
-            else:
-                raise ValueError(&#34;&#39;add_gw_route&#39;, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#34;)
-        else:
-            raise ValueError(&#34;&#39;add_gw_route&#39;, when set, must be type str()&#34;)</code></pre>
+<pre><code class="python">@property
+def add_gw_route(self):
+    return self._add_gw_route</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_add_route"><code class="name flex">
-<span>def <span class="ident">set_add_route</span></span>(<span>self, add_route)</span>
-</code></dt>
+<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.add_route"><code class="name">var <span class="ident">add_route</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.add_route</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>add_route</code></strong> :&ensp;<code>str</code></dt>
-<dd>add-route.
-('enable', 'disable' or None=inherit)</dd>
-</dl>
-<p>Returns:</p></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_add_route(self, add_route):
-    &#34;&#34;&#34; Set self.add_route
-
-    Args:
-        add_route (str): add-route.  (&#39;enable&#39;, &#39;disable&#39; or None=inherit)
-
-    Returns:
-
-    &#34;&#34;&#34;
-    if add_route is None:
-        self.add_route = None
-    else:
-        if isinstance(add_route, str):
-            if add_route == &#39;enable&#39;:
-                self.add_route = &#39;enable&#39;
-            elif add_route == &#39;disable&#39;:
-                self.add_route = &#39;disable&#39;
-            else:
-                raise ValueError(&#34;&#39;add_route&#39;, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#39;&#34;)
-        else:
-            raise ValueError(&#34;&#39;add_route&#39;, when set, must be type str()&#34;)</code></pre>
+<pre><code class="python">@property
+def add_route(self):
+    return self._add_route</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_comment"><code class="name flex">
-<span>def <span class="ident">set_comment</span></span>(<span>self, comment)</span>
-</code></dt>
+<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.comment"><code class="name">var <span class="ident">comment</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.comment to comment if comment is valid</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>comment</code></strong> :&ensp;<code>str</code></dt>
-<dd>Phase1 comment.
-(up to 1023 chars)</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_comment(self, comment):
-    &#34;&#34;&#34; Set self.comment to comment if comment is valid
-
-    Args:
-        comment (str): Phase1 comment.  (up to 1023 chars)
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if comment is None:
-        self.comment = None
-    else:
-        if isinstance(comment, str):
-            if 1 &lt;= len(comment) &lt;= 1023:
-                self.comment = comment
-            else:
-                raise ValueError(&#34;&#39;description&#39;, when set, must be type str() between 1 and 1,023 chars&#34;)
-        else:
-            raise Exception(&#34;&#39;description&#39;, when set, must be type str()&#34;)</code></pre>
+<pre><code class="python">@property
+def comment(self):
+    return self._comment</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_dhgrp"><code class="name flex">
-<span>def <span class="ident">set_dhgrp</span></span>(<span>self, dhgrp)</span>
-</code></dt>
+<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.dhgrp"><code class="name">var <span class="ident">dhgrp</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.dhgrp to dhgrp if dhgrp is valid ForitGate dhgrp</p>
-<p>The dhgrp may be passed in as a str, or a list.
-If the dhgrp(s) passed in are valid, add each
-of those to a space separated values string and set in self.dhgrp</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>dhgrp</code></strong> :&ensp;<code>list</code></dt>
-<dd>single int representing one dhgrp or a list of ints for one or more dhgrps</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_dhgrp(self, dhgrp):
-    &#34;&#34;&#34; Set self.dhgrp to dhgrp if dhgrp is valid ForitGate dhgrp
-
-    The dhgrp may be passed in as a str, or a list.  If the dhgrp(s) passed in are valid, add each
-    of those to a space separated values string and set in self.dhgrp
-
-    Args:
-        dhgrp (list): single int representing one dhgrp or a list of ints for one or more dhgrps
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if dhgrp is None:
-        self.dhgrp = None
-
-    else:
-        dhgrp_items = &#39;&#39;
-        valid_dhgrps = [1, 2, 5, 14, 15, 16, 17, 18, 19, 20, 21, 27, 28, 30, 31, 32]
-
-        # IF a single object was passed as a string, append it to list else iterate the list and pull
-        # out the dhgrps and add to list to be set as self object
-        if isinstance(dhgrp, int):
-            # compare proposal to valid_list
-            if dhgrp in valid_dhgrps:
-                dhgrp_items += &#34;{} &#34;.format(dhgrp)
-            else:
-                raise ValueError(f&#34;&#39;dhgrp&#39; provided: {dhgrp}, is not a valid fortigate dhgrp&#34;)
-
-        elif isinstance(dhgrp, list):
-            for item in dhgrp:
-                if isinstance(item, int):
-
-                    # compare proposal to valid proposals list
-                    if item in valid_dhgrps:
-                        dhgrp_items += &#34;{} &#34;.format(item)
-                    else:
-                        raise ValueError(f&#34;At least one &#39;dhgrp&#39; provided: {dhgrp} is not a valid fortigate phase1 &#34;
-                                         &#34;proposal option&#34;)
-        else:
-            raise ValueError(&#34;dhgrp must be provided as type integer&#34;)
-
-        self.dhgrp = dhgrp_items</code></pre>
+<pre><code class="python">@property
+def dhgrp(self):
+    return self._dhgrp</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_dpd"><code class="name flex">
-<span>def <span class="ident">set_dpd</span></span>(<span>self, dpd)</span>
-</code></dt>
+<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.dpd"><code class="name">var <span class="ident">dpd</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.dpd</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>dpd</code></strong> :&ensp;<code>str</code></dt>
-<dd>phase1 dpd.
-('disable', 'on-idle', 'on-demand', None=inherit)</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_dpd(self, dpd):
-    &#34;&#34;&#34; Set self.dpd
-
-    Args:
-        dpd (str): phase1 dpd.   (&#39;disable&#39;, &#39;on-idle&#39;, &#39;on-demand&#39;, None=inherit)
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if dpd is None:
-        self.dpd = None
-    else:
-        if isinstance(dpd, str):
-            if dpd.lower() == &#39;disable&#39;:
-                self.dpd = &#39;disable&#39;
-            elif dpd.lower() == &#39;on-idle&#39;:
-                self.dpd = &#39;on-idle&#39;
-            elif dpd.lower == &#39;on-demand&#39;:
-                self.dpd = &#39;on-demand&#39;
-            else:
-                raise Exception(&#34;&#39;dpd&#39;, when set, must be type str() with value &#39;disable&#39;, &#39;on-idle&#39; or &#34;
-                                &#34;&#39;on-demmand&#34;)
-        else:
-            raise ValueError(&#34;&#39;dpd&#39;, when set, must be type str()&#34;)</code></pre>
+<pre><code class="python">@property
+def dpd(self):
+    return self._dpd</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_exchange_interface_ip"><code class="name flex">
-<span>def <span class="ident">set_exchange_interface_ip</span></span>(<span>self, exchange_interface_ip)</span>
-</code></dt>
+<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.exchange_interface_ip"><code class="name">var <span class="ident">exchange_interface_ip</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.exchange_interface_ip</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>exchange_interface_ip</code></strong> :&ensp;<code>str</code></dt>
-<dd>exchange-interface-ip. ('enable', 'disable' or None)</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_exchange_interface_ip(self, exchange_interface_ip):
-    &#34;&#34;&#34; Set self.exchange_interface_ip
-
-    Args:
-        exchange_interface_ip (str): exchange-interface-ip. (&#39;enable&#39;, &#39;disable&#39; or None)
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if exchange_interface_ip is None:
-        self.exchange_interface_ip = None
-    else:
-        if isinstance(exchange_interface_ip, str):
-            if exchange_interface_ip == &#39;enable&#39;:
-                self.exchange_interface_ip = &#39;enable&#39;
-            elif exchange_interface_ip == &#39;disable&#39;:
-                self.exchange_interface_ip = &#39;disable&#39;
-            else:
-                raise ValueError(&#34;exchange_interface_ip, when set, must be type str() with value &#39;enable&#39; or &#34;
-                                 &#34;&#39;disable&#34;)
-        else:
-            raise ValueError(&#34;exchange_interface_ip, when set, must be type str()&#34;)</code></pre>
+<pre><code class="python">@property
+def exchange_interface_ip(self):
+    return self._exchange_interface_ip</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_ike_version"><code class="name flex">
-<span>def <span class="ident">set_ike_version</span></span>(<span>self, ike_version)</span>
-</code></dt>
+<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.ike_version"><code class="name">var <span class="ident">ike_version</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.ike_version to 1 or 2 if ike_version = 1 or 2.
-Otherwise raise Exception</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>ike_version</code></strong> :&ensp;<code>int</code></dt>
-<dd>ike-version.
-(1 or 2)</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_ike_version(self, ike_version):
-    &#34;&#34;&#34; Set self.ike_version to 1 or 2 if ike_version = 1 or 2.  Otherwise raise Exception
-
-    Args:
-        ike_version (int): ike-version.  (1 or 2)
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if ike_version is None:
-        self.ike_version = None
-    else:
-        if isinstance(ike_version, int):
-            if ike_version == 1:
-                self.ike_version = 1
-            elif ike_version == 2:
-                self.ike_version = 2
-            else:
-                raise ValueError(&#34;&#39;ike_version&#39;, when set must be type int with value = &#39;1&#39; or &#39;2&#39;&#34;)
-        else:
-            raise ValueError(&#34;&#39;ike_version&#39; when set, must be type int with value = &#39;1&#39; or &#39;2&#39;&#34;)</code></pre>
+<pre><code class="python">@property
+def ike_version(self):
+    return self._ike_version</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_interface"><code class="name flex">
-<span>def <span class="ident">set_interface</span></span>(<span>self, interface)</span>
-</code></dt>
+<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.interface"><code class="name">var <span class="ident">interface</span></code></dt>
 <dd>
-<section class="desc"><p>set self.local_intfs to intf if intfs is valid</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>interface</code></strong> :&ensp;<code>str</code></dt>
-<dd>Local interface for p1 attachment
-(1 to 35 chars)</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_interface(self, interface):
-    &#34;&#34;&#34; set self.local_intfs to intf if intfs is valid
-
-    Args:
-        interface (str): Local interface for p1 attachment  (1 to 35 chars)
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if interface is None:
-        self.interface = None
-
-    else:
-        if interface.isspace(): raise ValueError(&#34;&#39;interface&#39;, cannot be an empty string&#34;)
-        if isinstance(interface, str):
-            if len(interface) &lt; 35:
-                self.interface = interface
-            else:
-                raise ValueError(&#34;&#39;interface&#39;, when set, must be less than 35 chars or less&#34;)
-        else:
-            raise ValueError(&#34;&#39;interface&#39;, when set, must be a string&#34;)</code></pre>
+<pre><code class="python">@property
+def interface(self):
+    return self._interface</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_keepalive"><code class="name flex">
-<span>def <span class="ident">set_keepalive</span></span>(<span>self, keepalive)</span>
-</code></dt>
+<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.keepalive"><code class="name">var <span class="ident">keepalive</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.keepalive if keepalive valid</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>keepalive</code></strong> :&ensp;<code>int</code></dt>
-<dd>phase1 keepalive
-(10-900)</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_keepalive(self, keepalive):
-    &#34;&#34;&#34; Set self.keepalive if keepalive valid
-
-    Args:
-        keepalive (int): phase1 keepalive  (10-900)
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if keepalive is None:
-        self.keepalive = None
-    else:
-        if isinstance(keepalive, int):
-            if 10 &lt;= keepalive &lt;= 900:
-                self.keepalive = keepalive
-            else:
-                raise ValueError(&#34;&#39;keepalive&#39;, when set, must be type int() between 10 and 900&#34;)
-        else:
-            raise ValueError(&#34;&#39;keepalive&#39;, when set, must be type int()&#34;)</code></pre>
+<pre><code class="python">@property
+def keepalive(self):
+    return self._keepalive</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_local_gw"><code class="name flex">
-<span>def <span class="ident">set_local_gw</span></span>(<span>self, local_gw)</span>
-</code></dt>
+<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.local_gw"><code class="name">var <span class="ident">local_gw</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.local_gw to local_gw if local_gw is valid ipv4 address</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>local_gw</code></strong> :&ensp;<code>str</code></dt>
-<dd>Local gateway.
-(valid ipv4 address as str())</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_local_gw(self, local_gw):
-    &#34;&#34;&#34; Set self.local_gw to local_gw if local_gw is valid ipv4 address
-
-    Args:
-        local_gw (str): Local gateway.  (valid ipv4 address as str())
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if local_gw is None:
-        self.local_gw = None
-    else:
-        try:
-            self.local_gw = str(ipaddress.ip_address(local_gw))
-        except ValueError:
-            raise ValueError(&#34;&#39;local_gw&#39;, when set, must type str() with value containing a valid ipv4 address&#34;)</code></pre>
+<pre><code class="python">@property
+def local_gw(self):
+    return self._local_gw</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_localid"><code class="name flex">
-<span>def <span class="ident">set_localid</span></span>(<span>self, localid)</span>
-</code></dt>
+<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.localid"><code class="name">var <span class="ident">localid</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.local_id to local_id if local_id is valid</p>
-<p>Args:
-localid (str): Phase1 local id.
-(up to 68 chars)</p>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_localid(self, localid):
-    &#34;&#34;&#34; Set self.local_id to local_id if local_id is valid
-
-    Args:
-        localid (str): Phase1 local id.  (up to 68 chars)
-
-   Returns:
-        None
-    &#34;&#34;&#34;
-    if localid is None:
-        self.localid = None
-    else:
-        if isinstance(localid, str):
-            if 1 &lt;= len(localid) &lt;= 63:
-                self.localid = localid
-            else:
-                raise ValueError(&#34;&#39;localid&#39;, when set, must be type str() between 1 and 63 chars&#34;)
-        else:
-            raise ValueError(&#34;&#39;localid&#39;, when set, must be type str()&#34;)</code></pre>
+<pre><code class="python">@property
+def localid(self):
+    return self._localid</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_name"><code class="name flex">
-<span>def <span class="ident">set_name</span></span>(<span>self, name)</span>
-</code></dt>
+<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.name"><code class="name">var <span class="ident">name</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.name to name if name is valid</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>name</code></strong></dt>
-<dd>Name of object</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_name(self, name):
-    &#34;&#34;&#34; Set self.name to name if name is valid
-
-    Args:
-        name: Name of object
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if name is None:
-        self.name = None
-
-    else:
-        if name.isspace(): raise Exception(&#34;&#39;name&#39;, cannot be an empty string&#34;)
-        if isinstance(name, str):
-            if len(name) &lt;= 35:
-                self.name = name
-            else:
-                raise Exception(&#34;&#39;name&#39;, must be less than 35 chars or less&#34;)
-        else:
-            raise Exception(&#34;&#39;name&#39;, must be a string&#34;)</code></pre>
+<pre><code class="python">@property
+def name(self):
+    return self._name</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_nattraversal"><code class="name flex">
-<span>def <span class="ident">set_nattraversal</span></span>(<span>self, nattraversal)</span>
-</code></dt>
+<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.nattraversal"><code class="name">var <span class="ident">nattraversal</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.nat_traversal</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>nattraversal</code></strong> :&ensp;<code>str</code></dt>
-<dd>nat-traversal.
-('enable', 'disable', 'forced', None=inherit)</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_nattraversal(self, nattraversal):
-    &#34;&#34;&#34; Set self.nat_traversal
-
-    Args:
-        nattraversal (str): nat-traversal.  (&#39;enable&#39;, &#39;disable&#39;, &#39;forced&#39;, None=inherit)
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if nattraversal is None:
-        self.nattraversal = None
-    else:
-        if isinstance(nattraversal, str):
-            if nattraversal.lower() == &#39;enable&#39;:
-                self.nattraversal = &#39;enable&#39;
-            elif nattraversal.lower() == &#39;disable&#39;:
-                self.nattraversal = &#39;disable&#39;
-            elif nattraversal.lower() == &#39;forced&#39;:
-                self.nattraversal = &#39;forced&#39;
-            else:
-                raise ValueError(&#34;&#39;nattraversal&#39;, when set, must be type str() with value &#39;enable&#39;, &#39;disable&#39; &#34;
-                                &#34;or &#39;forced&#39;&#34;)
-        else:
-            raise ValueError(&#34;&#39;nattraversal&#39;, when set, must be type str()&#34;)</code></pre>
+<pre><code class="python">@property
+def nattraversal(self):
+    return self._nattraversal</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_net_device"><code class="name flex">
-<span>def <span class="ident">set_net_device</span></span>(<span>self, net_device)</span>
-</code></dt>
+<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.net_device"><code class="name">var <span class="ident">net_device</span></code></dt>
 <dd>
-<section class="desc"><p>set self.net_device</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>net_device</code></strong> :&ensp;<code>str</code></dt>
-<dd>net-device. ('enable', 'disable' or None=inherit)</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_net_device(self, net_device):
-    &#34;&#34;&#34; set self.net_device
-
-    Args:
-        net_device (str): net-device. (&#39;enable&#39;, &#39;disable&#39; or None=inherit)
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if net_device is None:
-        self.net_device = None
-    else:
-        if isinstance(net_device, str):
-            if net_device == &#39;enable&#39;:
-                self.net_device = &#39;enable&#39;
-            elif net_device == &#39;disable&#39;:
-                self.net_device = &#39;disable&#39;
-            else:
-                raise ValueError(&#34;&#39;net_device&#39;, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#39;&#34;)
-        else:
-            raise ValueError(&#34;&#39;net_device&#39;, when set, must be type str()&#34;)</code></pre>
+<pre><code class="python">@property
+def net_device(self):
+    return self._net_device</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_p1_type"><code class="name flex">
-<span>def <span class="ident">set_p1_type</span></span>(<span>self, p1_type)</span>
-</code></dt>
+<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.p1_type"><code class="name">var <span class="ident">p1_type</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.pt_type to p1_type if p1_type is valid</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>p1_type</code></strong> :&ensp;<code>str</code></dt>
-<dd>Phase1-interface type.
-('dynamic', 'static', 'ddns' or None=inherit)</dd>
-</dl>
-<p>Returns:</p></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_p1_type(self, p1_type):
-    &#34;&#34;&#34; Set self.pt_type to p1_type if p1_type is valid
-
-    Args:
-        p1_type (str): Phase1-interface type.  (&#39;dynamic&#39;, &#39;static&#39;, &#39;ddns&#39; or None=inherit)
-
-    Returns:
-
-    &#34;&#34;&#34;
-    if p1_type is None:
-        self.p1_type = None
-    else:
-        if isinstance(p1_type, str):
-            if p1_type.lower() == &#39;dynamic&#39;:
-                self.p1_type = &#39;dynamic&#39;
-            elif p1_type.lower() == &#39;static&#39;:
-                self.p1_type = &#39;static&#39;
-            elif p1_type.lower() == &#39;ddns&#39;:
-                raise ValueError(&#34;p1_type of &#39;ddns&#39; is not yet supported&#34;)
-            else:
-                raise ValueError(f&#34;&#39;p1_type&#39;: {p1_type} is not supported&#34;)
-        else:
-            raise ValueError(&#34;&#39;p1_type&#39;, when set, must be a str with value of &#39;dynamic&#39; or &#39;static&#39;&#34;)</code></pre>
+<pre><code class="python">@property
+def p1_type(self):
+    return self._p1_type</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_proposal"><code class="name flex">
-<span>def <span class="ident">set_proposal</span></span>(<span>self, proposal)</span>
-</code></dt>
+<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.proposal"><code class="name">var <span class="ident">proposal</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.proposal with list of proposals from proposal if items are all acceptable FG proposals</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>proposal</code></strong> :&ensp;<code>list</code></dt>
-<dd>string containing a single p1 proposal or list of strings with one or more p1 propolsals</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_proposal(self, proposal):
-    &#34;&#34;&#34; Set self.proposal with list of proposals from proposal if items are all acceptable FG proposals
-
-    Args:
-        proposal (list): string containing a single p1 proposal or list of strings with one or more p1 propolsals
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    valid_proposals = [&#39;des-md5&#39;, &#39;des-sha&#39;, &#39;des-sha256&#39;, &#39;des-sha384&#39;, &#39;des-sha512&#39;, &#39;3des-md5&#39;, &#39;3des-sha1&#39;,
-                       &#39;3des-sha256&#39;, &#39;3des-sha384&#39;, &#39;3des-sha512&#39;, &#39;aes128-md5&#39;, &#39;aes128-sha1&#39;, &#39;aes128-sha256&#39;,
-                       &#39;aes128-sha384&#39;, &#39;aes128-sha512&#39;, &#39;aes192-md5&#39;, &#39;aes192-sha1&#39;, &#39;aes192-sha256&#39;,
-                       &#39;aes192-sha384&#39;, &#39;aes192-sha512&#39;, &#39;aes256-md5&#39;, &#39;aes256-sha1&#39;, &#39;aes256-sha256&#39;,
-                       &#39;aes256-sha384&#39;, &#39;aes256-sha512&#39;, &#39;aria128-md5&#39;, &#39;aria128-sha1&#39;, &#39;aria128-sha256&#39;,
-                       &#39;aria128-sha384&#39;, &#39;aria128-sha512&#39;, &#39;aria192-md5&#39;, &#39;aria192-sha1&#39;, &#39;aria192-sha256&#39;,
-                       &#39;aria192-sha384&#39;, &#39;aria192-sha512&#39;, &#39;aria256-md5&#39;, &#39;aria256-sha1&#39;, &#39;aria256-sha256&#39;,
-                       &#39;aria256-sha384&#39;, &#39;aria256-sha512&#39;, &#39;seed-md5&#39;, &#39;seed-sha1&#39;, &#39;seed-sha256&#39;, &#39;seed-sha384&#39;,
-                       &#39;seed-sha512&#39;]
-
-    if proposal is None:
-        self.proposal = None
-
-    else:
-        proposal_items = &#39;&#39;
-
-        # IF a single object was passed as a string, append it to intf_list else iterate the list and pull
-        # out the strings of interfaces and append each to intf_list
-        if isinstance(proposal, str):
-
-            # compare proposal to valid_proposals list
-            if proposal in valid_proposals:
-                proposal_items += f&#34;{proposal} &#34;
-            else:
-                raise ValueError(f&#34;&#39;proposal&#39; provided: {proposal} is not a valid FortiGate phase1 proposal&#34;)
-
-        elif isinstance(proposal, list):
-            for item in proposal:
-                if isinstance(item, str):
-
-                    # compare proposal to valid proposals list
-                    if item in valid_proposals:
-                        proposal_items += f&#34;{item} &#34;
-                    else:
-                        raise ValueError(&#34;&#39;proposal&#39; provided: {proposal} is not a valid FortiGate phase1 proposal&#34;)
-        else:
-            raise ValueError(&#34;proposal must be provided as type string (with single proposal referenced or as a &#34;
-                             &#34;list for multiple proposal references&#34;)
-
-        self.proposal = proposal_items</code></pre>
+<pre><code class="python">@property
+def proposal(self):
+    return self._proposal</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_psksecret"><code class="name flex">
-<span>def <span class="ident">set_psksecret</span></span>(<span>self, psk)</span>
-</code></dt>
+<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.psksecret"><code class="name">var <span class="ident">psksecret</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.psk to psk if psk valid</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>psk</code></strong> :&ensp;<code>str</code></dt>
-<dd>Phase1 psksecret.
-(6 to 30 chars)</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_psksecret(self, psk):
-    &#34;&#34;&#34; Set self.psk to psk if psk valid
-
-    Args:
-        psk (str): Phase1 psksecret.  (6 to 30 chars)
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if psk is None:
-        self.psksecret = None
-    else:
-        if isinstance(psk, str):
-            if 6 &lt;= len(psk) &lt;= 30:
-                self.psksecret = psk
-            else:
-                raise ValueError(&#34;&#39;psksecret&#39;, must be type str() between 6 and 30 chars&#34;)
-        else:
-            raise ValueError(&#34;&#39;psksecret&#39;, must be type str()&#34;)</code></pre>
+<pre><code class="python">@property
+def psksecret(self):
+    return self._psksecret</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_remote_gw"><code class="name flex">
-<span>def <span class="ident">set_remote_gw</span></span>(<span>self, remote_gw)</span>
-</code></dt>
+<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.remote_gw"><code class="name">var <span class="ident">remote_gw</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.remote_gw to remote_gw if remote_gw is valid ipv4 address</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>remote_gw</code></strong> :&ensp;<code>str</code></dt>
-<dd>Address of remote vpn peer gateway.
-(valid ipv4 address as str())</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_remote_gw(self, remote_gw):
-    &#34;&#34;&#34; Set self.remote_gw to remote_gw if remote_gw is valid ipv4 address
-
-    Args:
-        remote_gw (str): Address of remote vpn peer gateway.  (valid ipv4 address as str())
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if remote_gw is None:
-        self.remote_gw = None
-    else:
-        try:
-            self.remote_gw = str(ipaddress.ip_address(remote_gw))
-        except ValueError:
-            raise ValueError(&#34;&#39;remote_gw&#39;, when set, must be type str() with value containing a valid ipv4 address&#34;)</code></pre>
+<pre><code class="python">@property
+def remote_gw(self):
+    return self._remote_gw</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_tunnel_search"><code class="name flex">
-<span>def <span class="ident">set_tunnel_search</span></span>(<span>self, tunnel_search)</span>
-</code></dt>
+<dt id="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.tunnel_search"><code class="name">var <span class="ident">tunnel_search</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.tunnel_search</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>tunnel_search</code></strong> :&ensp;<code>str</code></dt>
-<dd>tunnel-search.
-('selectors', 'nexthop', None=inherit)</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_tunnel_search(self, tunnel_search):
-    &#34;&#34;&#34; Set self.tunnel_search
-
-    Args:
-        tunnel_search (str): tunnel-search.  (&#39;selectors&#39;, &#39;nexthop&#39;, None=inherit)
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if tunnel_search is None:
-        self.tunnel_search = None
-    else:
-        if isinstance(tunnel_search, str):
-            if tunnel_search.lower() == &#39;selectors&#39;:
-                self.tunnel_search = &#39;selectors&#39;
-            elif tunnel_search.lower() == &#39;nexthop&#39;:
-                self.tunnel_search = &#39;nexthop&#39;
-            else:
-                raise Exception(&#34;&#39;tunnel_search&#39; when set, must be type str() with value &#39;selectors&#39;, &#39;nexthop&#39;&#34;)
-        else:
-            raise ValueError(&#34;&#39;tunnel_search&#39;, when set, must be type str(0&#34;)</code></pre>
+<pre><code class="python">@property
+def tunnel_search(self):
+    return self._tunnel_search</code></pre>
 </details>
 </dd>
 </dl>
@@ -2133,7 +1705,6 @@ localid (str): Phase1 local id.
 <li><code><a title="fgobjlib.fg_object.FgObject.get_cli_config_add" href="fg_object.html#fgobjlib.fg_object.FgObject.get_cli_config_add">get_cli_config_add</a></code></li>
 <li><code><a title="fgobjlib.fg_object.FgObject.get_cli_config_del" href="fg_object.html#fgobjlib.fg_object.FgObject.get_cli_config_del">get_cli_config_del</a></code></li>
 <li><code><a title="fgobjlib.fg_object.FgObject.get_cli_config_update" href="fg_object.html#fgobjlib.fg_object.FgObject.get_cli_config_update">get_cli_config_update</a></code></li>
-<li><code><a title="fgobjlib.fg_object.FgObject.set_vdom" href="fg_object.html#fgobjlib.fg_object.FgObject.set_vdom">set_vdom</a></code></li>
 </ul>
 </li>
 </ul>
@@ -2157,25 +1728,25 @@ localid (str): Phase1 local id.
 <li>
 <h4><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface">FgIpsecP1Interface</a></code></h4>
 <ul class="">
-<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_add_gw_route" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_add_gw_route">set_add_gw_route</a></code></li>
-<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_add_route" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_add_route">set_add_route</a></code></li>
-<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_comment" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_comment">set_comment</a></code></li>
-<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_dhgrp" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_dhgrp">set_dhgrp</a></code></li>
-<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_dpd" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_dpd">set_dpd</a></code></li>
-<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_exchange_interface_ip" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_exchange_interface_ip">set_exchange_interface_ip</a></code></li>
-<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_ike_version" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_ike_version">set_ike_version</a></code></li>
-<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_interface" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_interface">set_interface</a></code></li>
-<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_keepalive" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_keepalive">set_keepalive</a></code></li>
-<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_local_gw" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_local_gw">set_local_gw</a></code></li>
-<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_localid" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_localid">set_localid</a></code></li>
-<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_name" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_name">set_name</a></code></li>
-<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_nattraversal" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_nattraversal">set_nattraversal</a></code></li>
-<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_net_device" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_net_device">set_net_device</a></code></li>
-<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_p1_type" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_p1_type">set_p1_type</a></code></li>
-<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_proposal" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_proposal">set_proposal</a></code></li>
-<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_psksecret" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_psksecret">set_psksecret</a></code></li>
-<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_remote_gw" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_remote_gw">set_remote_gw</a></code></li>
-<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_tunnel_search" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.set_tunnel_search">set_tunnel_search</a></code></li>
+<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.add_gw_route" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.add_gw_route">add_gw_route</a></code></li>
+<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.add_route" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.add_route">add_route</a></code></li>
+<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.comment" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.comment">comment</a></code></li>
+<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.dhgrp" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.dhgrp">dhgrp</a></code></li>
+<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.dpd" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.dpd">dpd</a></code></li>
+<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.exchange_interface_ip" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.exchange_interface_ip">exchange_interface_ip</a></code></li>
+<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.ike_version" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.ike_version">ike_version</a></code></li>
+<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.interface" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.interface">interface</a></code></li>
+<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.keepalive" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.keepalive">keepalive</a></code></li>
+<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.local_gw" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.local_gw">local_gw</a></code></li>
+<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.localid" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.localid">localid</a></code></li>
+<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.name" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.name">name</a></code></li>
+<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.nattraversal" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.nattraversal">nattraversal</a></code></li>
+<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.net_device" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.net_device">net_device</a></code></li>
+<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.p1_type" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.p1_type">p1_type</a></code></li>
+<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.proposal" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.proposal">proposal</a></code></li>
+<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.psksecret" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.psksecret">psksecret</a></code></li>
+<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.remote_gw" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.remote_gw">remote_gw</a></code></li>
+<li><code><a title="fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.tunnel_search" href="#fgobjlib.fg_vpn_ipsec_p1_interface.FgIpsecP1Interface.tunnel_search">tunnel_search</a></code></li>
 </ul>
 </li>
 </ul>

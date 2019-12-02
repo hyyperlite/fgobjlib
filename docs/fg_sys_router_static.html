@@ -24,8 +24,9 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from fgobjlib import FgObject
-import ipaddress
+<pre><code class="python">import ipaddress
+
+from fgobjlib import FgObject
 
 
 class FgRouteIPv4(FgObject):
@@ -69,31 +70,30 @@ class FgRouteIPv4(FgObject):
         super().__init__(api=&#39;cmdb&#39;, api_path=&#39;router&#39;, api_name=&#39;static&#39;, cli_path=&#34;config router static&#34;,
                          obj_id=routeid, vdom=vdom)
 
-        ### Set parent class attributes ###
+        # Set parent class attributes #
         # Map instance attribute names to fg attribute names
-        self.data_attrs = {&#39;routeid&#39;: &#39;seq-num&#39;, &#39;dst&#39;: &#39;dst&#39;, &#39;device&#39;: &#39;device&#39;, &#39;gateway&#39;: &#39;gateway&#39;,
-                           &#39;distance&#39;: &#39;distance&#39;, &#39;priority&#39;: &#39;priority&#39;, &#39;weight&#39;: &#39;weight&#39;, &#39;comment&#39;: &#39;comments&#39;,
-                           &#39;blackhole&#39;: &#39;blackhole&#39;, &#39;vrf&#39;: &#39;vrf&#39;}
+        self._data_attrs = {&#39;routeid&#39;: &#39;seq-num&#39;, &#39;dst&#39;: &#39;dst&#39;, &#39;device&#39;: &#39;device&#39;, &#39;gateway&#39;: &#39;gateway&#39;,
+                            &#39;distance&#39;: &#39;distance&#39;, &#39;priority&#39;: &#39;priority&#39;, &#39;weight&#39;: &#39;weight&#39;, &#39;comment&#39;: &#39;comments&#39;,
+                            &#39;blackhole&#39;: &#39;blackhole&#39;, &#39;vrf&#39;: &#39;vrf&#39;}
 
-        self.cli_ignore_attrs = [&#39;routeid&#39;]
+        self._cli_ignore_attrs = [&#39;routeid&#39;]
 
-        # Set instance attributes
-        self.set_routeid(routeid)
-        self.set_dst(dst)
-        self.set_device(device)
-        self.set_gateway(gateway)
-        self.set_distance(distance)
-        self.set_priority(priority)
-        self.set_weight(weight)
-        self.set_comment(comment)
-        self.set_blackhole(blackhole)
-        self.set_vrf(vrf)
+        # Set instance attributes #
+        self.routeid = routeid
+        self.dst = dst
+        self.device = device
+        self.gateway = gateway
+        self.distance = distance
+        self.priority = priority
+        self.weight = weight
+        self.comment = comment
+        self.blackhole = blackhole
+        self.vrf = vrf
 
         # Update the parent defined obj_to_str attribute with this objects str representation
-        self.obj_to_str += f&#34;, routeid={self.routeid}, dst={self.dst}, device={self.device}, gateway={self.gateway},&#34; \
-                          f&#34;distance={self.distance}, priority={self.priority}, weight={self.weight}, &#34; \
-                          f&#34;comment={self.comment}, blackhole={self.blackhole}, vrf={self.vrf}, vdom={self.vdom}&#34;
-
+        self._obj_to_str += f&#34;, routeid={self.routeid}, dst={self.dst}, device={self.device}, gateway={self.gateway},&#34; \
+                            f&#34;distance={self.distance}, priority={self.priority}, weight={self.weight}, &#34; \
+                            f&#34;comment={self.comment}, blackhole={self.blackhole}, vrf={self.vrf}, vdom={self.vdom}&#34;
 
     # Class Methods
     @classmethod
@@ -117,13 +117,18 @@ class FgRouteIPv4(FgObject):
 
         device = None
         gateway = None
-        blackhole = True
+        blackhole = &#39;enable&#39;
 
         obj = cls(routeid, dst, device, gateway, distance, priority, weight, comment, blackhole, vrf, vdom)
         return obj
 
-    # Instance Methods
-    def set_routeid(self, routeid):
+    # Instance properties and setters
+    @property
+    def routeid(self):
+        return self._routeid
+
+    @routeid.setter
+    def routeid(self, routeid):
         &#34;&#34;&#34; Set self.routeid to routeid if routeid is provided and valid, else set self.routeid to 0
 
         Args:
@@ -133,18 +138,23 @@ class FgRouteIPv4(FgObject):
             None
         &#34;&#34;&#34;
         if routeid is None:
-            self.routeid = 0
+            self._routeid = 0
 
         else:
             if isinstance(routeid, int):
                 if 0 &lt;= routeid &lt;= 4294967295:
-                    self.routeid = routeid
+                    self._routeid = routeid
                 else:
-                    raise ValueError(&#34;&#39;routeid&#39; must be type int between 0 and 4294967295&#34;)
+                    raise ValueError(&#34;&#39;routeid&#39; must be type int() between 0 and 4294967295&#34;)
             else:
-                raise ValueError(&#34;&#39;routeid&#39;, must type int&#34;)
+                raise ValueError(&#34;&#39;routeid&#39;, must type int()&#34;)
 
-    def set_dst(self, dst):
+    @property
+    def dst(self):
+        return self._dst
+
+    @dst.setter
+    def dst(self, dst):
         &#34;&#34;&#34; Set self.dst to dst if dst is valid ipv4 network/mask.  If no mask is set, mask defaults to 32.
 
         Args:
@@ -154,18 +164,23 @@ class FgRouteIPv4(FgObject):
             None
         &#34;&#34;&#34;
         if dst is None:
-            self.dst = None
+            self._dst = None
 
         else:
             if isinstance(dst, str):
                 try:
-                    self.dst = str(ipaddress.ip_network(dst))
+                    self._dst = str(ipaddress.ip_network(dst))
                 except ValueError:
-                    raise ValueError(&#34;&#39;dst&#39; must be a valid ipv4 or ipv6 network and mask&#34;)
+                    raise ValueError(&#34;&#39;dst&#39; must be type str() with value containing a valid ipv4 network and mask&#34;)
             else:
-                raise ValueError(&#34;&#39;dst&#39; must be type: str&#34;)
+                raise ValueError(&#34;&#39;dst&#39; must be type: str()&#34;)
 
-    def set_device(self, device):
+    @property
+    def device(self):
+        return self._device
+
+    @device.setter
+    def device(self, device):
         &#34;&#34;&#34; Set self.device to device if device contains valid values
 
         Args:
@@ -175,15 +190,20 @@ class FgRouteIPv4(FgObject):
             None
         &#34;&#34;&#34;
         if device is None:
-            self.device = None
+            self._device = None
 
         else:
             if isinstance(device, str) and 1 &lt;= len(device) &lt;= 35:
-                self.device = device
+                self._device = device
             else:
-                raise ValueError(&#34;&#39;device&#39; must be type str between 1 and 35 chars&#34;, device)
+                raise ValueError(&#34;&#39;device&#39; must be type str() between 1 and 35 chars&#34;, device)
 
-    def set_gateway(self, gateway):
+    @property
+    def gateway(self):
+        return self._gateway
+
+    @gateway.setter
+    def gateway(self, gateway):
         &#34;&#34;&#34; Set self.gateway to gateway if gateway is valid ipv4 address
 
         Args:
@@ -193,18 +213,23 @@ class FgRouteIPv4(FgObject):
             None
         &#34;&#34;&#34;
         if gateway is None:
-            self.gateway = None
+            self._gateway = None
 
         else:
             if isinstance(gateway, str):
                 try:
-                    self.gateway = str(ipaddress.ip_address(gateway))
+                    self._gateway = str(ipaddress.ip_address(gateway))
                 except ValueError:
-                    raise ValueError(&#34;&#39;gateway&#39;, when set, must be a valid ipv4 address address&#34;)
+                    raise ValueError(&#34;&#39;gateway&#39;, when set, must be type str() containing a valid ipv4 address address&#34;)
             else:
-                raise ValueError(&#34;&#39;gateway&#39;, when set must be type: str, with a valid ipv4 address&#34;)
+                raise ValueError(&#34;&#39;gateway&#39;, when set must be type: str() containing a valid ipv4 address&#34;)
 
-    def set_distance(self, distance):
+    @property
+    def distance(self):
+        return self._distance
+
+    @distance.setter
+    def distance(self, distance):
         &#34;&#34;&#34; Set self.distance to distance if distance valid
 
         Args:
@@ -214,15 +239,20 @@ class FgRouteIPv4(FgObject):
             None
         &#34;&#34;&#34;
         if distance is None:
-            self.distance = None
+            self._distance = None
 
         else:
-            if isinstance(distance, int) and  1 &lt;= distance &lt;= 255:
-                self.distance = distance
+            if isinstance(distance, int) and 1 &lt;= distance &lt;= 255:
+                self._distance = distance
             else:
-                raise ValueError(&#34;&#39;distance&#39;, when set, must be type int with value between 1 and 255&#34;)
+                raise ValueError(&#34;&#39;distance&#39;, when set, must be type int() with value between 1 and 255&#34;)
 
-    def set_weight(self, weight):
+    @property
+    def weight(self):
+        return self._distance
+
+    @weight.setter
+    def weight(self, weight):
         &#34;&#34;&#34; Set self.weight to weight if weight valid
 
         Args:
@@ -232,15 +262,20 @@ class FgRouteIPv4(FgObject):
 
         &#34;&#34;&#34;
         if weight is None:
-            self.weight = None
+            self._weight = None
 
         else:
-            if isinstance(weight, int) and  1 &lt;= weight &lt;= 255:
-                self.weight = weight
+            if isinstance(weight, int) and 1 &lt;= weight &lt;= 255:
+                self._weight = weight
             else:
-                raise ValueError(&#34;&#39;weight&#39;, when set, must be type int with value between 1 and 255&#34;)
+                raise ValueError(&#34;&#39;weight&#39;, when set, must be type int() with value between 1 and 255&#34;)
 
-    def set_priority(self, priority):
+    @property
+    def priority(self):
+        return self._priority
+
+    @priority.setter
+    def priority(self, priority):
         &#34;&#34;&#34; Set self.priority to priority if priority valid
 
         Args:
@@ -250,15 +285,20 @@ class FgRouteIPv4(FgObject):
             None
         &#34;&#34;&#34;
         if priority is None:
-            self.priority = None
+            self._priority = None
 
         else:
-            if isinstance(priority, int) and  0 &lt;= priority &lt;= 4294967295:
-                self.priority = priority
+            if isinstance(priority, int) and 0 &lt;= priority &lt;= 4294967295:
+                self._priority = priority
             else:
-                raise ValueError(&#34;&#39;priority&#39;, when set, must be type int with value between 0 and 4294967295&#34;)
+                raise ValueError(&#34;&#39;priority&#39;, when set, must be type int() with value between 0 and 4294967295&#34;)
 
-    def set_vrf(self, vrf):
+    @property
+    def vrf(self):
+        return self._vrf
+
+    @vrf.setter
+    def vrf(self, vrf):
         &#34;&#34;&#34; Set self.vrf to vrf if vrf is valid
 
         Args:
@@ -268,15 +308,20 @@ class FgRouteIPv4(FgObject):
             None
         &#34;&#34;&#34;
         if vrf is None:
-            self.vrf = None
+            self._vrf = None
 
         else:
-            if isinstance(vrf, int) and  0 &lt;= vrf &lt;= 31:
-                self.vrf = vrf
+            if isinstance(vrf, int) and 0 &lt;= vrf &lt;= 31:
+                self._vrf = vrf
             else:
-                raise ValueError(&#34;&#39;vrf&#39;, when set, must be type int with value between 0 and 31&#34;)
+                raise ValueError(&#34;&#39;vrf&#39;, when set, must be type int() with value between 0 and 31&#34;)
 
-    def set_comment(self, comment):
+    @property
+    def comment(self):
+        return self._comment
+
+    @comment.setter
+    def comment(self, comment):
         &#34;&#34;&#34; Set self.comment to comment if comment valid
 
         Args:
@@ -286,15 +331,20 @@ class FgRouteIPv4(FgObject):
             None
         &#34;&#34;&#34;
         if comment is None:
-            self.comment = None
+            self._comment = None
 
         else:
             if isinstance(comment, str) and 1 &lt;= len(comment) &lt;= 255:
-                self.comment = comment
+                self._comment = comment
             else:
-                raise Exception(&#34;&#39;comment&#39;, when set, must be type str between 1 and 255 chars&#34;)
+                raise Exception(&#34;&#39;comment&#39;, when set, must be type str() between 1 and 255 chars&#34;)
 
-    def set_blackhole(self, blackhole):
+    @property
+    def blackhole(self):
+        return self._blackhole
+
+    @blackhole.setter
+    def blackhole(self, blackhole):
         &#34;&#34;&#34; Set self.blackhole to True, False if blackhole = True or False, else set to None
 
         Args:
@@ -304,14 +354,14 @@ class FgRouteIPv4(FgObject):
             None
         &#34;&#34;&#34;
         if blackhole is None:
-            self.blackhole = None
+            self._blackhole = None
 
         else:
             if isinstance(blackhole, bool):
                 if blackhole == &#39;enable&#39;:
-                    self.blackhole = &#39;enable&#39;
+                    self._blackhole = &#39;enable&#39;
                 elif blackhole == &#39;disable&#39;:
-                    self.blackhole = &#39;diable&#39;
+                    self._blackhole = &#39;diable&#39;
                 else:
                     raise ValueError(&#34;&#39;blackhole&#39;, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#39;&#34;)
             else:
@@ -434,31 +484,30 @@ Must be valid IPv4 address.</dd>
         super().__init__(api=&#39;cmdb&#39;, api_path=&#39;router&#39;, api_name=&#39;static&#39;, cli_path=&#34;config router static&#34;,
                          obj_id=routeid, vdom=vdom)
 
-        ### Set parent class attributes ###
+        # Set parent class attributes #
         # Map instance attribute names to fg attribute names
-        self.data_attrs = {&#39;routeid&#39;: &#39;seq-num&#39;, &#39;dst&#39;: &#39;dst&#39;, &#39;device&#39;: &#39;device&#39;, &#39;gateway&#39;: &#39;gateway&#39;,
-                           &#39;distance&#39;: &#39;distance&#39;, &#39;priority&#39;: &#39;priority&#39;, &#39;weight&#39;: &#39;weight&#39;, &#39;comment&#39;: &#39;comments&#39;,
-                           &#39;blackhole&#39;: &#39;blackhole&#39;, &#39;vrf&#39;: &#39;vrf&#39;}
+        self._data_attrs = {&#39;routeid&#39;: &#39;seq-num&#39;, &#39;dst&#39;: &#39;dst&#39;, &#39;device&#39;: &#39;device&#39;, &#39;gateway&#39;: &#39;gateway&#39;,
+                            &#39;distance&#39;: &#39;distance&#39;, &#39;priority&#39;: &#39;priority&#39;, &#39;weight&#39;: &#39;weight&#39;, &#39;comment&#39;: &#39;comments&#39;,
+                            &#39;blackhole&#39;: &#39;blackhole&#39;, &#39;vrf&#39;: &#39;vrf&#39;}
 
-        self.cli_ignore_attrs = [&#39;routeid&#39;]
+        self._cli_ignore_attrs = [&#39;routeid&#39;]
 
-        # Set instance attributes
-        self.set_routeid(routeid)
-        self.set_dst(dst)
-        self.set_device(device)
-        self.set_gateway(gateway)
-        self.set_distance(distance)
-        self.set_priority(priority)
-        self.set_weight(weight)
-        self.set_comment(comment)
-        self.set_blackhole(blackhole)
-        self.set_vrf(vrf)
+        # Set instance attributes #
+        self.routeid = routeid
+        self.dst = dst
+        self.device = device
+        self.gateway = gateway
+        self.distance = distance
+        self.priority = priority
+        self.weight = weight
+        self.comment = comment
+        self.blackhole = blackhole
+        self.vrf = vrf
 
         # Update the parent defined obj_to_str attribute with this objects str representation
-        self.obj_to_str += f&#34;, routeid={self.routeid}, dst={self.dst}, device={self.device}, gateway={self.gateway},&#34; \
-                          f&#34;distance={self.distance}, priority={self.priority}, weight={self.weight}, &#34; \
-                          f&#34;comment={self.comment}, blackhole={self.blackhole}, vrf={self.vrf}, vdom={self.vdom}&#34;
-
+        self._obj_to_str += f&#34;, routeid={self.routeid}, dst={self.dst}, device={self.device}, gateway={self.gateway},&#34; \
+                            f&#34;distance={self.distance}, priority={self.priority}, weight={self.weight}, &#34; \
+                            f&#34;comment={self.comment}, blackhole={self.blackhole}, vrf={self.vrf}, vdom={self.vdom}&#34;
 
     # Class Methods
     @classmethod
@@ -482,13 +531,18 @@ Must be valid IPv4 address.</dd>
 
         device = None
         gateway = None
-        blackhole = True
+        blackhole = &#39;enable&#39;
 
         obj = cls(routeid, dst, device, gateway, distance, priority, weight, comment, blackhole, vrf, vdom)
         return obj
 
-    # Instance Methods
-    def set_routeid(self, routeid):
+    # Instance properties and setters
+    @property
+    def routeid(self):
+        return self._routeid
+
+    @routeid.setter
+    def routeid(self, routeid):
         &#34;&#34;&#34; Set self.routeid to routeid if routeid is provided and valid, else set self.routeid to 0
 
         Args:
@@ -498,18 +552,23 @@ Must be valid IPv4 address.</dd>
             None
         &#34;&#34;&#34;
         if routeid is None:
-            self.routeid = 0
+            self._routeid = 0
 
         else:
             if isinstance(routeid, int):
                 if 0 &lt;= routeid &lt;= 4294967295:
-                    self.routeid = routeid
+                    self._routeid = routeid
                 else:
-                    raise ValueError(&#34;&#39;routeid&#39; must be type int between 0 and 4294967295&#34;)
+                    raise ValueError(&#34;&#39;routeid&#39; must be type int() between 0 and 4294967295&#34;)
             else:
-                raise ValueError(&#34;&#39;routeid&#39;, must type int&#34;)
+                raise ValueError(&#34;&#39;routeid&#39;, must type int()&#34;)
 
-    def set_dst(self, dst):
+    @property
+    def dst(self):
+        return self._dst
+
+    @dst.setter
+    def dst(self, dst):
         &#34;&#34;&#34; Set self.dst to dst if dst is valid ipv4 network/mask.  If no mask is set, mask defaults to 32.
 
         Args:
@@ -519,18 +578,23 @@ Must be valid IPv4 address.</dd>
             None
         &#34;&#34;&#34;
         if dst is None:
-            self.dst = None
+            self._dst = None
 
         else:
             if isinstance(dst, str):
                 try:
-                    self.dst = str(ipaddress.ip_network(dst))
+                    self._dst = str(ipaddress.ip_network(dst))
                 except ValueError:
-                    raise ValueError(&#34;&#39;dst&#39; must be a valid ipv4 or ipv6 network and mask&#34;)
+                    raise ValueError(&#34;&#39;dst&#39; must be type str() with value containing a valid ipv4 network and mask&#34;)
             else:
-                raise ValueError(&#34;&#39;dst&#39; must be type: str&#34;)
+                raise ValueError(&#34;&#39;dst&#39; must be type: str()&#34;)
 
-    def set_device(self, device):
+    @property
+    def device(self):
+        return self._device
+
+    @device.setter
+    def device(self, device):
         &#34;&#34;&#34; Set self.device to device if device contains valid values
 
         Args:
@@ -540,15 +604,20 @@ Must be valid IPv4 address.</dd>
             None
         &#34;&#34;&#34;
         if device is None:
-            self.device = None
+            self._device = None
 
         else:
             if isinstance(device, str) and 1 &lt;= len(device) &lt;= 35:
-                self.device = device
+                self._device = device
             else:
-                raise ValueError(&#34;&#39;device&#39; must be type str between 1 and 35 chars&#34;, device)
+                raise ValueError(&#34;&#39;device&#39; must be type str() between 1 and 35 chars&#34;, device)
 
-    def set_gateway(self, gateway):
+    @property
+    def gateway(self):
+        return self._gateway
+
+    @gateway.setter
+    def gateway(self, gateway):
         &#34;&#34;&#34; Set self.gateway to gateway if gateway is valid ipv4 address
 
         Args:
@@ -558,18 +627,23 @@ Must be valid IPv4 address.</dd>
             None
         &#34;&#34;&#34;
         if gateway is None:
-            self.gateway = None
+            self._gateway = None
 
         else:
             if isinstance(gateway, str):
                 try:
-                    self.gateway = str(ipaddress.ip_address(gateway))
+                    self._gateway = str(ipaddress.ip_address(gateway))
                 except ValueError:
-                    raise ValueError(&#34;&#39;gateway&#39;, when set, must be a valid ipv4 address address&#34;)
+                    raise ValueError(&#34;&#39;gateway&#39;, when set, must be type str() containing a valid ipv4 address address&#34;)
             else:
-                raise ValueError(&#34;&#39;gateway&#39;, when set must be type: str, with a valid ipv4 address&#34;)
+                raise ValueError(&#34;&#39;gateway&#39;, when set must be type: str() containing a valid ipv4 address&#34;)
 
-    def set_distance(self, distance):
+    @property
+    def distance(self):
+        return self._distance
+
+    @distance.setter
+    def distance(self, distance):
         &#34;&#34;&#34; Set self.distance to distance if distance valid
 
         Args:
@@ -579,15 +653,20 @@ Must be valid IPv4 address.</dd>
             None
         &#34;&#34;&#34;
         if distance is None:
-            self.distance = None
+            self._distance = None
 
         else:
-            if isinstance(distance, int) and  1 &lt;= distance &lt;= 255:
-                self.distance = distance
+            if isinstance(distance, int) and 1 &lt;= distance &lt;= 255:
+                self._distance = distance
             else:
-                raise ValueError(&#34;&#39;distance&#39;, when set, must be type int with value between 1 and 255&#34;)
+                raise ValueError(&#34;&#39;distance&#39;, when set, must be type int() with value between 1 and 255&#34;)
 
-    def set_weight(self, weight):
+    @property
+    def weight(self):
+        return self._distance
+
+    @weight.setter
+    def weight(self, weight):
         &#34;&#34;&#34; Set self.weight to weight if weight valid
 
         Args:
@@ -597,15 +676,20 @@ Must be valid IPv4 address.</dd>
 
         &#34;&#34;&#34;
         if weight is None:
-            self.weight = None
+            self._weight = None
 
         else:
-            if isinstance(weight, int) and  1 &lt;= weight &lt;= 255:
-                self.weight = weight
+            if isinstance(weight, int) and 1 &lt;= weight &lt;= 255:
+                self._weight = weight
             else:
-                raise ValueError(&#34;&#39;weight&#39;, when set, must be type int with value between 1 and 255&#34;)
+                raise ValueError(&#34;&#39;weight&#39;, when set, must be type int() with value between 1 and 255&#34;)
 
-    def set_priority(self, priority):
+    @property
+    def priority(self):
+        return self._priority
+
+    @priority.setter
+    def priority(self, priority):
         &#34;&#34;&#34; Set self.priority to priority if priority valid
 
         Args:
@@ -615,15 +699,20 @@ Must be valid IPv4 address.</dd>
             None
         &#34;&#34;&#34;
         if priority is None:
-            self.priority = None
+            self._priority = None
 
         else:
-            if isinstance(priority, int) and  0 &lt;= priority &lt;= 4294967295:
-                self.priority = priority
+            if isinstance(priority, int) and 0 &lt;= priority &lt;= 4294967295:
+                self._priority = priority
             else:
-                raise ValueError(&#34;&#39;priority&#39;, when set, must be type int with value between 0 and 4294967295&#34;)
+                raise ValueError(&#34;&#39;priority&#39;, when set, must be type int() with value between 0 and 4294967295&#34;)
 
-    def set_vrf(self, vrf):
+    @property
+    def vrf(self):
+        return self._vrf
+
+    @vrf.setter
+    def vrf(self, vrf):
         &#34;&#34;&#34; Set self.vrf to vrf if vrf is valid
 
         Args:
@@ -633,15 +722,20 @@ Must be valid IPv4 address.</dd>
             None
         &#34;&#34;&#34;
         if vrf is None:
-            self.vrf = None
+            self._vrf = None
 
         else:
-            if isinstance(vrf, int) and  0 &lt;= vrf &lt;= 31:
-                self.vrf = vrf
+            if isinstance(vrf, int) and 0 &lt;= vrf &lt;= 31:
+                self._vrf = vrf
             else:
-                raise ValueError(&#34;&#39;vrf&#39;, when set, must be type int with value between 0 and 31&#34;)
+                raise ValueError(&#34;&#39;vrf&#39;, when set, must be type int() with value between 0 and 31&#34;)
 
-    def set_comment(self, comment):
+    @property
+    def comment(self):
+        return self._comment
+
+    @comment.setter
+    def comment(self, comment):
         &#34;&#34;&#34; Set self.comment to comment if comment valid
 
         Args:
@@ -651,15 +745,20 @@ Must be valid IPv4 address.</dd>
             None
         &#34;&#34;&#34;
         if comment is None:
-            self.comment = None
+            self._comment = None
 
         else:
             if isinstance(comment, str) and 1 &lt;= len(comment) &lt;= 255:
-                self.comment = comment
+                self._comment = comment
             else:
-                raise Exception(&#34;&#39;comment&#39;, when set, must be type str between 1 and 255 chars&#34;)
+                raise Exception(&#34;&#39;comment&#39;, when set, must be type str() between 1 and 255 chars&#34;)
 
-    def set_blackhole(self, blackhole):
+    @property
+    def blackhole(self):
+        return self._blackhole
+
+    @blackhole.setter
+    def blackhole(self, blackhole):
         &#34;&#34;&#34; Set self.blackhole to True, False if blackhole = True or False, else set to None
 
         Args:
@@ -669,14 +768,14 @@ Must be valid IPv4 address.</dd>
             None
         &#34;&#34;&#34;
         if blackhole is None:
-            self.blackhole = None
+            self._blackhole = None
 
         else:
             if isinstance(blackhole, bool):
                 if blackhole == &#39;enable&#39;:
-                    self.blackhole = &#39;enable&#39;
+                    self._blackhole = &#39;enable&#39;
                 elif blackhole == &#39;disable&#39;:
-                    self.blackhole = &#39;diable&#39;
+                    self._blackhole = &#39;diable&#39;
                 else:
                     raise ValueError(&#34;&#39;blackhole&#39;, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#39;&#34;)
             else:
@@ -685,6 +784,7 @@ Must be valid IPv4 address.</dd>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="fgobjlib.fg_object.FgObject" href="fg_object.html#fgobjlib.fg_object.FgObject">FgObject</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Static methods</h3>
 <dl>
@@ -743,406 +843,133 @@ def blackhole_route(cls, routeid: int = 0, dst: str = None, vdom: str = None, di
 
     device = None
     gateway = None
-    blackhole = True
+    blackhole = &#39;enable&#39;
 
     obj = cls(routeid, dst, device, gateway, distance, priority, weight, comment, blackhole, vrf, vdom)
     return obj</code></pre>
 </details>
 </dd>
 </dl>
-<h3>Methods</h3>
+<h3>Instance variables</h3>
 <dl>
-<dt id="fgobjlib.fg_sys_router_static.FgRouteIPv4.set_blackhole"><code class="name flex">
-<span>def <span class="ident">set_blackhole</span></span>(<span>self, blackhole)</span>
-</code></dt>
+<dt id="fgobjlib.fg_sys_router_static.FgRouteIPv4.blackhole"><code class="name">var <span class="ident">blackhole</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.blackhole to True, False if blackhole = True or False, else set to None</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>blackhole</code></strong></dt>
-<dd>Set blackhole True=enable, False=disable, None=inherit</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_blackhole(self, blackhole):
-    &#34;&#34;&#34; Set self.blackhole to True, False if blackhole = True or False, else set to None
-
-    Args:
-        blackhole: Set blackhole True=enable, False=disable, None=inherit
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if blackhole is None:
-        self.blackhole = None
-
-    else:
-        if isinstance(blackhole, bool):
-            if blackhole == &#39;enable&#39;:
-                self.blackhole = &#39;enable&#39;
-            elif blackhole == &#39;disable&#39;:
-                self.blackhole = &#39;diable&#39;
-            else:
-                raise ValueError(&#34;&#39;blackhole&#39;, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#39;&#34;)
-        else:
-            raise ValueError(&#34;&#39;blackhole&#39;, when set, must be type str()&#34;)</code></pre>
+<pre><code class="python">@property
+def blackhole(self):
+    return self._blackhole</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_sys_router_static.FgRouteIPv4.set_comment"><code class="name flex">
-<span>def <span class="ident">set_comment</span></span>(<span>self, comment)</span>
-</code></dt>
+<dt id="fgobjlib.fg_sys_router_static.FgRouteIPv4.comment"><code class="name">var <span class="ident">comment</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.comment to comment if comment valid</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>comment</code></strong></dt>
-<dd>Route comment</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_comment(self, comment):
-    &#34;&#34;&#34; Set self.comment to comment if comment valid
-
-    Args:
-        comment: Route comment
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if comment is None:
-        self.comment = None
-
-    else:
-        if isinstance(comment, str) and 1 &lt;= len(comment) &lt;= 255:
-            self.comment = comment
-        else:
-            raise Exception(&#34;&#39;comment&#39;, when set, must be type str between 1 and 255 chars&#34;)</code></pre>
+<pre><code class="python">@property
+def comment(self):
+    return self._comment</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_sys_router_static.FgRouteIPv4.set_device"><code class="name flex">
-<span>def <span class="ident">set_device</span></span>(<span>self, device)</span>
-</code></dt>
+<dt id="fgobjlib.fg_sys_router_static.FgRouteIPv4.device"><code class="name">var <span class="ident">device</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.device to device if device contains valid values</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>device</code></strong> :&ensp;<code>str</code></dt>
-<dd>Route destination device</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_device(self, device):
-    &#34;&#34;&#34; Set self.device to device if device contains valid values
-
-    Args:
-        device (str): Route destination device
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if device is None:
-        self.device = None
-
-    else:
-        if isinstance(device, str) and 1 &lt;= len(device) &lt;= 35:
-            self.device = device
-        else:
-            raise ValueError(&#34;&#39;device&#39; must be type str between 1 and 35 chars&#34;, device)</code></pre>
+<pre><code class="python">@property
+def device(self):
+    return self._device</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_sys_router_static.FgRouteIPv4.set_distance"><code class="name flex">
-<span>def <span class="ident">set_distance</span></span>(<span>self, distance)</span>
-</code></dt>
+<dt id="fgobjlib.fg_sys_router_static.FgRouteIPv4.distance"><code class="name">var <span class="ident">distance</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.distance to distance if distance valid</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>distance</code></strong> :&ensp;<code>int</code></dt>
-<dd>Route distance</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_distance(self, distance):
-    &#34;&#34;&#34; Set self.distance to distance if distance valid
-
-    Args:
-        distance (int): Route distance
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if distance is None:
-        self.distance = None
-
-    else:
-        if isinstance(distance, int) and  1 &lt;= distance &lt;= 255:
-            self.distance = distance
-        else:
-            raise ValueError(&#34;&#39;distance&#39;, when set, must be type int with value between 1 and 255&#34;)</code></pre>
+<pre><code class="python">@property
+def distance(self):
+    return self._distance</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_sys_router_static.FgRouteIPv4.set_dst"><code class="name flex">
-<span>def <span class="ident">set_dst</span></span>(<span>self, dst)</span>
-</code></dt>
+<dt id="fgobjlib.fg_sys_router_static.FgRouteIPv4.dst"><code class="name">var <span class="ident">dst</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.dst to dst if dst is valid ipv4 network/mask.
-If no mask is set, mask defaults to 32.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>dst</code></strong> :&ensp;<code>str</code></dt>
-<dd>A valid IPv4 network/mask</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_dst(self, dst):
-    &#34;&#34;&#34; Set self.dst to dst if dst is valid ipv4 network/mask.  If no mask is set, mask defaults to 32.
-
-    Args:
-        dst (str): A valid IPv4 network/mask
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if dst is None:
-        self.dst = None
-
-    else:
-        if isinstance(dst, str):
-            try:
-                self.dst = str(ipaddress.ip_network(dst))
-            except ValueError:
-                raise ValueError(&#34;&#39;dst&#39; must be a valid ipv4 or ipv6 network and mask&#34;)
-        else:
-            raise ValueError(&#34;&#39;dst&#39; must be type: str&#34;)</code></pre>
+<pre><code class="python">@property
+def dst(self):
+    return self._dst</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_sys_router_static.FgRouteIPv4.set_gateway"><code class="name flex">
-<span>def <span class="ident">set_gateway</span></span>(<span>self, gateway)</span>
-</code></dt>
+<dt id="fgobjlib.fg_sys_router_static.FgRouteIPv4.gateway"><code class="name">var <span class="ident">gateway</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.gateway to gateway if gateway is valid ipv4 address</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>gateway</code></strong> :&ensp;<code>str</code></dt>
-<dd>Next-hop gateway.
-Must be valid ipv4 address.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_gateway(self, gateway):
-    &#34;&#34;&#34; Set self.gateway to gateway if gateway is valid ipv4 address
-
-    Args:
-        gateway (str): Next-hop gateway.  Must be valid ipv4 address.
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if gateway is None:
-        self.gateway = None
-
-    else:
-        if isinstance(gateway, str):
-            try:
-                self.gateway = str(ipaddress.ip_address(gateway))
-            except ValueError:
-                raise ValueError(&#34;&#39;gateway&#39;, when set, must be a valid ipv4 address address&#34;)
-        else:
-            raise ValueError(&#34;&#39;gateway&#39;, when set must be type: str, with a valid ipv4 address&#34;)</code></pre>
+<pre><code class="python">@property
+def gateway(self):
+    return self._gateway</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_sys_router_static.FgRouteIPv4.set_priority"><code class="name flex">
-<span>def <span class="ident">set_priority</span></span>(<span>self, priority)</span>
-</code></dt>
+<dt id="fgobjlib.fg_sys_router_static.FgRouteIPv4.priority"><code class="name">var <span class="ident">priority</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.priority to priority if priority valid</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>priority</code></strong> :&ensp;<code>int</code></dt>
-<dd>Route priority</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_priority(self, priority):
-    &#34;&#34;&#34; Set self.priority to priority if priority valid
-
-    Args:
-        priority (int): Route priority
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if priority is None:
-        self.priority = None
-
-    else:
-        if isinstance(priority, int) and  0 &lt;= priority &lt;= 4294967295:
-            self.priority = priority
-        else:
-            raise ValueError(&#34;&#39;priority&#39;, when set, must be type int with value between 0 and 4294967295&#34;)</code></pre>
+<pre><code class="python">@property
+def priority(self):
+    return self._priority</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_sys_router_static.FgRouteIPv4.set_routeid"><code class="name flex">
-<span>def <span class="ident">set_routeid</span></span>(<span>self, routeid)</span>
-</code></dt>
+<dt id="fgobjlib.fg_sys_router_static.FgRouteIPv4.routeid"><code class="name">var <span class="ident">routeid</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.routeid to routeid if routeid is provided and valid, else set self.routeid to 0</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>routeid</code></strong> :&ensp;<code>int</code></dt>
-<dd>Id for route.
-If routeid = None, self.routeid set to 0</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_routeid(self, routeid):
-    &#34;&#34;&#34; Set self.routeid to routeid if routeid is provided and valid, else set self.routeid to 0
-
-    Args:
-        routeid (int): Id for route.  If routeid = None, self.routeid set to 0
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if routeid is None:
-        self.routeid = 0
-
-    else:
-        if isinstance(routeid, int):
-            if 0 &lt;= routeid &lt;= 4294967295:
-                self.routeid = routeid
-            else:
-                raise ValueError(&#34;&#39;routeid&#39; must be type int between 0 and 4294967295&#34;)
-        else:
-            raise ValueError(&#34;&#39;routeid&#39;, must type int&#34;)</code></pre>
+<pre><code class="python">@property
+def routeid(self):
+    return self._routeid</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_sys_router_static.FgRouteIPv4.set_vrf"><code class="name flex">
-<span>def <span class="ident">set_vrf</span></span>(<span>self, vrf)</span>
-</code></dt>
+<dt id="fgobjlib.fg_sys_router_static.FgRouteIPv4.vrf"><code class="name">var <span class="ident">vrf</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.vrf to vrf if vrf is valid</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>vrf</code></strong> :&ensp;<code>int</code></dt>
-<dd>Route VRF</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_vrf(self, vrf):
-    &#34;&#34;&#34; Set self.vrf to vrf if vrf is valid
-
-    Args:
-        vrf (int): Route VRF
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if vrf is None:
-        self.vrf = None
-
-    else:
-        if isinstance(vrf, int) and  0 &lt;= vrf &lt;= 31:
-            self.vrf = vrf
-        else:
-            raise ValueError(&#34;&#39;vrf&#39;, when set, must be type int with value between 0 and 31&#34;)</code></pre>
+<pre><code class="python">@property
+def vrf(self):
+    return self._vrf</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_sys_router_static.FgRouteIPv4.set_weight"><code class="name flex">
-<span>def <span class="ident">set_weight</span></span>(<span>self, weight)</span>
-</code></dt>
+<dt id="fgobjlib.fg_sys_router_static.FgRouteIPv4.weight"><code class="name">var <span class="ident">weight</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.weight to weight if weight valid</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>weight</code></strong> :&ensp;<code>int</code></dt>
-<dd>Route weight</dd>
-</dl>
-<p>Returns:</p></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_weight(self, weight):
-    &#34;&#34;&#34; Set self.weight to weight if weight valid
-
-    Args:
-        weight (int): Route weight
-
-    Returns:
-
-    &#34;&#34;&#34;
-    if weight is None:
-        self.weight = None
-
-    else:
-        if isinstance(weight, int) and  1 &lt;= weight &lt;= 255:
-            self.weight = weight
-        else:
-            raise ValueError(&#34;&#39;weight&#39;, when set, must be type int with value between 1 and 255&#34;)</code></pre>
+<pre><code class="python">@property
+def weight(self):
+    return self._distance</code></pre>
 </details>
 </dd>
 </dl>
@@ -1157,7 +984,6 @@ If routeid = None, self.routeid set to 0</dd>
 <li><code><a title="fgobjlib.fg_object.FgObject.get_cli_config_add" href="fg_object.html#fgobjlib.fg_object.FgObject.get_cli_config_add">get_cli_config_add</a></code></li>
 <li><code><a title="fgobjlib.fg_object.FgObject.get_cli_config_del" href="fg_object.html#fgobjlib.fg_object.FgObject.get_cli_config_del">get_cli_config_del</a></code></li>
 <li><code><a title="fgobjlib.fg_object.FgObject.get_cli_config_update" href="fg_object.html#fgobjlib.fg_object.FgObject.get_cli_config_update">get_cli_config_update</a></code></li>
-<li><code><a title="fgobjlib.fg_object.FgObject.set_vdom" href="fg_object.html#fgobjlib.fg_object.FgObject.set_vdom">set_vdom</a></code></li>
 </ul>
 </li>
 </ul>
@@ -1181,17 +1007,17 @@ If routeid = None, self.routeid set to 0</dd>
 <li>
 <h4><code><a title="fgobjlib.fg_sys_router_static.FgRouteIPv4" href="#fgobjlib.fg_sys_router_static.FgRouteIPv4">FgRouteIPv4</a></code></h4>
 <ul class="two-column">
+<li><code><a title="fgobjlib.fg_sys_router_static.FgRouteIPv4.blackhole" href="#fgobjlib.fg_sys_router_static.FgRouteIPv4.blackhole">blackhole</a></code></li>
 <li><code><a title="fgobjlib.fg_sys_router_static.FgRouteIPv4.blackhole_route" href="#fgobjlib.fg_sys_router_static.FgRouteIPv4.blackhole_route">blackhole_route</a></code></li>
-<li><code><a title="fgobjlib.fg_sys_router_static.FgRouteIPv4.set_blackhole" href="#fgobjlib.fg_sys_router_static.FgRouteIPv4.set_blackhole">set_blackhole</a></code></li>
-<li><code><a title="fgobjlib.fg_sys_router_static.FgRouteIPv4.set_comment" href="#fgobjlib.fg_sys_router_static.FgRouteIPv4.set_comment">set_comment</a></code></li>
-<li><code><a title="fgobjlib.fg_sys_router_static.FgRouteIPv4.set_device" href="#fgobjlib.fg_sys_router_static.FgRouteIPv4.set_device">set_device</a></code></li>
-<li><code><a title="fgobjlib.fg_sys_router_static.FgRouteIPv4.set_distance" href="#fgobjlib.fg_sys_router_static.FgRouteIPv4.set_distance">set_distance</a></code></li>
-<li><code><a title="fgobjlib.fg_sys_router_static.FgRouteIPv4.set_dst" href="#fgobjlib.fg_sys_router_static.FgRouteIPv4.set_dst">set_dst</a></code></li>
-<li><code><a title="fgobjlib.fg_sys_router_static.FgRouteIPv4.set_gateway" href="#fgobjlib.fg_sys_router_static.FgRouteIPv4.set_gateway">set_gateway</a></code></li>
-<li><code><a title="fgobjlib.fg_sys_router_static.FgRouteIPv4.set_priority" href="#fgobjlib.fg_sys_router_static.FgRouteIPv4.set_priority">set_priority</a></code></li>
-<li><code><a title="fgobjlib.fg_sys_router_static.FgRouteIPv4.set_routeid" href="#fgobjlib.fg_sys_router_static.FgRouteIPv4.set_routeid">set_routeid</a></code></li>
-<li><code><a title="fgobjlib.fg_sys_router_static.FgRouteIPv4.set_vrf" href="#fgobjlib.fg_sys_router_static.FgRouteIPv4.set_vrf">set_vrf</a></code></li>
-<li><code><a title="fgobjlib.fg_sys_router_static.FgRouteIPv4.set_weight" href="#fgobjlib.fg_sys_router_static.FgRouteIPv4.set_weight">set_weight</a></code></li>
+<li><code><a title="fgobjlib.fg_sys_router_static.FgRouteIPv4.comment" href="#fgobjlib.fg_sys_router_static.FgRouteIPv4.comment">comment</a></code></li>
+<li><code><a title="fgobjlib.fg_sys_router_static.FgRouteIPv4.device" href="#fgobjlib.fg_sys_router_static.FgRouteIPv4.device">device</a></code></li>
+<li><code><a title="fgobjlib.fg_sys_router_static.FgRouteIPv4.distance" href="#fgobjlib.fg_sys_router_static.FgRouteIPv4.distance">distance</a></code></li>
+<li><code><a title="fgobjlib.fg_sys_router_static.FgRouteIPv4.dst" href="#fgobjlib.fg_sys_router_static.FgRouteIPv4.dst">dst</a></code></li>
+<li><code><a title="fgobjlib.fg_sys_router_static.FgRouteIPv4.gateway" href="#fgobjlib.fg_sys_router_static.FgRouteIPv4.gateway">gateway</a></code></li>
+<li><code><a title="fgobjlib.fg_sys_router_static.FgRouteIPv4.priority" href="#fgobjlib.fg_sys_router_static.FgRouteIPv4.priority">priority</a></code></li>
+<li><code><a title="fgobjlib.fg_sys_router_static.FgRouteIPv4.routeid" href="#fgobjlib.fg_sys_router_static.FgRouteIPv4.routeid">routeid</a></code></li>
+<li><code><a title="fgobjlib.fg_sys_router_static.FgRouteIPv4.vrf" href="#fgobjlib.fg_sys_router_static.FgRouteIPv4.vrf">vrf</a></code></li>
+<li><code><a title="fgobjlib.fg_sys_router_static.FgRouteIPv4.weight" href="#fgobjlib.fg_sys_router_static.FgRouteIPv4.weight">weight</a></code></li>
 </ul>
 </li>
 </ul>

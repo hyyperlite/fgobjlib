@@ -24,8 +24,11 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from fgobjlib import FgObject
-import ipaddress
+<pre><code class="python">import ipaddress
+from typing import Union
+
+from fgobjlib import FgObject
+
 
 class FgIpsecP2Interface(FgObject):
     &#34;&#34;&#34;
@@ -51,7 +54,7 @@ class FgIpsecP2Interface(FgObject):
     &#34;&#34;&#34;
 
     def __init__(self, name: str = None, phase1name: str = None, proposal: list = None, pfs: str = None,
-                 dhgrp: list = None, keepalive: str = None, replay: str = None, comment: str = None,
+                 dhgrp: Union[str, list] = None, keepalive: str = None, replay: str = None, comment: str = None,
                  auto_negotiate: str = None, vdom: str = None, src_subnet: str = None, dst_subnet: str = None):
         &#34;&#34;&#34;
         Args:
@@ -75,34 +78,39 @@ class FgIpsecP2Interface(FgObject):
 
         # Set parent class attributes #
         # Map instance attribute names to fg attribute names
-        self.data_attrs = {&#39;name&#39;: &#39;name&#39;, &#39;phase1name&#39;: &#39;phase1name&#39;, &#39;proposal&#39;: &#39;proposal&#39;,
-                           &#39;comment&#39;: &#39;comments&#39;, &#39;keepalive&#39;: &#39;keepalive&#39;, &#39;dhgrp&#39;: &#39;dhgrp&#39;, &#39;pfs&#39;: &#39;pfs&#39;,
-                           &#39;replay&#39;: &#39;replay&#39;, &#39;auto_negotiate&#39;: &#39;auto-negotiate&#39;, &#39;src_subnet&#39;: &#39;src-subnet&#39;,
-                           &#39;dst_subnet&#39;: &#39;dst-subnet&#39;}
+        self._data_attrs = {&#39;name&#39;: &#39;name&#39;, &#39;phase1name&#39;: &#39;phase1name&#39;, &#39;proposal&#39;: &#39;proposal&#39;,
+                            &#39;comment&#39;: &#39;comments&#39;, &#39;keepalive&#39;: &#39;keepalive&#39;, &#39;dhgrp&#39;: &#39;dhgrp&#39;, &#39;pfs&#39;: &#39;pfs&#39;,
+                            &#39;replay&#39;: &#39;replay&#39;, &#39;auto_negotiate&#39;: &#39;auto-negotiate&#39;, &#39;src_subnet&#39;: &#39;src-subnet&#39;,
+                            &#39;dst_subnet&#39;: &#39;dst-subnet&#39;}
 
-        self.cli_ignore_attrs = [&#39;name&#39;]
+        self._cli_ignore_attrs = [&#39;name&#39;]
 
         # Set instance attributes #
-        self.set_name(name)
-        self.set_phase1name(phase1name)
-        self.set_proposal(proposal)
-        self.set_comment(comment)
-        self.set_keepalive(keepalive)
-        self.set_dhgrp(dhgrp)
-        self.set_pfs(pfs)
-        self.set_replay(replay)
-        self.set_auto_negotiate(auto_negotiate)
-        self.set_src_subnet(src_subnet)
-        self.set_dst_subnet(dst_subnet)
+        self.name = name
+        self.phase1name = phase1name
+        self.proposal = proposal
+        self.comment = comment
+        self.keepalive = keepalive
+        self.dhgrp = dhgrp
+        self.pfs = pfs
+        self.replay = replay
+        self.auto_negotiate = auto_negotiate
+        self.src_subnet = src_subnet
+        self.dst_subnet = dst_subnet
 
         # Update the parent defined obj_to_str attribute with this objects str representation
-        self.obj_to_str += f&#39;, name={self.name}, phase1name={self.phase1name}, proposal={self.proposal}, &#39; \
-                           f&#39;comment={self.comment}, keepalive={self.keepalive}, dhgrp={self.dhgrp}, pfs={self.pfs}, &#39; \
-                           f&#39;replay={self.replay}, auto_negotiate={self.auto_negotiate}, &#39; \
-                           f&#39;src_subnet={self.src_subnet}, dst_subnet={self.dst_subnet}&#39;
+        self._obj_to_str += f&#39;, name={self.name}, phase1name={self.phase1name}, proposal={self.proposal}, &#39; \
+                            f&#39;comment={self.comment}, keepalive={self.keepalive}, dhgrp={self.dhgrp}, &#39; \
+                            f&#39;pfs={self.pfs}, replay={self.replay}, auto_negotiate={self.auto_negotiate}, &#39; \
+                            f&#39;src_subnet={self.src_subnet}, dst_subnet={self.dst_subnet}&#39;
 
+    # Instance properties and setters
+    @property
+    def name(self):
+        return self._name
 
-    def set_name(self, name):
+    @name.setter
+    def name(self, name):
         &#34;&#34;&#34; Set self.name to name if name valid
 
         Args:
@@ -112,19 +120,24 @@ class FgIpsecP2Interface(FgObject):
             None
         &#34;&#34;&#34;
         if name is None:
-            self.name = None
-
+            self._name = None
         else:
-            if name.isspace(): raise ValueError(&#34;&#39;name&#39;, cannot be an empty string&#34;)
+            if name.isspace():
+                raise ValueError(&#34;&#39;name&#39;, cannot be an empty&#34;)
             if isinstance(name, str):
                 if len(name) &lt;= 35:
-                    self.name = name
+                    self._name = name
                 else:
-                    raise ValueError(&#34;&#39;name&#39;, must be less than 35 chars or less&#34;)
+                    raise ValueError(&#34;&#39;name&#39;, must be type str() between 1 and 35 chars&#34;)
             else:
-                raise ValueError(&#34;&#39;name&#39;, must be a string&#34;)
+                raise ValueError(&#34;&#39;name&#39;, must be type str()&#34;)
 
-    def set_phase1name(self, phase1name):
+    @property
+    def phase1name(self):
+        return self._phase1name
+
+    @phase1name.setter
+    def phase1name(self, phase1name):
         &#34;&#34;&#34; Set self.phase1name to phase1name if phase1name valid
 
         Args:
@@ -134,19 +147,24 @@ class FgIpsecP2Interface(FgObject):
             None
         &#34;&#34;&#34;
         if phase1name is None:
-            self.phase1name = None
-
+            self._phase1name = None
         else:
-            if phase1name.isspace(): raise ValueError(&#34;&#39;phase1name&#39;, cannot be an empty string&#34;)
+            if phase1name.isspace():
+                raise ValueError(&#34;&#39;phase1name&#39;, cannot be an empty string&#34;)
             if isinstance(phase1name, str):
                 if len(phase1name) &lt;= 35:
-                    self.phase1name = phase1name
+                    self._phase1name = phase1name
                 else:
-                    raise ValueError(&#34;&#39;phase1name&#39;, must be less than 35 chars or less&#34;)
+                    raise ValueError(&#34;&#39;phase1name&#39;, must be type str between 1 and 35 chars&#34;)
             else:
-                raise ValueError(&#34;&#39;phase1name&#39;, must be a string&#34;)
+                raise ValueError(&#34;&#39;phase1name&#39;, must be type str()&#34;)
 
-    def set_proposal(self, proposal):
+    @property
+    def proposal(self):
+        return self._proposal
+
+    @proposal.setter
+    def proposal(self, proposal):
         &#34;&#34;&#34; Set self.proposal to proposal if proposal contains valid FG proposals
 
         Args:
@@ -168,7 +186,7 @@ class FgIpsecP2Interface(FgObject):
                            &#39;aria128-null&#39;, &#39;seed-null&#39;]
 
         if proposal is None:
-            self.propsoal = None
+            self._proposal = None
 
         else:
             proposal_items = &#39;&#39;
@@ -181,7 +199,7 @@ class FgIpsecP2Interface(FgObject):
                 if proposal in valid_proposals:
                     proposal_items += f&#34;{proposal}&#34;
                 else:
-                    raise ValueError(f&#34;&#39;proposal&#39; provided: {proposal} is not a valid fortigate phase1 proposal option&#34;)
+                    raise ValueError(&#34;&#39;proposal&#39; value provided is not a valid fortigate phase1 proposal option&#34;)
 
             elif isinstance(proposal, list):
                 for item in proposal:
@@ -191,15 +209,19 @@ class FgIpsecP2Interface(FgObject):
                         if item in valid_proposals:
                             proposal_items += f&#34; {item}&#34;
                         else:
-                            raise ValueError(f&#34;&#39;proposal&#39; provided: {proposal} is not a valid fortigate phase1 proposal&#34;
-                                            &#34; option&#34;)
+                            raise ValueError(&#34;&#39;proposal&#39; value provided not a valid fortigate phase1 proposal option&#34;)
             else:
-                raise ValueError(&#34;&#39;proposal&#39; must be provided as type string (with single proposal referenced or as a &#34;
-                                 &#34;list for multiple proposal references&#34;)
+                raise ValueError(&#34;&#39;proposal&#39; must be type str() with single proposal referenced or type list() for &#34;
+                                 &#34;multiple proposal references&#34;)
 
-            self.proposal = proposal_items
+            self._proposal = proposal_items
 
-    def set_dhgrp(self, dhgrp):
+    @property
+    def dhgrp(self):
+        return self._dhgrp
+
+    @dhgrp.setter
+    def dhgrp(self, dhgrp):
         &#34;&#34;&#34;  Set self.dhgrp to string containing values dhgrp if dhgrp contains valid FortiGate proposals
 
         The dhgrp may be passed in as a str, or a list.  If the dhgrp(s) passed in are valid we&#39;ll add each
@@ -212,7 +234,7 @@ class FgIpsecP2Interface(FgObject):
             None
         &#34;&#34;&#34;
         if dhgrp is None:
-            self.dhgrp = None
+            self._dhgrp = None
 
         else:
             dhgrp_items = &#39;&#39;
@@ -225,7 +247,7 @@ class FgIpsecP2Interface(FgObject):
                 if dhgrp in valid_dhgrps:
                     dhgrp_items += f&#34;{dhgrp} &#34;
                 else:
-                    raise ValueError(f&#34;&#39;dhgrp&#39; provided: {dhgrp}, is not a valid fortigate dhgrp&#34;)
+                    raise ValueError(f&#34;&#39;dhgrp&#39; value provided is not a valid fortigate dhgrp option&#34;)
 
             elif isinstance(dhgrp, list):
                 for item in dhgrp:
@@ -235,14 +257,18 @@ class FgIpsecP2Interface(FgObject):
                         if item in valid_dhgrps:
                             dhgrp_items += f&#34;{item} &#34;
                         else:
-                            raise ValueError(f&#34;At least one &#39;dhgrp&#39; provided: {dhgrp} is not a valid fortigate phase1 &#34;
-                                             &#34;proposal option&#34;)
+                            raise ValueError(f&#34;At least one &#39;dhgrp&#39; provided is not a valid fortigate phase1 proposal&#34;)
             else:
                 raise ValueError(&#34;dhgrp must be provided as type int() or list() of int()&#34;)
 
-            self.dhgrp = dhgrp_items
+            self._dhgrp = dhgrp_items
 
-    def set_comment(self, comment):
+    @property
+    def comment(self):
+        return self._comment
+
+    @comment.setter
+    def comment(self, comment):
         &#34;&#34;&#34; Set self.comment to comment if comment valid
 
         Args:
@@ -252,18 +278,22 @@ class FgIpsecP2Interface(FgObject):
             None
         &#34;&#34;&#34;
         if comment is None:
-            self.comment = None
-
+            self._comment = None
         else:
             if isinstance(comment, str):
                 if 1 &lt;= len(comment) &lt;= 1023:
-                    self.comment = comment
+                    self._comment = comment
                 else:
                     raise ValueError(&#34;&#39;description&#39;, when set, must be type str() between 1 and 1,023 chars&#34;)
             else:
                 raise ValueError(&#34;&#39;description&#39;, when set, must be type str()&#34;)
 
-    def set_keepalive(self, keepalive):
+    @property
+    def keepalive(self):
+        return self._keepalive
+
+    @keepalive.setter
+    def keepalive(self, keepalive):
         &#34;&#34;&#34; Set self.keepalive to keepalive if keepalive valid
 
         Args:
@@ -273,21 +303,25 @@ class FgIpsecP2Interface(FgObject):
             None
         &#34;&#34;&#34;
         if keepalive is None:
-            self.keepalive = None
-
+            self._keepalive = None
         else:
             if isinstance(keepalive, str):
                 if keepalive == &#39;enable&#39;:
-                    self.keepalive = &#39;enable&#39;
+                    self._keepalive = &#39;enable&#39;
                 elif keepalive == &#39;disable&#39;:
-                    self.keepalive = &#39;disable&#39;
+                    self._keepalive = &#39;disable&#39;
                 else:
-                    raise ValueError(&#34;&#39;keepalive&#39; allowed values are: &#39;enable&#39; or &#39;disable&#39;&#34;)
+                    raise ValueError(&#34;&#39;keepalive&#39; when set must be type str() with value &#39;enable&#39; or &#39;disable&#39;&#34;)
 
             else:
                 raise ValueError(&#34;&#39;keepalive&#39;, when set, must be type str()&#34;)
 
-    def set_pfs(self, pfs):
+    @property
+    def pfs(self):
+        return self._pfs
+
+    @pfs.setter
+    def pfs(self, pfs):
         &#34;&#34;&#34; set self.pfs to enable, disable or None based on pfs value
 
         Args:
@@ -297,20 +331,24 @@ class FgIpsecP2Interface(FgObject):
             None
         &#34;&#34;&#34;
         if pfs is None:
-            self.pfs = None
-
+            self._pfs = None
         else:
             if isinstance(pfs, str):
                 if pfs == &#39;enable&#39;:
-                    self.pfs = &#39;enable&#39;
+                    self._pfs = &#39;enable&#39;
                 elif pfs == &#39;disable&#39;:
-                    self.pfs = &#39;disable&#39;
+                    self._pfs = &#39;disable&#39;
                 else:
-                    raise ValueError(&#34;&#39;pfs&#39; allowed values are: &#39;enable&#39; or &#39;disable&#39;&#34;)
+                    raise ValueError(&#34;&#39;pfs&#39;, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#39;&#34;)
             else:
                 raise ValueError(&#34;&#39;pfs&#39;, when set, must be type str()&#34;)
 
-    def set_replay(self, replay):
+    @property
+    def replay(self):
+        return self._replay
+
+    @replay.setter
+    def replay(self, replay):
         &#34;&#34;&#34; Set self.replay to enable, disable or None
 
         Args:
@@ -320,20 +358,24 @@ class FgIpsecP2Interface(FgObject):
             None
         &#34;&#34;&#34;
         if replay is None:
-            self.replay = None
-
+            self._replay = None
         else:
             if isinstance(replay, str):
                 if replay == &#39;enable&#39;:
-                    self.replay = &#39;enable&#39;
+                    self._replay = &#39;enable&#39;
                 elif replay == &#39;disable&#39;:
-                    self.replay = &#39;disable&#39;
+                    self._replay = &#39;disable&#39;
                 else:
-                    raise ValueError(&#34;&#39;replay&#39;, allowed values are: &#39;enable&#39; or &#39;disable&#39;&#34;)
+                    raise ValueError(&#34;&#39;replay&#39;, when set must be type str() with value &#39;enable&#39; or &#39;disable&#39;&#34;)
             else:
                 raise ValueError(&#34;&#39;pfs&#39;, when set, must type str()&#34;)
 
-    def set_auto_negotiate(self, auto_negotiate):
+    @property
+    def auto_negotiate(self):
+        return self.auto_negotiate
+
+    @auto_negotiate.setter
+    def auto_negotiate(self, auto_negotiate):
         &#34;&#34;&#34; Set self.auto_negotiate to enable, disable or None
 
         Args:
@@ -343,20 +385,24 @@ class FgIpsecP2Interface(FgObject):
         None
         &#34;&#34;&#34;
         if auto_negotiate is None:
-            self.auto_negotiate = None
-
+            self._auto_negotiate = None
         else:
             if isinstance(auto_negotiate, str):
                 if auto_negotiate == &#39;enable&#39;:
-                    self.auto_negotiate = &#39;enable&#39;
+                    self._auto_negotiate = &#39;enable&#39;
                 elif auto_negotiate == &#39;disable&#39;:
-                    self.auto_negotiate = &#39;disable&#39;
+                    self._auto_negotiate = &#39;disable&#39;
                 else:
-                    raise ValueError(&#34;&#39;auto_negotiate&#39; allowed values: &#39;enable&#39; or &#39;disable&#39;&#34;)
+                    raise ValueError(&#34;&#39;auto_negotiate&#39;, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#39;&#34;)
             else:
-                raise ValueError(&#34;&#39;pfs&#39;, when set, must type bool&#34;)
+                raise ValueError(&#34;&#39;pfs&#39;, when set, must type str()&#34;)
 
-    def set_src_subnet(self, src_subnet):
+    @property
+    def src_subnet(self):
+        return self._src_subnet
+
+    @src_subnet.setter
+    def src_subnet(self, src_subnet):
         &#34;&#34;&#34; Set self.src_subnet if src_subnet valid
 
         Args:
@@ -366,17 +412,21 @@ class FgIpsecP2Interface(FgObject):
             None
         &#34;&#34;&#34;
         if src_subnet is None:
-            self.src_subnet = None
-
+            self._src_subnet = None
         else:
             try:
                 ipaddress.ip_network(src_subnet)
             except ValueError:
                 raise ValueError(&#34;&#39;src_subnet&#39;, when set, must be a valid ipv4 or ipv6 address&#34;)
             else:
-                self.src_subnet = src_subnet
+                self._src_subnet = src_subnet
 
-    def set_dst_subnet(self, dst_subnet):
+    @property
+    def dst_subnet(self):
+        return self._dst_subnet
+
+    @dst_subnet.setter
+    def dst_subnet(self, dst_subnet):
         &#34;&#34;&#34; Set self.dst_subnet if dst_subnet valid
 
         Args:
@@ -386,15 +436,14 @@ class FgIpsecP2Interface(FgObject):
             None
         &#34;&#34;&#34;
         if dst_subnet is None:
-            self.dst_subnet = None
-
+            self._dst_subnet = None
         else:
             try:
                 ipaddress.ip_network(dst_subnet)
             except ValueError:
-                raise ValueError(&#34;&#39;dst_subnet&#39;, when set, must be a valid ipv4 or ipv6 address&#34;)
+                raise ValueError(&#34;&#39;dst_subnet&#39;, when set, must be type str() with value a valid ipv4 or ipv6 address&#34;)
             else:
-                self.dst_subnet = dst_subnet</code></pre>
+                self._dst_subnet = dst_subnet</code></pre>
 </details>
 </section>
 <section>
@@ -500,7 +549,7 @@ Allowed values are 'enable' or 'disable'</dd>
     &#34;&#34;&#34;
 
     def __init__(self, name: str = None, phase1name: str = None, proposal: list = None, pfs: str = None,
-                 dhgrp: list = None, keepalive: str = None, replay: str = None, comment: str = None,
+                 dhgrp: Union[str, list] = None, keepalive: str = None, replay: str = None, comment: str = None,
                  auto_negotiate: str = None, vdom: str = None, src_subnet: str = None, dst_subnet: str = None):
         &#34;&#34;&#34;
         Args:
@@ -524,34 +573,39 @@ Allowed values are 'enable' or 'disable'</dd>
 
         # Set parent class attributes #
         # Map instance attribute names to fg attribute names
-        self.data_attrs = {&#39;name&#39;: &#39;name&#39;, &#39;phase1name&#39;: &#39;phase1name&#39;, &#39;proposal&#39;: &#39;proposal&#39;,
-                           &#39;comment&#39;: &#39;comments&#39;, &#39;keepalive&#39;: &#39;keepalive&#39;, &#39;dhgrp&#39;: &#39;dhgrp&#39;, &#39;pfs&#39;: &#39;pfs&#39;,
-                           &#39;replay&#39;: &#39;replay&#39;, &#39;auto_negotiate&#39;: &#39;auto-negotiate&#39;, &#39;src_subnet&#39;: &#39;src-subnet&#39;,
-                           &#39;dst_subnet&#39;: &#39;dst-subnet&#39;}
+        self._data_attrs = {&#39;name&#39;: &#39;name&#39;, &#39;phase1name&#39;: &#39;phase1name&#39;, &#39;proposal&#39;: &#39;proposal&#39;,
+                            &#39;comment&#39;: &#39;comments&#39;, &#39;keepalive&#39;: &#39;keepalive&#39;, &#39;dhgrp&#39;: &#39;dhgrp&#39;, &#39;pfs&#39;: &#39;pfs&#39;,
+                            &#39;replay&#39;: &#39;replay&#39;, &#39;auto_negotiate&#39;: &#39;auto-negotiate&#39;, &#39;src_subnet&#39;: &#39;src-subnet&#39;,
+                            &#39;dst_subnet&#39;: &#39;dst-subnet&#39;}
 
-        self.cli_ignore_attrs = [&#39;name&#39;]
+        self._cli_ignore_attrs = [&#39;name&#39;]
 
         # Set instance attributes #
-        self.set_name(name)
-        self.set_phase1name(phase1name)
-        self.set_proposal(proposal)
-        self.set_comment(comment)
-        self.set_keepalive(keepalive)
-        self.set_dhgrp(dhgrp)
-        self.set_pfs(pfs)
-        self.set_replay(replay)
-        self.set_auto_negotiate(auto_negotiate)
-        self.set_src_subnet(src_subnet)
-        self.set_dst_subnet(dst_subnet)
+        self.name = name
+        self.phase1name = phase1name
+        self.proposal = proposal
+        self.comment = comment
+        self.keepalive = keepalive
+        self.dhgrp = dhgrp
+        self.pfs = pfs
+        self.replay = replay
+        self.auto_negotiate = auto_negotiate
+        self.src_subnet = src_subnet
+        self.dst_subnet = dst_subnet
 
         # Update the parent defined obj_to_str attribute with this objects str representation
-        self.obj_to_str += f&#39;, name={self.name}, phase1name={self.phase1name}, proposal={self.proposal}, &#39; \
-                           f&#39;comment={self.comment}, keepalive={self.keepalive}, dhgrp={self.dhgrp}, pfs={self.pfs}, &#39; \
-                           f&#39;replay={self.replay}, auto_negotiate={self.auto_negotiate}, &#39; \
-                           f&#39;src_subnet={self.src_subnet}, dst_subnet={self.dst_subnet}&#39;
+        self._obj_to_str += f&#39;, name={self.name}, phase1name={self.phase1name}, proposal={self.proposal}, &#39; \
+                            f&#39;comment={self.comment}, keepalive={self.keepalive}, dhgrp={self.dhgrp}, &#39; \
+                            f&#39;pfs={self.pfs}, replay={self.replay}, auto_negotiate={self.auto_negotiate}, &#39; \
+                            f&#39;src_subnet={self.src_subnet}, dst_subnet={self.dst_subnet}&#39;
 
+    # Instance properties and setters
+    @property
+    def name(self):
+        return self._name
 
-    def set_name(self, name):
+    @name.setter
+    def name(self, name):
         &#34;&#34;&#34; Set self.name to name if name valid
 
         Args:
@@ -561,19 +615,24 @@ Allowed values are 'enable' or 'disable'</dd>
             None
         &#34;&#34;&#34;
         if name is None:
-            self.name = None
-
+            self._name = None
         else:
-            if name.isspace(): raise ValueError(&#34;&#39;name&#39;, cannot be an empty string&#34;)
+            if name.isspace():
+                raise ValueError(&#34;&#39;name&#39;, cannot be an empty&#34;)
             if isinstance(name, str):
                 if len(name) &lt;= 35:
-                    self.name = name
+                    self._name = name
                 else:
-                    raise ValueError(&#34;&#39;name&#39;, must be less than 35 chars or less&#34;)
+                    raise ValueError(&#34;&#39;name&#39;, must be type str() between 1 and 35 chars&#34;)
             else:
-                raise ValueError(&#34;&#39;name&#39;, must be a string&#34;)
+                raise ValueError(&#34;&#39;name&#39;, must be type str()&#34;)
 
-    def set_phase1name(self, phase1name):
+    @property
+    def phase1name(self):
+        return self._phase1name
+
+    @phase1name.setter
+    def phase1name(self, phase1name):
         &#34;&#34;&#34; Set self.phase1name to phase1name if phase1name valid
 
         Args:
@@ -583,19 +642,24 @@ Allowed values are 'enable' or 'disable'</dd>
             None
         &#34;&#34;&#34;
         if phase1name is None:
-            self.phase1name = None
-
+            self._phase1name = None
         else:
-            if phase1name.isspace(): raise ValueError(&#34;&#39;phase1name&#39;, cannot be an empty string&#34;)
+            if phase1name.isspace():
+                raise ValueError(&#34;&#39;phase1name&#39;, cannot be an empty string&#34;)
             if isinstance(phase1name, str):
                 if len(phase1name) &lt;= 35:
-                    self.phase1name = phase1name
+                    self._phase1name = phase1name
                 else:
-                    raise ValueError(&#34;&#39;phase1name&#39;, must be less than 35 chars or less&#34;)
+                    raise ValueError(&#34;&#39;phase1name&#39;, must be type str between 1 and 35 chars&#34;)
             else:
-                raise ValueError(&#34;&#39;phase1name&#39;, must be a string&#34;)
+                raise ValueError(&#34;&#39;phase1name&#39;, must be type str()&#34;)
 
-    def set_proposal(self, proposal):
+    @property
+    def proposal(self):
+        return self._proposal
+
+    @proposal.setter
+    def proposal(self, proposal):
         &#34;&#34;&#34; Set self.proposal to proposal if proposal contains valid FG proposals
 
         Args:
@@ -617,7 +681,7 @@ Allowed values are 'enable' or 'disable'</dd>
                            &#39;aria128-null&#39;, &#39;seed-null&#39;]
 
         if proposal is None:
-            self.propsoal = None
+            self._proposal = None
 
         else:
             proposal_items = &#39;&#39;
@@ -630,7 +694,7 @@ Allowed values are 'enable' or 'disable'</dd>
                 if proposal in valid_proposals:
                     proposal_items += f&#34;{proposal}&#34;
                 else:
-                    raise ValueError(f&#34;&#39;proposal&#39; provided: {proposal} is not a valid fortigate phase1 proposal option&#34;)
+                    raise ValueError(&#34;&#39;proposal&#39; value provided is not a valid fortigate phase1 proposal option&#34;)
 
             elif isinstance(proposal, list):
                 for item in proposal:
@@ -640,15 +704,19 @@ Allowed values are 'enable' or 'disable'</dd>
                         if item in valid_proposals:
                             proposal_items += f&#34; {item}&#34;
                         else:
-                            raise ValueError(f&#34;&#39;proposal&#39; provided: {proposal} is not a valid fortigate phase1 proposal&#34;
-                                            &#34; option&#34;)
+                            raise ValueError(&#34;&#39;proposal&#39; value provided not a valid fortigate phase1 proposal option&#34;)
             else:
-                raise ValueError(&#34;&#39;proposal&#39; must be provided as type string (with single proposal referenced or as a &#34;
-                                 &#34;list for multiple proposal references&#34;)
+                raise ValueError(&#34;&#39;proposal&#39; must be type str() with single proposal referenced or type list() for &#34;
+                                 &#34;multiple proposal references&#34;)
 
-            self.proposal = proposal_items
+            self._proposal = proposal_items
 
-    def set_dhgrp(self, dhgrp):
+    @property
+    def dhgrp(self):
+        return self._dhgrp
+
+    @dhgrp.setter
+    def dhgrp(self, dhgrp):
         &#34;&#34;&#34;  Set self.dhgrp to string containing values dhgrp if dhgrp contains valid FortiGate proposals
 
         The dhgrp may be passed in as a str, or a list.  If the dhgrp(s) passed in are valid we&#39;ll add each
@@ -661,7 +729,7 @@ Allowed values are 'enable' or 'disable'</dd>
             None
         &#34;&#34;&#34;
         if dhgrp is None:
-            self.dhgrp = None
+            self._dhgrp = None
 
         else:
             dhgrp_items = &#39;&#39;
@@ -674,7 +742,7 @@ Allowed values are 'enable' or 'disable'</dd>
                 if dhgrp in valid_dhgrps:
                     dhgrp_items += f&#34;{dhgrp} &#34;
                 else:
-                    raise ValueError(f&#34;&#39;dhgrp&#39; provided: {dhgrp}, is not a valid fortigate dhgrp&#34;)
+                    raise ValueError(f&#34;&#39;dhgrp&#39; value provided is not a valid fortigate dhgrp option&#34;)
 
             elif isinstance(dhgrp, list):
                 for item in dhgrp:
@@ -684,14 +752,18 @@ Allowed values are 'enable' or 'disable'</dd>
                         if item in valid_dhgrps:
                             dhgrp_items += f&#34;{item} &#34;
                         else:
-                            raise ValueError(f&#34;At least one &#39;dhgrp&#39; provided: {dhgrp} is not a valid fortigate phase1 &#34;
-                                             &#34;proposal option&#34;)
+                            raise ValueError(f&#34;At least one &#39;dhgrp&#39; provided is not a valid fortigate phase1 proposal&#34;)
             else:
                 raise ValueError(&#34;dhgrp must be provided as type int() or list() of int()&#34;)
 
-            self.dhgrp = dhgrp_items
+            self._dhgrp = dhgrp_items
 
-    def set_comment(self, comment):
+    @property
+    def comment(self):
+        return self._comment
+
+    @comment.setter
+    def comment(self, comment):
         &#34;&#34;&#34; Set self.comment to comment if comment valid
 
         Args:
@@ -701,18 +773,22 @@ Allowed values are 'enable' or 'disable'</dd>
             None
         &#34;&#34;&#34;
         if comment is None:
-            self.comment = None
-
+            self._comment = None
         else:
             if isinstance(comment, str):
                 if 1 &lt;= len(comment) &lt;= 1023:
-                    self.comment = comment
+                    self._comment = comment
                 else:
                     raise ValueError(&#34;&#39;description&#39;, when set, must be type str() between 1 and 1,023 chars&#34;)
             else:
                 raise ValueError(&#34;&#39;description&#39;, when set, must be type str()&#34;)
 
-    def set_keepalive(self, keepalive):
+    @property
+    def keepalive(self):
+        return self._keepalive
+
+    @keepalive.setter
+    def keepalive(self, keepalive):
         &#34;&#34;&#34; Set self.keepalive to keepalive if keepalive valid
 
         Args:
@@ -722,21 +798,25 @@ Allowed values are 'enable' or 'disable'</dd>
             None
         &#34;&#34;&#34;
         if keepalive is None:
-            self.keepalive = None
-
+            self._keepalive = None
         else:
             if isinstance(keepalive, str):
                 if keepalive == &#39;enable&#39;:
-                    self.keepalive = &#39;enable&#39;
+                    self._keepalive = &#39;enable&#39;
                 elif keepalive == &#39;disable&#39;:
-                    self.keepalive = &#39;disable&#39;
+                    self._keepalive = &#39;disable&#39;
                 else:
-                    raise ValueError(&#34;&#39;keepalive&#39; allowed values are: &#39;enable&#39; or &#39;disable&#39;&#34;)
+                    raise ValueError(&#34;&#39;keepalive&#39; when set must be type str() with value &#39;enable&#39; or &#39;disable&#39;&#34;)
 
             else:
                 raise ValueError(&#34;&#39;keepalive&#39;, when set, must be type str()&#34;)
 
-    def set_pfs(self, pfs):
+    @property
+    def pfs(self):
+        return self._pfs
+
+    @pfs.setter
+    def pfs(self, pfs):
         &#34;&#34;&#34; set self.pfs to enable, disable or None based on pfs value
 
         Args:
@@ -746,20 +826,24 @@ Allowed values are 'enable' or 'disable'</dd>
             None
         &#34;&#34;&#34;
         if pfs is None:
-            self.pfs = None
-
+            self._pfs = None
         else:
             if isinstance(pfs, str):
                 if pfs == &#39;enable&#39;:
-                    self.pfs = &#39;enable&#39;
+                    self._pfs = &#39;enable&#39;
                 elif pfs == &#39;disable&#39;:
-                    self.pfs = &#39;disable&#39;
+                    self._pfs = &#39;disable&#39;
                 else:
-                    raise ValueError(&#34;&#39;pfs&#39; allowed values are: &#39;enable&#39; or &#39;disable&#39;&#34;)
+                    raise ValueError(&#34;&#39;pfs&#39;, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#39;&#34;)
             else:
                 raise ValueError(&#34;&#39;pfs&#39;, when set, must be type str()&#34;)
 
-    def set_replay(self, replay):
+    @property
+    def replay(self):
+        return self._replay
+
+    @replay.setter
+    def replay(self, replay):
         &#34;&#34;&#34; Set self.replay to enable, disable or None
 
         Args:
@@ -769,20 +853,24 @@ Allowed values are 'enable' or 'disable'</dd>
             None
         &#34;&#34;&#34;
         if replay is None:
-            self.replay = None
-
+            self._replay = None
         else:
             if isinstance(replay, str):
                 if replay == &#39;enable&#39;:
-                    self.replay = &#39;enable&#39;
+                    self._replay = &#39;enable&#39;
                 elif replay == &#39;disable&#39;:
-                    self.replay = &#39;disable&#39;
+                    self._replay = &#39;disable&#39;
                 else:
-                    raise ValueError(&#34;&#39;replay&#39;, allowed values are: &#39;enable&#39; or &#39;disable&#39;&#34;)
+                    raise ValueError(&#34;&#39;replay&#39;, when set must be type str() with value &#39;enable&#39; or &#39;disable&#39;&#34;)
             else:
                 raise ValueError(&#34;&#39;pfs&#39;, when set, must type str()&#34;)
 
-    def set_auto_negotiate(self, auto_negotiate):
+    @property
+    def auto_negotiate(self):
+        return self.auto_negotiate
+
+    @auto_negotiate.setter
+    def auto_negotiate(self, auto_negotiate):
         &#34;&#34;&#34; Set self.auto_negotiate to enable, disable or None
 
         Args:
@@ -792,20 +880,24 @@ Allowed values are 'enable' or 'disable'</dd>
         None
         &#34;&#34;&#34;
         if auto_negotiate is None:
-            self.auto_negotiate = None
-
+            self._auto_negotiate = None
         else:
             if isinstance(auto_negotiate, str):
                 if auto_negotiate == &#39;enable&#39;:
-                    self.auto_negotiate = &#39;enable&#39;
+                    self._auto_negotiate = &#39;enable&#39;
                 elif auto_negotiate == &#39;disable&#39;:
-                    self.auto_negotiate = &#39;disable&#39;
+                    self._auto_negotiate = &#39;disable&#39;
                 else:
-                    raise ValueError(&#34;&#39;auto_negotiate&#39; allowed values: &#39;enable&#39; or &#39;disable&#39;&#34;)
+                    raise ValueError(&#34;&#39;auto_negotiate&#39;, when set, must be type str() with value &#39;enable&#39; or &#39;disable&#39;&#34;)
             else:
-                raise ValueError(&#34;&#39;pfs&#39;, when set, must type bool&#34;)
+                raise ValueError(&#34;&#39;pfs&#39;, when set, must type str()&#34;)
 
-    def set_src_subnet(self, src_subnet):
+    @property
+    def src_subnet(self):
+        return self._src_subnet
+
+    @src_subnet.setter
+    def src_subnet(self, src_subnet):
         &#34;&#34;&#34; Set self.src_subnet if src_subnet valid
 
         Args:
@@ -815,17 +907,21 @@ Allowed values are 'enable' or 'disable'</dd>
             None
         &#34;&#34;&#34;
         if src_subnet is None:
-            self.src_subnet = None
-
+            self._src_subnet = None
         else:
             try:
                 ipaddress.ip_network(src_subnet)
             except ValueError:
                 raise ValueError(&#34;&#39;src_subnet&#39;, when set, must be a valid ipv4 or ipv6 address&#34;)
             else:
-                self.src_subnet = src_subnet
+                self._src_subnet = src_subnet
 
-    def set_dst_subnet(self, dst_subnet):
+    @property
+    def dst_subnet(self):
+        return self._dst_subnet
+
+    @dst_subnet.setter
+    def dst_subnet(self, dst_subnet):
         &#34;&#34;&#34; Set self.dst_subnet if dst_subnet valid
 
         Args:
@@ -835,540 +931,152 @@ Allowed values are 'enable' or 'disable'</dd>
             None
         &#34;&#34;&#34;
         if dst_subnet is None:
-            self.dst_subnet = None
-
+            self._dst_subnet = None
         else:
             try:
                 ipaddress.ip_network(dst_subnet)
             except ValueError:
-                raise ValueError(&#34;&#39;dst_subnet&#39;, when set, must be a valid ipv4 or ipv6 address&#34;)
+                raise ValueError(&#34;&#39;dst_subnet&#39;, when set, must be type str() with value a valid ipv4 or ipv6 address&#34;)
             else:
-                self.dst_subnet = dst_subnet</code></pre>
+                self._dst_subnet = dst_subnet</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="fgobjlib.fg_object.FgObject" href="fg_object.html#fgobjlib.fg_object.FgObject">FgObject</a></li>
+<li>abc.ABC</li>
 </ul>
-<h3>Methods</h3>
+<h3>Instance variables</h3>
 <dl>
-<dt id="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.set_auto_negotiate"><code class="name flex">
-<span>def <span class="ident">set_auto_negotiate</span></span>(<span>self, auto_negotiate)</span>
-</code></dt>
+<dt id="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.auto_negotiate"><code class="name">var <span class="ident">auto_negotiate</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.auto_negotiate to enable, disable or None</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>auto_negotiate</code></strong> :&ensp;<code>str</code></dt>
-<dd>auto-negotiation, allowed values: 'enable' or 'disable'</dd>
-<dt>Returns:</dt>
-<dt><strong><code>None</code></strong></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_auto_negotiate(self, auto_negotiate):
-    &#34;&#34;&#34; Set self.auto_negotiate to enable, disable or None
-
-    Args:
-        auto_negotiate (str): auto-negotiation, allowed values: &#39;enable&#39; or &#39;disable&#39;
-
-    Returns:
-    None
-    &#34;&#34;&#34;
-    if auto_negotiate is None:
-        self.auto_negotiate = None
-
-    else:
-        if isinstance(auto_negotiate, str):
-            if auto_negotiate == &#39;enable&#39;:
-                self.auto_negotiate = &#39;enable&#39;
-            elif auto_negotiate == &#39;disable&#39;:
-                self.auto_negotiate = &#39;disable&#39;
-            else:
-                raise ValueError(&#34;&#39;auto_negotiate&#39; allowed values: &#39;enable&#39; or &#39;disable&#39;&#34;)
-        else:
-            raise ValueError(&#34;&#39;pfs&#39;, when set, must type bool&#34;)</code></pre>
+<pre><code class="python">@property
+def auto_negotiate(self):
+    return self.auto_negotiate</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.set_comment"><code class="name flex">
-<span>def <span class="ident">set_comment</span></span>(<span>self, comment)</span>
-</code></dt>
+<dt id="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.comment"><code class="name">var <span class="ident">comment</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.comment to comment if comment valid</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>comment</code></strong> :&ensp;<code>str</code></dt>
-<dd>phase2-interface comment</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_comment(self, comment):
-    &#34;&#34;&#34; Set self.comment to comment if comment valid
-
-    Args:
-        comment (str): phase2-interface comment
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if comment is None:
-        self.comment = None
-
-    else:
-        if isinstance(comment, str):
-            if 1 &lt;= len(comment) &lt;= 1023:
-                self.comment = comment
-            else:
-                raise ValueError(&#34;&#39;description&#39;, when set, must be type str() between 1 and 1,023 chars&#34;)
-        else:
-            raise ValueError(&#34;&#39;description&#39;, when set, must be type str()&#34;)</code></pre>
+<pre><code class="python">@property
+def comment(self):
+    return self._comment</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.set_dhgrp"><code class="name flex">
-<span>def <span class="ident">set_dhgrp</span></span>(<span>self, dhgrp)</span>
-</code></dt>
+<dt id="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.dhgrp"><code class="name">var <span class="ident">dhgrp</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.dhgrp to string containing values dhgrp if dhgrp contains valid FortiGate proposals</p>
-<p>The dhgrp may be passed in as a str, or a list.
-If the dhgrp(s) passed in are valid we'll add each
-of those to a space separated values string and set in self.dhgrp</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>dhgrp</code></strong> :&ensp;<code>list</code></dt>
-<dd>list of valid fortigate dhgrps</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_dhgrp(self, dhgrp):
-    &#34;&#34;&#34;  Set self.dhgrp to string containing values dhgrp if dhgrp contains valid FortiGate proposals
-
-    The dhgrp may be passed in as a str, or a list.  If the dhgrp(s) passed in are valid we&#39;ll add each
-    of those to a space separated values string and set in self.dhgrp
-
-    Args:
-        dhgrp (list): list of valid fortigate dhgrps
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if dhgrp is None:
-        self.dhgrp = None
-
-    else:
-        dhgrp_items = &#39;&#39;
-        valid_dhgrps = [1, 2, 5, 14, 15, 16, 17, 18, 19, 20, 21, 27, 28, 30, 31, 32]
-
-        # IF a single object was passed as a string, append it to list else iterate the list and pull
-        # out the dhgrps and add to list to be set as self object
-        if isinstance(dhgrp, int):
-            # compare proposal to valid_list
-            if dhgrp in valid_dhgrps:
-                dhgrp_items += f&#34;{dhgrp} &#34;
-            else:
-                raise ValueError(f&#34;&#39;dhgrp&#39; provided: {dhgrp}, is not a valid fortigate dhgrp&#34;)
-
-        elif isinstance(dhgrp, list):
-            for item in dhgrp:
-                if isinstance(item, int):
-
-                    # compare proposal to valid proposals list
-                    if item in valid_dhgrps:
-                        dhgrp_items += f&#34;{item} &#34;
-                    else:
-                        raise ValueError(f&#34;At least one &#39;dhgrp&#39; provided: {dhgrp} is not a valid fortigate phase1 &#34;
-                                         &#34;proposal option&#34;)
-        else:
-            raise ValueError(&#34;dhgrp must be provided as type int() or list() of int()&#34;)
-
-        self.dhgrp = dhgrp_items</code></pre>
+<pre><code class="python">@property
+def dhgrp(self):
+    return self._dhgrp</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.set_dst_subnet"><code class="name flex">
-<span>def <span class="ident">set_dst_subnet</span></span>(<span>self, dst_subnet)</span>
-</code></dt>
+<dt id="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.dst_subnet"><code class="name">var <span class="ident">dst_subnet</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.dst_subnet if dst_subnet valid</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>dst_subnet</code></strong></dt>
-<dd>Destination Selector when selector type set to subnet.
-Must be valid ipv4 network/mask.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_dst_subnet(self, dst_subnet):
-    &#34;&#34;&#34; Set self.dst_subnet if dst_subnet valid
-
-    Args:
-        dst_subnet: Destination Selector when selector type set to subnet.  Must be valid ipv4 network/mask.
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if dst_subnet is None:
-        self.dst_subnet = None
-
-    else:
-        try:
-            ipaddress.ip_network(dst_subnet)
-        except ValueError:
-            raise ValueError(&#34;&#39;dst_subnet&#39;, when set, must be a valid ipv4 or ipv6 address&#34;)
-        else:
-            self.dst_subnet = dst_subnet</code></pre>
+<pre><code class="python">@property
+def dst_subnet(self):
+    return self._dst_subnet</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.set_keepalive"><code class="name flex">
-<span>def <span class="ident">set_keepalive</span></span>(<span>self, keepalive)</span>
-</code></dt>
+<dt id="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.keepalive"><code class="name">var <span class="ident">keepalive</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.keepalive to keepalive if keepalive valid</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>keepalive</code></strong> :&ensp;<code>str</code></dt>
-<dd>keepalive, allowed values: 'enable' or 'disable'</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_keepalive(self, keepalive):
-    &#34;&#34;&#34; Set self.keepalive to keepalive if keepalive valid
-
-    Args:
-        keepalive (str):  keepalive, allowed values: &#39;enable&#39; or &#39;disable&#39;
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if keepalive is None:
-        self.keepalive = None
-
-    else:
-        if isinstance(keepalive, str):
-            if keepalive == &#39;enable&#39;:
-                self.keepalive = &#39;enable&#39;
-            elif keepalive == &#39;disable&#39;:
-                self.keepalive = &#39;disable&#39;
-            else:
-                raise ValueError(&#34;&#39;keepalive&#39; allowed values are: &#39;enable&#39; or &#39;disable&#39;&#34;)
-
-        else:
-            raise ValueError(&#34;&#39;keepalive&#39;, when set, must be type str()&#34;)</code></pre>
+<pre><code class="python">@property
+def keepalive(self):
+    return self._keepalive</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.set_name"><code class="name flex">
-<span>def <span class="ident">set_name</span></span>(<span>self, name)</span>
-</code></dt>
+<dt id="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.name"><code class="name">var <span class="ident">name</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.name to name if name valid</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
-<dd>Name for phase2-interface</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_name(self, name):
-    &#34;&#34;&#34; Set self.name to name if name valid
-
-    Args:
-        name (str): Name for phase2-interface
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if name is None:
-        self.name = None
-
-    else:
-        if name.isspace(): raise ValueError(&#34;&#39;name&#39;, cannot be an empty string&#34;)
-        if isinstance(name, str):
-            if len(name) &lt;= 35:
-                self.name = name
-            else:
-                raise ValueError(&#34;&#39;name&#39;, must be less than 35 chars or less&#34;)
-        else:
-            raise ValueError(&#34;&#39;name&#39;, must be a string&#34;)</code></pre>
+<pre><code class="python">@property
+def name(self):
+    return self._name</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.set_pfs"><code class="name flex">
-<span>def <span class="ident">set_pfs</span></span>(<span>self, pfs)</span>
-</code></dt>
+<dt id="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.pfs"><code class="name">var <span class="ident">pfs</span></code></dt>
 <dd>
-<section class="desc"><p>set self.pfs to enable, disable or None based on pfs value</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>pfs</code></strong> :&ensp;<code>str</code></dt>
-<dd>pfs, allowed values: 'enable'
-or 'disable'</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_pfs(self, pfs):
-    &#34;&#34;&#34; set self.pfs to enable, disable or None based on pfs value
-
-    Args:
-        pfs (str): pfs, allowed values: &#39;enable&#39;  or &#39;disable&#39;
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if pfs is None:
-        self.pfs = None
-
-    else:
-        if isinstance(pfs, str):
-            if pfs == &#39;enable&#39;:
-                self.pfs = &#39;enable&#39;
-            elif pfs == &#39;disable&#39;:
-                self.pfs = &#39;disable&#39;
-            else:
-                raise ValueError(&#34;&#39;pfs&#39; allowed values are: &#39;enable&#39; or &#39;disable&#39;&#34;)
-        else:
-            raise ValueError(&#34;&#39;pfs&#39;, when set, must be type str()&#34;)</code></pre>
+<pre><code class="python">@property
+def pfs(self):
+    return self._pfs</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.set_phase1name"><code class="name flex">
-<span>def <span class="ident">set_phase1name</span></span>(<span>self, phase1name)</span>
-</code></dt>
+<dt id="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.phase1name"><code class="name">var <span class="ident">phase1name</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.phase1name to phase1name if phase1name valid</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>phase1name</code></strong> :&ensp;<code>str</code></dt>
-<dd>phase1name to bind to</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_phase1name(self, phase1name):
-    &#34;&#34;&#34; Set self.phase1name to phase1name if phase1name valid
-
-    Args:
-        phase1name (str): phase1name to bind to
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if phase1name is None:
-        self.phase1name = None
-
-    else:
-        if phase1name.isspace(): raise ValueError(&#34;&#39;phase1name&#39;, cannot be an empty string&#34;)
-        if isinstance(phase1name, str):
-            if len(phase1name) &lt;= 35:
-                self.phase1name = phase1name
-            else:
-                raise ValueError(&#34;&#39;phase1name&#39;, must be less than 35 chars or less&#34;)
-        else:
-            raise ValueError(&#34;&#39;phase1name&#39;, must be a string&#34;)</code></pre>
+<pre><code class="python">@property
+def phase1name(self):
+    return self._phase1name</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.set_proposal"><code class="name flex">
-<span>def <span class="ident">set_proposal</span></span>(<span>self, proposal)</span>
-</code></dt>
+<dt id="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.proposal"><code class="name">var <span class="ident">proposal</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.proposal to proposal if proposal contains valid FG proposals</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>proposal</code></strong></dt>
-<dd>phase2 proposal.
-May be string or list of strings.
-i.e. 'des-md5' or ['des-md5', '3des-md5']</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_proposal(self, proposal):
-    &#34;&#34;&#34; Set self.proposal to proposal if proposal contains valid FG proposals
-
-    Args:
-        proposal: phase2 proposal.  May be string or list of strings.  i.e. &#39;des-md5&#39; or [&#39;des-md5&#39;, &#39;3des-md5&#39;]
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    valid_proposals = [&#39;des-md5&#39;, &#39;des-sha&#39;, &#39;des-sha256&#39;, &#39;des-sha384&#39;, &#39;des-sha512&#39;, &#39;3des-md5&#39;, &#39;3des-sha1&#39;,
-                       &#39;3des-sha256&#39;, &#39;3des-sha384&#39;, &#39;3des-sha512&#39;, &#39;aes128-md5&#39;, &#39;aes128-sha1&#39;, &#39;aes128-sha256&#39;,
-                       &#39;aes128-sha384&#39;, &#39;aes128-sha512&#39;, &#39;aes192-md5&#39;, &#39;aes192-sha1&#39;, &#39;aes192-sha256&#39;,
-                       &#39;aes192-sha384&#39;, &#39;aes192-sha512&#39;, &#39;aes256-md5&#39;, &#39;aes256-sha1&#39;, &#39;aes256-sha256&#39;,
-                       &#39;aes256-sha384&#39;, &#39;aes256-sha512&#39;, &#39;aria128-md5&#39;, &#39;aria128-sha1&#39;, &#39;aria128-sha256&#39;,
-                       &#39;aria128-sha384&#39;, &#39;aria128-sha512&#39;, &#39;aria192-md5&#39;, &#39;aria192-sha1&#39;, &#39;aria192-sha256&#39;,
-                       &#39;aria192-sha384&#39;, &#39;aria192-sha512&#39;, &#39;aria256-md5&#39;, &#39;aria256-sha1&#39;, &#39;aria256-sha256&#39;,
-                       &#39;aria256-sha384&#39;, &#39;aria256-sha512&#39;, &#39;seed-md5&#39;, &#39;seed-sha1&#39;, &#39;seed-sha256&#39;, &#39;seed-sha384&#39;,
-                       &#39;seed-sha512&#39;, &#39;chacha20poly1305&#39;, &#39;null-md5&#39;, &#39;null-sha1&#39;, &#39;null-sha256&#39;, &#39;null-sha384&#39;,
-                       &#39;null-sha512&#39;, &#39;des-null&#39;, &#39;3des-null&#39;, &#39;aes128-null&#39;, &#39;aes192-null&#39;, &#39;aes256-null&#39;,
-                       &#39;aria128-null&#39;, &#39;seed-null&#39;]
-
-    if proposal is None:
-        self.propsoal = None
-
-    else:
-        proposal_items = &#39;&#39;
-
-        # IF a single object was passed as a string, append it to intf_list else iterate the list and pull
-        # out the strings of interfaces and append each to intf_list
-        if isinstance(proposal, str):
-
-            # compare proposal to valid_proposals list
-            if proposal in valid_proposals:
-                proposal_items += f&#34;{proposal}&#34;
-            else:
-                raise ValueError(f&#34;&#39;proposal&#39; provided: {proposal} is not a valid fortigate phase1 proposal option&#34;)
-
-        elif isinstance(proposal, list):
-            for item in proposal:
-                if isinstance(item, str):
-
-                    # compare proposal to valid proposals list
-                    if item in valid_proposals:
-                        proposal_items += f&#34; {item}&#34;
-                    else:
-                        raise ValueError(f&#34;&#39;proposal&#39; provided: {proposal} is not a valid fortigate phase1 proposal&#34;
-                                        &#34; option&#34;)
-        else:
-            raise ValueError(&#34;&#39;proposal&#39; must be provided as type string (with single proposal referenced or as a &#34;
-                             &#34;list for multiple proposal references&#34;)
-
-        self.proposal = proposal_items</code></pre>
+<pre><code class="python">@property
+def proposal(self):
+    return self._proposal</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.set_replay"><code class="name flex">
-<span>def <span class="ident">set_replay</span></span>(<span>self, replay)</span>
-</code></dt>
+<dt id="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.replay"><code class="name">var <span class="ident">replay</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.replay to enable, disable or None</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>replay</code></strong> :&ensp;<code>str</code></dt>
-<dd>replay protection, allowed values: 'enable' or 'disable'</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_replay(self, replay):
-    &#34;&#34;&#34; Set self.replay to enable, disable or None
-
-    Args:
-        replay (str): replay protection, allowed values: &#39;enable&#39; or &#39;disable&#39;
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if replay is None:
-        self.replay = None
-
-    else:
-        if isinstance(replay, str):
-            if replay == &#39;enable&#39;:
-                self.replay = &#39;enable&#39;
-            elif replay == &#39;disable&#39;:
-                self.replay = &#39;disable&#39;
-            else:
-                raise ValueError(&#34;&#39;replay&#39;, allowed values are: &#39;enable&#39; or &#39;disable&#39;&#34;)
-        else:
-            raise ValueError(&#34;&#39;pfs&#39;, when set, must type str()&#34;)</code></pre>
+<pre><code class="python">@property
+def replay(self):
+    return self._replay</code></pre>
 </details>
 </dd>
-<dt id="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.set_src_subnet"><code class="name flex">
-<span>def <span class="ident">set_src_subnet</span></span>(<span>self, src_subnet)</span>
-</code></dt>
+<dt id="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.src_subnet"><code class="name">var <span class="ident">src_subnet</span></code></dt>
 <dd>
-<section class="desc"><p>Set self.src_subnet if src_subnet valid</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>src_subnet</code></strong></dt>
-<dd>Source Selector when selector type set to subnet.
-Must be valid ipv4 network/mask.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_src_subnet(self, src_subnet):
-    &#34;&#34;&#34; Set self.src_subnet if src_subnet valid
-
-    Args:
-        src_subnet: Source Selector when selector type set to subnet.  Must be valid ipv4 network/mask.
-
-    Returns:
-        None
-    &#34;&#34;&#34;
-    if src_subnet is None:
-        self.src_subnet = None
-
-    else:
-        try:
-            ipaddress.ip_network(src_subnet)
-        except ValueError:
-            raise ValueError(&#34;&#39;src_subnet&#39;, when set, must be a valid ipv4 or ipv6 address&#34;)
-        else:
-            self.src_subnet = src_subnet</code></pre>
+<pre><code class="python">@property
+def src_subnet(self):
+    return self._src_subnet</code></pre>
 </details>
 </dd>
 </dl>
@@ -1383,7 +1091,6 @@ Must be valid ipv4 network/mask.</dd>
 <li><code><a title="fgobjlib.fg_object.FgObject.get_cli_config_add" href="fg_object.html#fgobjlib.fg_object.FgObject.get_cli_config_add">get_cli_config_add</a></code></li>
 <li><code><a title="fgobjlib.fg_object.FgObject.get_cli_config_del" href="fg_object.html#fgobjlib.fg_object.FgObject.get_cli_config_del">get_cli_config_del</a></code></li>
 <li><code><a title="fgobjlib.fg_object.FgObject.get_cli_config_update" href="fg_object.html#fgobjlib.fg_object.FgObject.get_cli_config_update">get_cli_config_update</a></code></li>
-<li><code><a title="fgobjlib.fg_object.FgObject.set_vdom" href="fg_object.html#fgobjlib.fg_object.FgObject.set_vdom">set_vdom</a></code></li>
 </ul>
 </li>
 </ul>
@@ -1407,17 +1114,17 @@ Must be valid ipv4 network/mask.</dd>
 <li>
 <h4><code><a title="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface" href="#fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface">FgIpsecP2Interface</a></code></h4>
 <ul class="two-column">
-<li><code><a title="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.set_auto_negotiate" href="#fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.set_auto_negotiate">set_auto_negotiate</a></code></li>
-<li><code><a title="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.set_comment" href="#fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.set_comment">set_comment</a></code></li>
-<li><code><a title="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.set_dhgrp" href="#fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.set_dhgrp">set_dhgrp</a></code></li>
-<li><code><a title="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.set_dst_subnet" href="#fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.set_dst_subnet">set_dst_subnet</a></code></li>
-<li><code><a title="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.set_keepalive" href="#fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.set_keepalive">set_keepalive</a></code></li>
-<li><code><a title="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.set_name" href="#fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.set_name">set_name</a></code></li>
-<li><code><a title="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.set_pfs" href="#fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.set_pfs">set_pfs</a></code></li>
-<li><code><a title="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.set_phase1name" href="#fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.set_phase1name">set_phase1name</a></code></li>
-<li><code><a title="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.set_proposal" href="#fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.set_proposal">set_proposal</a></code></li>
-<li><code><a title="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.set_replay" href="#fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.set_replay">set_replay</a></code></li>
-<li><code><a title="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.set_src_subnet" href="#fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.set_src_subnet">set_src_subnet</a></code></li>
+<li><code><a title="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.auto_negotiate" href="#fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.auto_negotiate">auto_negotiate</a></code></li>
+<li><code><a title="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.comment" href="#fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.comment">comment</a></code></li>
+<li><code><a title="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.dhgrp" href="#fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.dhgrp">dhgrp</a></code></li>
+<li><code><a title="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.dst_subnet" href="#fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.dst_subnet">dst_subnet</a></code></li>
+<li><code><a title="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.keepalive" href="#fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.keepalive">keepalive</a></code></li>
+<li><code><a title="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.name" href="#fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.name">name</a></code></li>
+<li><code><a title="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.pfs" href="#fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.pfs">pfs</a></code></li>
+<li><code><a title="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.phase1name" href="#fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.phase1name">phase1name</a></code></li>
+<li><code><a title="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.proposal" href="#fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.proposal">proposal</a></code></li>
+<li><code><a title="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.replay" href="#fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.replay">replay</a></code></li>
+<li><code><a title="fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.src_subnet" href="#fgobjlib.fg_vpn_ipsec_p2_interface.FgIpsecP2Interface.src_subnet">src_subnet</a></code></li>
 </ul>
 </li>
 </ul>
