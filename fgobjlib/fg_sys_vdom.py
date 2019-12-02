@@ -14,16 +14,13 @@ class FgVdom(FgObject):
         """
         Args:
             name (str): Name of vdom
-            vdom_enabled (bool): VDOMs enabled on target FortiGate?  Set to True if VDOMs enabled False if not.
         """
 
         # Initialize the parent class
         super().__init__(api='cmdb', api_path='system', api_name='vdom', cli_path="config vdom",
                          vdom='global', obj_id=name)
 
-
-
-        ### Set parent class attributes ###
+        # Set parent class attributes #
         # Map instance attribute names to fg attribute names
         self._data_attrs = {'name': 'name'}
         self._cli_ignore_attrs = ['name']
@@ -32,12 +29,18 @@ class FgVdom(FgObject):
         self.is_global = True
 
         # Set instance attributes
-        self.set_name(name)
+        self.name = name
+
+        # Set obj to str conversion
         self._obj_to_str += f', name={self.name}'
 
+    # Instance properties and setters
+    @property
+    def name(self):
+        return self._name
 
-    # Instance Methods
-    def set_name(self, name):
+    @name.setter
+    def name(self, name):
         """ Set self.name to name if name is valid
 
         Args:
@@ -47,17 +50,17 @@ class FgVdom(FgObject):
             None
         """
         if name:
-            if name.isspace(): raise ValueError("\"name\", cannot be an empty string")
+            if name.isspace():
+                raise ValueError("'name', cannot be an empty string")
             for char in name:
                 if char.isspace():
-                    raise ValueError("\"name\" may not contain spaces")
+                    raise ValueError("'name' may not contain spaces")
             if isinstance(name, str):
                 if 1 <= len(name) <= 31:
-                    self.name = name
+                    self._name = name
                 else:
-                    raise ValueError("\"name\", must be less than or equal to 31 chars")
+                    raise ValueError("'name', must be type str() between 1 and 31 chars")
             else:
-                raise ValueError("\"name\", must be a string")
+                raise ValueError("'name', must be type str() between 1 and 31 chars")
         else:
-            raise ValueError("Value \"name\" is required but was not provided")
-
+            self._name = None

@@ -1,5 +1,6 @@
-from fgobjlib import FgObject
 import ipaddress
+
+from fgobjlib import FgObject
 
 
 class FgFwAddress(FgObject):
