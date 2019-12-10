@@ -56,7 +56,7 @@ class FgFwPolicy(FgObject):
         # Set parent class attributes
         # Map instance attribute names to fg attribute names
         self._data_attrs = {'policyid': 'policyid', 'srcintf': 'srcintf', 'dstintf': 'dstintf', 'srcaddr': 'srcaddr',
-                            'service': 'service', 'schedule': 'schedule', 'action': 'action',
+                            'dstaddr': 'dstaddr', 'service': 'service', 'schedule': 'schedule', 'action': 'action',
                             'logtraffic': 'logtraffic', 'nat': 'nat', 'srcaddr_negate': 'srcaddr-negate',
                             'dstaddr_negate': 'dstaddr-negate', 'service_negate': 'service-negate', 'name': 'name'}
 

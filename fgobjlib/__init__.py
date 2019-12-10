@@ -3,6 +3,7 @@ from .fg_sys_router_static import FgRouteIPv4
 from .fg_sys_interface import FgInterfaceIpv4
 from .fg_fw_policy import FgFwPolicy
 from .fg_fw_address import FgFwAddress
+from .fg_fw_addrgrp import FgFwAddressGroup
 from .fg_fw_service import FgFwService
 from .fg_vpn_ipsec_p1_interface import FgIpsecP1Interface
 from .fg_vpn_ipsec_p2_interface import FgIpsecP2Interface
