@@ -308,12 +308,12 @@ class FgObject(ABC):
                         else:
                             raise Exception(f"unrecognized key name for dictionary list: {item.keys()}")
 
-                conf += f"    set {fg_attr} \"{str_items}\"\n"
+                conf += f"    set {fg_attr} {str_items.rstrip()}\n"
             else:
-                if getattr(self, inst_attr): conf += "    set {fg_attr} \"{config_attr}\"\n"
+                if getattr(self, inst_attr): conf += f"    set {fg_attr} \"{config_attr}\"\n"
 
         # End obj_id config
-        conf += "  end\nend\n"
+        conf += "  end\n"
 
         # End vdom or global config
         if self.vdom:
