@@ -46,9 +46,9 @@ class FgFwAddress(FgObject):
         # Map instance attribute names to fg attribute names
         self._data_attrs = {'name': 'name', 'type': 'type', 'subnet': 'subnet', 'fqdn': 'fqdn',
                             'associated_interface': 'associated-interface', 'visibility': 'visibility',
-                            'comment': 'comments', 'start_ip': 'start-ip', 'end_ip': 'end-ip'}
+                            'comment': 'comment', 'start_ip': 'start-ip', 'end_ip': 'end-ip'}
 
-        self._cli_ignore_attrs = []
+        self._cli_ignore_attrs = ['name']
 
         # Set instance attributes
         self.name = name
